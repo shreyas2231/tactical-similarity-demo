@@ -89,15 +89,16 @@
     <div class="max-w-3xl">
       <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-accent/30 bg-accent/5 text-accent text-xs font-mono uppercase tracking-wider mb-6">
         <span class="w-1.5 h-1.5 rounded-full bg-accent animate-pulse"></span>
-        first model to pass internal quality gates
+        early qualitative demo · phase 0
       </div>
       <h1 class="text-4xl md:text-6xl font-bold tracking-tight leading-[1.05] mb-6">
-        Find recurring tactical patterns —
-        <span class="text-accent">from one example.</span>
+        Tactical similarity retrieval —
+        <span class="text-accent">from one labelled example.</span>
       </h1>
       <p class="text-lg md:text-xl text-muted leading-relaxed mb-10 max-w-2xl">
-        An analyst picks one clip of a tactical pattern. The model finds similar moments
-        from other matches it has never seen labelled. Pick a seed below and try it.
+        An analyst picks one clip of a tactical pattern. The model returns similar moments
+        from other matches in our expert-labelled set. This is an early qualitative demo —
+        a working prototype, not a deployable product.
       </p>
       <div class="flex flex-wrap gap-3">
         <a href="#try" class="inline-flex items-center gap-2 px-5 py-3 rounded-md bg-accent text-ink-950 font-semibold hover:bg-accent/90 transition">
@@ -110,27 +111,27 @@
       </div>
     </div>
 
-    <!-- Headline metric -->
+    <!-- Corpus snapshot -->
     <div class="mt-16 grid grid-cols-2 md:grid-cols-4 gap-px bg-ink-800 rounded-xl overflow-hidden border border-ink-800">
       <div class="bg-ink-950 p-6">
-        <div class="text-xs font-mono text-muted uppercase tracking-wider mb-2">Lift over baseline</div>
-        <div class="text-3xl md:text-4xl font-bold text-accent">+0.10</div>
-        <div class="text-xs text-muted mt-1">on expert-graded pairs</div>
+        <div class="text-xs font-mono text-muted uppercase tracking-wider mb-2">Matches in corpus</div>
+        <div class="text-3xl md:text-4xl font-bold">10</div>
+        <div class="text-xs text-muted mt-1">SkillCorner public tracking</div>
       </div>
       <div class="bg-ink-950 p-6">
-        <div class="text-xs font-mono text-muted uppercase tracking-wider mb-2">Cross-match recall</div>
+        <div class="text-xs font-mono text-muted uppercase tracking-wider mb-2">Expert-labelled pairs</div>
+        <div class="text-3xl md:text-4xl font-bold">75</div>
+        <div class="text-xs text-muted mt-1">single-analyst, phase 0</div>
+      </div>
+      <div class="bg-ink-950 p-6">
+        <div class="text-xs font-mono text-muted uppercase tracking-wider mb-2">Cross-match retrievals</div>
         <div class="text-3xl md:text-4xl font-bold">100%</div>
-        <div class="text-xs text-muted mt-1">no same-match shortcuts</div>
+        <div class="text-xs text-muted mt-1">no same-match shortcuts in demo</div>
       </div>
       <div class="bg-ink-950 p-6">
-        <div class="text-xs font-mono text-muted uppercase tracking-wider mb-2">Match-shortcut control</div>
-        <div class="text-3xl md:text-4xl font-bold">&check;</div>
-        <div class="text-xs text-muted mt-1">below safety cap</div>
-      </div>
-      <div class="bg-ink-950 p-6">
-        <div class="text-xs font-mono text-muted uppercase tracking-wider mb-2">Internal quality gates</div>
-        <div class="text-3xl md:text-4xl font-bold">5/5</div>
-        <div class="text-xs text-muted mt-1">first time, all passing</div>
+        <div class="text-xs font-mono text-muted uppercase tracking-wider mb-2">Stage</div>
+        <div class="text-3xl md:text-4xl font-bold text-accent">Phase 0</div>
+        <div class="text-xs text-muted mt-1">research demo, not product</div>
       </div>
     </div>
   </div>
@@ -224,8 +225,10 @@
       <div class="text-xs font-mono text-accent uppercase tracking-wider mb-3">try the demo</div>
       <h2 class="text-3xl md:text-4xl font-bold tracking-tight mb-4">Pick a seed. See what the model retrieved.</h2>
       <p class="text-muted max-w-3xl">
-        Nine seed clips below — six clean wins, one partial, and two honest misses. Click any tile to
-        see the model's top-5 retrievals (precomputed on a real GPU; click reveals the result).
+        Nine seed clips below. Click any tile to see the model's top-5 retrievals on
+        the labelled bank (precomputed on a real GPU). The badges are our honest review
+        of each retrieval — strong, partial, or miss — so you see what the model gets
+        right and where it stumbles.
       </p>
     </div>
 
@@ -256,28 +259,32 @@
         <div class="text-xs font-mono text-accent uppercase tracking-wider mb-3">where this is</div>
         <h2 class="text-3xl font-bold tracking-tight mb-6">Honest about the stage.</h2>
         <p class="text-muted leading-relaxed mb-4">
-          This is a research milestone, not a customer-ready product. Three things to know:
+          This is a phase-0 research demo, not a customer-ready product. The retrievals
+          you see above are real — qualitative tactical-similarity output on
+          expert-labelled clips. The harder claim — that the model generalises this
+          quality to fresh, unseen analyst pairs — is <em>not</em> yet established.
+          That's the next milestone.
         </p>
         <ul class="space-y-4 text-sm">
           <li class="flex gap-3">
             <div class="flex-shrink-0 w-1 bg-warn rounded-full"></div>
             <div>
-              <div class="font-medium mb-1">The expert-graded test is internal.</div>
-              <p class="text-muted">Our football expert labelled the clips, knowing they'd be used to train. We then carved a held-out subset for the test. Fair internal benchmark, not yet a system-blind evaluation.</p>
+              <div class="font-medium mb-1">Built on expert-labelled examples, demo is qualitative.</div>
+              <p class="text-muted">The retrievals you see come from a labelled bank: every clip has an analyst tag. The model is doing a real job here, but on data the analyst has already touched.</p>
             </div>
           </li>
           <li class="flex gap-3">
             <div class="flex-shrink-0 w-1 bg-warn rounded-full"></div>
             <div>
-              <div class="font-medium mb-1">Match-shortcut is controlled, not solved.</div>
-              <p class="text-muted">The model leans slightly on "same game → similar embedding." We measure this and it sits just below our safety threshold — controlled, not eliminated.</p>
+              <div class="font-medium mb-1">Generalisation to fresh expert-labelled pairs is the next milestone.</div>
+              <p class="text-muted">We have built the first eval discipline and learned that <em>scaling expert-labelled, system-blind data</em> is the core unlock. Onboarding a second analyst and labelling a held-out set is the immediate next step.</p>
             </div>
           </li>
           <li class="flex gap-3">
             <div class="flex-shrink-0 w-1 bg-warn rounded-full"></div>
             <div>
-              <div class="font-medium mb-1">The corpus is small.</div>
-              <p class="text-muted">10 matches of public tracking data, 70 expert-labelled tactical decisions, one expert. The wins are real; n=70 means more analyst sessions could move the picture either way.</p>
+              <div class="font-medium mb-1">The corpus is small — n=10 matches, n=75 expert pair-judgments, one analyst.</div>
+              <p class="text-muted">Phase 0. The wins shown are real on this corpus. Assertions about broader performance require more analysts, more matches, and a properly held-out evaluation — all in flight.</p>
             </div>
           </li>
         </ul>
@@ -294,15 +301,15 @@
           <div class="flex items-center gap-3 p-3 rounded-md border border-ink-700 bg-ink-950">
             <div class="w-8 h-8 rounded-full bg-accent/10 text-accent flex items-center justify-center font-mono text-sm">1</div>
             <div>
-              <div class="font-medium text-sm">Scale expert labels</div>
-              <div class="text-xs text-muted">2nd analyst onboarding, more sessions, structured rationale</div>
+              <div class="font-medium text-sm">Calibrate the eval</div>
+              <div class="text-xs text-muted">Onboard 2nd analyst, label same held-out pack blind, measure agreement</div>
             </div>
           </div>
           <div class="flex items-center gap-3 p-3 rounded-md border border-ink-700 bg-ink-950">
             <div class="w-8 h-8 rounded-full bg-accent/10 text-accent flex items-center justify-center font-mono text-sm">2</div>
             <div>
-              <div class="font-medium text-sm">Design-partner footage</div>
-              <div class="text-xs text-muted">Real club tracking data — wider distribution, weekly workflow</div>
+              <div class="font-medium text-sm">Scale system-blind expert data</div>
+              <div class="text-xs text-muted">Larger held-out evaluation pack, more matches, broader distribution</div>
             </div>
           </div>
           <div class="flex items-center gap-3 p-3 rounded-md border border-ink-700 bg-ink-950">
