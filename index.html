@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Tactical Similarity Retrieval — Demo</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          ink: { 950: '#0a0e16', 900: '#0f1622', 800: '#161e2c', 700: '#1f2a3c', 600: '#2c394e' },
+          accent: '#00d6a4',
+          muted: '#7d8aa0',
+          warn: '#ffb547',
+          danger: '#ff6b7e',
+        },
+        fontFamily: {
+          sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+          mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
+        },
+      },
+    },
+  };
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  body { background-color: #0a0e16; color: #e5e9f0; font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
+  .grain {
+    background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.04) 1px, transparent 0);
+    background-size: 24px 24px;
+  }
+  .video-card { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+  .video-card:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0, 214, 164, 0.08); }
+  .badge-strong { background-color: rgba(0, 214, 164, 0.12); color: #00d6a4; border-color: rgba(0, 214, 164, 0.30); }
+  .badge-partial { background-color: rgba(255, 181, 71, 0.12); color: #ffb547; border-color: rgba(255, 181, 71, 0.30); }
+  .badge-miss { background-color: rgba(255, 107, 126, 0.12); color: #ff6b7e; border-color: rgba(255, 107, 126, 0.30); }
+  .sim-bar { background: linear-gradient(90deg, #00d6a4 0%, #00d6a4 100%); }
+  .scroll-snap-x { scroll-snap-type: x mandatory; }
+  .scroll-snap-x > * { scroll-snap-align: start; }
+  details > summary { list-style: none; cursor: pointer; }
+  details > summary::-webkit-details-marker { display: none; }
+  .anchor-target { scroll-margin-top: 80px; }
+  video { background-color: #000; }
+  /* Hide scrollbar styling */
+  .nice-scroll::-webkit-scrollbar { height: 8px; }
+  .nice-scroll::-webkit-scrollbar-track { background: #161e2c; border-radius: 4px; }
+  .nice-scroll::-webkit-scrollbar-thumb { background: #2c394e; border-radius: 4px; }
+  .nice-scroll::-webkit-scrollbar-thumb:hover { background: #3d4d6b; }
+</style>
+<script>window.__AUDIT__ = {"ckpt": "/home/ubuntu/fwm/runs/supcon_analyst_v9c/ckpt_final.pt", "narrative_one_liner": "An analyst picks one example of a tactical pattern. The model finds similar moments from other matches \u2014 without seeing those matches labelled.", "seeds": [{"id": "switch_of_play", "demo_role": "strong_win", "title": "Switch of play", "subtitle": "Same mechanism, different match \u2014 top hit at 0.90 similarity", "explanation": "Unable to progress down the right flank, the team switches to the opposite side. The model's top retrieval (similarity 0.903) is also a switch of play \u2014 different team, different match. Pure shape recognition: long ball changes the side, opposition block has to shift across.", "manual_review": "strong", "seed": {"clip_id": "1899585:1899585:4:1214", "match_id": "1899585", "mp4_url": "https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c15_create_middle_1899585_1899585_4_1214.mp4", "v1_category": "switch_of_play", "severity": 5, "notes": "Unable to progress down the right side, the team quickly switches play to the opposite flank in search of a potential advantage. The opp team shifts across effectively, maintaining a compact structure", "structured": {"primary_mechanism": "switch_of_play", "relation_reason": "same_mechanism", "progression_zone": "attacking_third", "progression_lane": "left", "pressure_context": "mid_block"}}, "neighbors": [{"clip_id": "1886347:1886347:82:15943", "match_id": "1886347", "mp4_url": "https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c17_create_middle_1886347_1886347_82_15943.mp4", "v1_category": "switch_of_play", "severity": 3, "notes": "LB unable to progress forward, plays back pass to CB. The plays is recycled and ends with a fast pass to the RB  with clear advantage. The opp team defends in a compact mid-block.", "similarity": 0.9032870531082153, "structured": {}, "auto_label": "strong"}, {"clip_id": "1886347:1886347:173:34910", "match_id": "1886347", "mp4_url": "https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c38_set_piece_1886347_1886347_173_34910.mp4", "v1_category": "final_third_circulation", "severity": 3, "notes": "Low block from opp. team. Possession in the final third with most of the team positioned in final third, circulating the ball trying to generate spaces.", "similarity": 0.650351881980896, "structured": {"primary_mechanism": "final_third_progression", "relation_reason": "boundary_case", "progression_zone": "attacking_third", "progression_lane": "half_space_left", "pressure_context": "low_block"}, "auto_label": "miss"}, {"clip_id": "1925299:1925299:180:38820", "match_id": "1925299", "mp4_url": "https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c19_cross_attempt_1925299_1925299_180_38820.mp4", "v1_category": "middle_progression", "severity": 2, "notes": "The entire team is overloaded on the right side of the pitch. Following a layoff from the CF to the CM, he identifies the LW positioned centrally in a favorable pocket of space.", "similarity": 0.6160433292388916, "structured": {"primary_mechanism": "middle_progression", "relation_reason": "same_mechanism", "progression_zone": "middle_third", "progression_lane": "central", "pressure_context": "mid_block"}, "auto_label": "miss"}, {"clip_id": "1925299:1925299:267:60618", "match_id": "1925299", "mp4_url": "https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c16_create_middle_1925299_1925299_267_60618.mp4", "v1_category": "final_third_circulation", "severity": 4, "notes": "The team is fully committed in the opposition half, maintaining possession in the final third. Circulating without urgency to penetrate or create depth, opp team defensive line shifts effectively.", "similarity": 0.5984053611755371, "structured": {"primary_mechanism": "final_third_progression", "relation_reason": "same_mechanism", "progression_zone": "attacking_third", "progression_lane": "half_space_left", "pressure_context": "low_block", "v1_category_self": "final_third_progression"}, "auto_label": "miss"}, {"clip_id": "1886347:1886347:127:26415", "match_id": "1886347", "mp4_url": "https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c06_create_finish_attack_1886347_1886347_127_26415.mp4", "v1_category": "middle_circulation", "severity": 3, "notes": "Ball circulation in the middle third, aiming to shift possession from an area with no clear advantage to a less crowded zone, with limited urgency to progress vertically. ", "similarity": 0.5656742453575134, "structured": {"primary_mechanism": "middle_circulation", "relation_reason": "same_mechanism", "progression_zone": "middle_third", "progression_lane": "central", "pressure_context": "mid_block"}, "auto_label": "miss"}]}, {"id": "deep_build_up", "demo_role": "strong_win", "title": "Deep build-up against a mid-block", "subtitle": "Two top retrievals are the same mechanism in different matches", "explanation": "Build-up from the goalkeeper against an opponent in mid-block \u2014 no high pressing, just patient circulation. Top two retrievals (0.79, 0.69) are both deep build-up from other matches. The model correctly finds the family of patient first-phase possession against passive opposition.", "manual_review": "strong", "seed": {"clip_id": "1899585:1899585:119:23619", "match_id": "1899585", "mp4_url": "https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c05_buildup_own_half_1899585_1899585_119_23619.mp4", "v1_category": "deep_build_up", "severity": 4, "notes": "Build-up from the back starting with the GK. The opposition sits in a mid-block with no high pressing. The team circulates possession without forcing forward passes.", "structured": {"primary_mechanism": "deep_build_up", "relation_reason": "same_mechanism", "progression_zone": "defensive_third", "progression_lane": "central", "pressure_context": "mid_block"}}, "neighbors": [{"clip_id": "1925299:1925299:258:57972", "match_id": "1925299", "mp4_url": "https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c04_buildup_own_half_1925299_1925299_258_57972.mp4", "v1_category": "deep_build_up", "severity": 1, "notes": "GK in possession, waiting for the team to properly organize before restarting play short. ", "similarity": 0.7935247421264648, "structured": {}, "auto_label": "strong"}, {"clip_id": "1886347:1886347:13:2095", "match_id": "1886347", "mp4_url": "https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c00_buildup_own_half_1886347_1886347_13_2095.mp4", "v1_category": "deep_build_up", "severity": 3, "notes": "Build-up in first third with a clearly defined back three line, opposition pressure starts in Middle third. CM's drop close to CB's to attract pressure and create space in advanced areas.", "similarity": 0.6873266696929932, "structured": {"primary_mechanism": "deep_build_up", "relation_reason": "same_mechanism", "progression_zone": "defensive_third", "progression_lane": "central", "pressure_context": "mid_block"}, "auto_label": "strong"}, {"clip_id": "1886347:1886347:173:34910", "match_id": "1886347", "mp4_url": "https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c38_set_piece_1886347_1886347_173_34910.mp4", "v1_category": "final_third_circulation", "severity": 3, "notes": "Low block from opp. team. Possession in the final third with most of the team positioned in final third, circulating the ball trying to generate spaces.", "similarity": 0.4838947355747223, "structured": {"primary_mechanism": "final_third_progression", "relation_reason": "boundary_case", "progression_zone": "attacking_third", "progression_lane": "half_space_left", "pressure_context": "low_block"}, "auto_label": "miss"}, {"clip_id": "1886347:1886347:127:26415", "match_id": "1886347", "mp4_url": "https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c06_create_finish_attack_1886347_1886347_127_26415.mp4", "v1_category": "middle_circulation", "severity": 3, "notes": "Ball circulation in the middle third, aiming to shift possession from an area with no clear advantage to a less crowded zone, with limited urgency to progress vertically. ", "similarity": 0.4792797267436981, "structured": {"primary_mechanism": "middle_circulation", "relation_reason": "same_mechanism", "progression_zone": "middle_third", "progression_lane": "central", "pressure_context": "mid_block"}, "auto_label": "miss"}, {"clip_id": "1925299:1925299:119:27135", "match_id": "1925299", "mp4_url": "https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c08_create_finish_attack_1925299_1925299_119_27135.mp4", "v1_category": "crossing_attack", "severity": 3, "notes": "Individual action in the final third, in the box that ends with a cross, with 5 attacking players positioned inside the box awaiting the delivery.", "similarity": 0.4181978702545166, "structured": {"primary_mechanism": "crossing_attack", "relation_reason": "same_mechanism", "progression_zone": "attacking_third", "progression_lane": "left", "pressure_context": "low_block"}, "auto_label": "miss"}]}, {"id": "press_break", "demo_role": "strong_win", "title": "Press break \u2014 combination on the flank", "subtitle": "Three of the top five are press breaks", "explanation": "A combination on the left flank breaks the opposition's high press, opening positional advantage in attack. Top retrieval is a calm deep build-up (the precursor phase to a press break \u2014 same shape, different moment); ranks 2 through 4 are all press breaks from other matches. The model groups by tactical family even when the exact moment varies.", "manual_review": "strong", "seed": {"clip_id": "1899585:1899585:221:42990", "match_id": "1899585", "mp4_url": "https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c20_cross_attempt_1899585_1899585_221_42990.mp4", "v1_category": "press_break", "severity": 5, "notes": "Build up from the back, where a combination play on the left flank breaks the opp team\u2019s high press, resulting in a positional advantage in the attacking half with space to advance toward the box.", "structured": {"primary_mechanism": "press_break", "relation_reason": "same_mechanism", "progression_zone": "middle_third", "progression_lane": "central", "pressure_context": "high_press"}}, "neighbors": [{"clip_id": "1925299:1925299:258:57972", "match_id": "1925299", "mp4_url": "https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c04_buildup_own_half_1925299_1925299_258_57972.mp4", "v1_category": "deep_build_up", "severity": 1, "notes": "GK in possession, waiting for the team to properly organize before restarting play short. ", "similarity": 0.8125320672988892, "structured": {}, "auto_label": "miss"}, {"clip_id": "1886347:1886347:13:2315", "match_id": "1886347", "mp4_url": "https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c34_recovery_press_1886347_1886347_13_2315.mp4", "v1_category": "press_break", "severity": 4, "notes": "LCB breaks the press with a progressive carry and finds the free player in middle third, then plays a through pass into the flank with the RW. Opp. pressure leaves multiple players unmarked", "similarity": 0.7330019474029541, "structured": {"primary_mechanism": "press_break", "relation_reason": "same_mechanism", "progression_zone": "middle_third", "progression_lane": "central", "pressure_context": "high_press"}, "auto_label": "strong"}, {"clip_id": "1886347:1886347:211:44356", "match_id": "1886347", "mp4_url": "https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c18_cross_attempt_1886347_1886347_211_44356.mp4", "v1_category": "press_break", "severity": 3, "notes": "Disorganized pressure from the opp team. CM with lots of time finds RW that drops deep well, his mark stays static, and CF makes a diagonal run to receive in space inside the penalty area.", "similarity": 0.5330442786216736, "structured": {}, "auto_label": "strong"}, {"clip_id": "1925299:1925299:199:44074", "match_id": "1925299", "mp4_url": "https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c27_high_press_own_half_1925299_1925299_199_44074.mp4", "v1_category": "press_break", "severity": 3, "notes": "CB plays back to the GK under high pressure, who sent a long ball. The CF wins the aerial duel and lays it off to the CM who quickly open with LB who is in a positional advantage to go forward.", "similarity": 0.511159360408783, "structured": {"primary_mechanism": "press_break", "relation_reason": "boundary_case", "progression_zone": "defensive_third", "progression_lane": "central", "pressure_context": "high_press"}, "auto_label": "strong"}, {"clip_id": "1886347:1886347:96:19181", "match_id": "1886347", "mp4_url": "https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c28_high_press_own_half_1886347_1886347_96_19181.mp4", "v1_category": "middle_circulation", "severity": 3, "notes": "Ball circulation among defensive line players between first/second thirds, moving the opposition\u2019s mid-block structure from side to side till spaces are generated to progress.", "similarity": 0.4668755531311035, "structured": {}, "auto_label": "miss"}]}, {"id": "middle_progression_partial", "demo_role": "partial", "title": "Middle-third progression \u2014 partial match", "subtitle": "The model finds the right zone but misses the progression intent", "explanation": "Centre-back holds, plays right-back, who carries forward and progresses down the flank. The model retrieves middle-third possession clips from other matches \u2014 correct zone \u2014 but they're middle CIRCULATION, not progression. The model groups by where the ball is, not yet by what the team is trying to do with it. Honest weakness of the current model.", "manual_review": "partial", "seed": {"clip_id": "1925299:1925299:98:21424", "match_id": "1925299", "mp4_url": "https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c33_recovery_press_1925299_1925299_98_21424.mp4", "v1_category": "middle_progression", "severity": 4, "notes": "RCB holds the ball with low pressure, plays with RB, who uses a movement to evade his marker and carries the ball forward, progressing down the flank. The opposition defends in a mid-block.", "structured": {"primary_mechanism": "middle_progression", "relation_reason": "looks_alike_different_mechanism", "progression_zone": "middle_third", "progression_lane": "half_space_right", "pressure_context": "mid_block"}}, "neighbors": [{"clip_id": "1886347:1886347:96:19181", "match_id": "1886347", "mp4_url": "https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c28_high_press_own_half_1886347_1886347_96_19181.mp4", "v1_category": "middle_circulation", "severity": 3, "notes": "Ball circulation among defensive line players between first/second thirds, moving the opposition\u2019s mid-block structure from side to side till spaces are generated to progress.", "similarity": 0.7414462566375732, "structured": {}, "auto_label": "miss"}, {"clip_id": "1886347:1886347:211:44356", "match_id": "1886347", "mp4_url": "https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c18_cross_attempt_1886347_1886347_211_44356.mp4", "v1_category": "press_break", "severity": 3, "notes": "Disorganized pressure from the opp team. CM with lots of time finds RW that drops deep well, his mark stays static, and CF makes a diagonal run to receive in space inside the penalty area.", "similarity": 0.7010815143585205, "structured": {}, "auto_label": "miss"}, {"clip_id": "1886347:1886347:144:29689", "match_id": "1886347", "mp4_url": "https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c31_recovery_press_1886347_1886347_144_29689.mp4", "v1_category": "switch_of_play", "severity": 3, "notes": "Opp. team is pressing in middle third. LCB carries the ball forward taking the free space. He identifies the free man (RW) on the opposite flank and executes a switch of play.", "similarity": 0.5950930118560791, "structured": {"primary_mechanism": "switch_of_play", "relation_reason": "same_mechanism", "progression_zone": "attacking_third", "progression_lane": "left", "pressure_context": "mid_block"}, "auto_label": "miss"}, {"clip_id": "1886347:1886347:19:3540", "match_id": "1886347", "mp4_url": "https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c14_create_middle_1886347_1886347_19_3540.mp4", "v1_category": "middle_circulation", "severity": 3, "notes": "Ball circulation between defensive line, Opp team defending middle block, shifting properly. No rush to go forced forward passes.", "similarity": 0.5703160762786865, "structured": {"primary_mechanism": "middle_progression", "relation_reason": "looks_alike_different_mechanism", "progression_zone": "middle_third", "progression_lane": "half_space_right", "pressure_context": "mid_block"}, "auto_label": "partial"}, {"clip_id": "1886347:1886347:13:2315", "match_id": "1886347", "mp4_url": "https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c34_recovery_press_1886347_1886347_13_2315.mp4", "v1_category": "press_break", "severity": 4, "notes": "LCB breaks the press with a progressive carry and finds the free player in middle third, then plays a through pass into the flank with the RW. Opp. pressure leaves multiple players unmarked", "similarity": 0.563459575176239, "structured": {"primary_mechanism": "press_break", "relation_reason": "same_mechanism", "progression_zone": "middle_third", "progression_lane": "central", "pressure_context": "high_press"}, "auto_label": "miss"}]}, {"id": "build_up_under_press_miss", "demo_role": "miss", "title": "Build-up under high press \u2014 honest miss", "subtitle": "The model retrieves visually similar clips that have a different mechanism", "explanation": "Goalkeeper under intense pressing plays out to the free left-back, who progresses down the flank. Top retrievals look similar on the pitch (deep first-phase possession) but are NOT under-pressure cases. The model is confused by surface geometry and misses the press cue \u2014 exactly the kind of failure mode richer expert labels are designed to fix.", "manual_review": "miss", "seed": {"clip_id": "1899585:1899585:107:21707", "match_id": "1899585", "mp4_url": "https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c12_create_middle_1899585_1899585_107_21707.mp4", "v1_category": "build_up_under_high_press", "severity": 4, "notes": "GK under high pressing chooses to play to the free player, in this case the LB, who has space to carry the ball forward and progress down the flank.", "structured": {"primary_mechanism": "final_third_circulation", "relation_reason": "same_mechanism", "progression_zone": "defensive_third", "progression_lane": "left", "pressure_context": "high_press"}}, "neighbors": [{"clip_id": "1886347:1886347:179:36305", "match_id": "1886347", "mp4_url": "https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c25_high_press_own_half_1886347_1886347_179_36305.mp4", "v1_category": "circulation_under_high_press", "severity": 3, "notes": "Ball circulation between the CB's, no clear forward passing options. Opp. team applying high pressure correctly and closing forward passing lanes.", "similarity": 0.5247035026550293, "structured": {"primary_mechanism": "circulation_under_high_press", "relation_reason": "boundary_case", "progression_zone": "defensive_third", "progression_lane": "central", "pressure_context": "high_press"}, "auto_label": "miss"}, {"clip_id": "1886347:1886347:139:28623", "match_id": "1886347", "mp4_url": "https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c03_buildup_own_half_1886347_1886347_139_28623.mp4", "v1_category": "deep_build_up", "severity": 2, "notes": "Team is reorganizing after a set piece, ball circulation between the deepest players in the middle/low third facing no opposition pressure.", "similarity": 0.5106333494186401, "structured": {"primary_mechanism": "deep_build_up", "relation_reason": "same_mechanism", "progression_zone": "defensive_third", "progression_lane": "central", "pressure_context": "mid_block"}, "auto_label": "miss"}, {"clip_id": "1925299:1925299:26:5110", "match_id": "1925299", "mp4_url": "https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c01_buildup_own_half_1925299_1925299_26_5110.mp4", "v1_category": "deep_build_up", "severity": 2, "notes": "Controlled possession between GK, CB's and CM with no clear intent or urgency to progress. The opposition remains organized in a mid-block.", "similarity": 0.46944934129714966, "structured": {"primary_mechanism": "deep_build_up", "relation_reason": "same_mechanism", "progression_zone": "defensive_third", "progression_lane": "central", "pressure_context": "mid_block"}, "auto_label": "miss"}, {"clip_id": "1886347:1886347:144:29689", "match_id": "1886347", "mp4_url": "https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c31_recovery_press_1886347_1886347_144_29689.mp4", "v1_category": "switch_of_play", "severity": 3, "notes": "Opp. team is pressing in middle third. LCB carries the ball forward taking the free space. He identifies the free man (RW) on the opposite flank and executes a switch of play.", "similarity": 0.46745437383651733, "structured": {"primary_mechanism": "switch_of_play", "relation_reason": "same_mechanism", "progression_zone": "attacking_third", "progression_lane": "left", "pressure_context": "mid_block"}, "auto_label": "miss"}, {"clip_id": "1925299:1925299:219:49679", "match_id": "1925299", "mp4_url": "https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c24_high_press_own_half_1925299_1925299_219_49679.mp4", "v1_category": "circulation_under_high_press", "severity": 4, "notes": "The team in possession is unable to progress and opts to play backwards. The defending team applies pressure in the middle 3th, maintaining a compact defensive block and blocking forward passing lanes", "similarity": 0.38946375250816345, "structured": {}, "auto_label": "miss"}]}]};</script>
+</head>
+<body class="min-h-screen">
+
+<!-- Top nav -->
+<nav class="sticky top-0 z-50 bg-ink-950/85 backdrop-blur border-b border-ink-800">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8 rounded-md bg-accent flex items-center justify-center">
+        <svg class="w-4 h-4 text-ink-950" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <circle cx="12" cy="12" r="9" /><path d="M12 3v18M3 12h18" />
+        </svg>
+      </div>
+      <span class="font-semibold tracking-tight">Tactical Similarity</span>
+      <span class="hidden sm:inline text-xs font-mono text-muted ml-2">research demo · v9c · phase 0</span>
+    </div>
+    <div class="hidden md:flex items-center gap-6 text-sm text-muted">
+      <a href="#how" class="hover:text-white transition">How it works</a>
+      <a href="#examples" class="hover:text-white transition">Examples</a>
+      <a href="#caveats" class="hover:text-white transition">Honest caveats</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="grain border-b border-ink-800">
+  <div class="max-w-7xl mx-auto px-6 py-24 md:py-32">
+    <div class="max-w-3xl">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-accent/30 bg-accent/5 text-accent text-xs font-mono uppercase tracking-wider mb-6">
+        <span class="w-1.5 h-1.5 rounded-full bg-accent animate-pulse"></span>
+        first model to pass internal quality gates
+      </div>
+      <h1 class="text-4xl md:text-6xl font-bold tracking-tight leading-[1.05] mb-6">
+        Find recurring tactical patterns —
+        <span class="text-accent">from one example.</span>
+      </h1>
+      <p class="text-lg md:text-xl text-muted leading-relaxed mb-10 max-w-2xl">
+        An analyst picks one clip of a tactical pattern. The model finds similar moments
+        from other matches it has never seen labelled. This page is the proof.
+      </p>
+      <div class="flex flex-wrap gap-3">
+        <a href="#examples" class="inline-flex items-center gap-2 px-5 py-3 rounded-md bg-accent text-ink-950 font-semibold hover:bg-accent/90 transition">
+          See the 5 examples
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 5l7 7-7 7"/></svg>
+        </a>
+        <a href="#how" class="inline-flex items-center gap-2 px-5 py-3 rounded-md border border-ink-700 text-muted hover:text-white hover:border-ink-600 transition">
+          How it works
+        </a>
+      </div>
+    </div>
+
+    <!-- Headline metric -->
+    <div class="mt-20 grid grid-cols-2 md:grid-cols-4 gap-px bg-ink-800 rounded-xl overflow-hidden border border-ink-800">
+      <div class="bg-ink-950 p-6">
+        <div class="text-xs font-mono text-muted uppercase tracking-wider mb-2">Lift over baseline</div>
+        <div class="text-3xl md:text-4xl font-bold text-accent">+0.10</div>
+        <div class="text-xs text-muted mt-1">on expert-graded pairs</div>
+      </div>
+      <div class="bg-ink-950 p-6">
+        <div class="text-xs font-mono text-muted uppercase tracking-wider mb-2">Cross-match recall</div>
+        <div class="text-3xl md:text-4xl font-bold">100%</div>
+        <div class="text-xs text-muted mt-1">no same-match shortcuts</div>
+      </div>
+      <div class="bg-ink-950 p-6">
+        <div class="text-xs font-mono text-muted uppercase tracking-wider mb-2">Match-shortcut control</div>
+        <div class="text-3xl md:text-4xl font-bold">✓</div>
+        <div class="text-xs text-muted mt-1">below safety cap</div>
+      </div>
+      <div class="bg-ink-950 p-6">
+        <div class="text-xs font-mono text-muted uppercase tracking-wider mb-2">Internal quality gates</div>
+        <div class="text-3xl md:text-4xl font-bold">5/5</div>
+        <div class="text-xs text-muted mt-1">first time, all passing</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- How it works -->
+<section id="how" class="border-b border-ink-800 anchor-target">
+  <div class="max-w-7xl mx-auto px-6 py-20">
+    <div class="grid md:grid-cols-3 gap-8 md:gap-12">
+      <div>
+        <div class="text-xs font-mono text-accent uppercase tracking-wider mb-3">01 / Seed</div>
+        <h3 class="text-xl font-semibold mb-2">An analyst picks one clip.</h3>
+        <p class="text-sm text-muted leading-relaxed">
+          A football expert chooses a single 10-second moment that demonstrates a tactical pattern —
+          a press break, a switch of play, a build-up under pressure.
+        </p>
+      </div>
+      <div>
+        <div class="text-xs font-mono text-accent uppercase tracking-wider mb-3">02 / Query</div>
+        <h3 class="text-xl font-semibold mb-2">The model embeds the play.</h3>
+        <p class="text-sm text-muted leading-relaxed">
+          The model — trained on expert-labelled examples — converts the clip's player and ball
+          trajectories into a tactical signature. No video is processed; only the tracking data.
+        </p>
+      </div>
+      <div>
+        <div class="text-xs font-mono text-accent uppercase tracking-wider mb-3">03 / Retrieve</div>
+        <h3 class="text-xl font-semibold mb-2">Top similar moments come back.</h3>
+        <p class="text-sm text-muted leading-relaxed">
+          The model searches the rest of the corpus and returns the five most similar plays —
+          all from <em>different matches</em>, so geometric similarity from "same game" can't fake it.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Examples -->
+<section id="examples" class="anchor-target">
+  <div class="max-w-7xl mx-auto px-6 py-20">
+    <div class="mb-12">
+      <div class="text-xs font-mono text-accent uppercase tracking-wider mb-3">examples</div>
+      <h2 class="text-3xl md:text-4xl font-bold tracking-tight mb-4">Five queries. Three wins, one partial, one honest miss.</h2>
+      <p class="text-muted max-w-3xl">
+        Each example below shows what happens when an analyst hands the model one clip and asks for
+        similar moments from other matches. We picked the seeds; the model picked the retrievals.
+      </p>
+    </div>
+
+    <div id="seed-sections" class="space-y-20">
+      <!-- Populated by JS from _AUDIT.json -->
+    </div>
+  </div>
+</section>
+
+<!-- Caveats -->
+<section id="caveats" class="border-t border-ink-800 anchor-target bg-ink-900">
+  <div class="max-w-7xl mx-auto px-6 py-20">
+    <div class="grid md:grid-cols-2 gap-12">
+      <div>
+        <div class="text-xs font-mono text-accent uppercase tracking-wider mb-3">where this is</div>
+        <h2 class="text-3xl font-bold tracking-tight mb-6">Honest about the stage.</h2>
+        <p class="text-muted leading-relaxed mb-4">
+          This is a research milestone, not a customer-ready product. Three things to know:
+        </p>
+        <ul class="space-y-4 text-sm">
+          <li class="flex gap-3">
+            <div class="flex-shrink-0 w-1 bg-warn rounded-full"></div>
+            <div>
+              <div class="font-medium mb-1">The expert-graded test is internal.</div>
+              <p class="text-muted">Our football expert labelled the clips, knowing they'd be used to train. We then carved a held-out subset for the test. Fair internal benchmark, not yet a system-blind evaluation.</p>
+            </div>
+          </li>
+          <li class="flex gap-3">
+            <div class="flex-shrink-0 w-1 bg-warn rounded-full"></div>
+            <div>
+              <div class="font-medium mb-1">Match-shortcut is controlled, not solved.</div>
+              <p class="text-muted">The model leans slightly on "same game → similar embedding." We measure this and it sits just below our safety threshold — controlled, not eliminated.</p>
+            </div>
+          </li>
+          <li class="flex gap-3">
+            <div class="flex-shrink-0 w-1 bg-warn rounded-full"></div>
+            <div>
+              <div class="font-medium mb-1">The corpus is small.</div>
+              <p class="text-muted">10 matches of public tracking data, 70 expert-labelled tactical decisions, one expert. The wins are real; n=70 means more analyst sessions could move the picture either way.</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div>
+        <div class="text-xs font-mono text-accent uppercase tracking-wider mb-3">what's next</div>
+        <h2 class="text-3xl font-bold tracking-tight mb-6">The path to the product.</h2>
+        <p class="text-muted leading-relaxed mb-6">
+          This is the foundation for finding <em>recurring tactical problems</em> and the clips that prove them.
+          A coach asks "show me every press we broke down the left this season" and the system answers with five video clips.
+          Today's demo is the embedding layer that makes that possible.
+        </p>
+        <div class="space-y-3">
+          <div class="flex items-center gap-3 p-3 rounded-md border border-ink-700 bg-ink-950">
+            <div class="w-8 h-8 rounded-full bg-accent/10 text-accent flex items-center justify-center font-mono text-sm">1</div>
+            <div>
+              <div class="font-medium text-sm">Scale expert labels</div>
+              <div class="text-xs text-muted">2nd analyst onboarding, more sessions, structured rationale</div>
+            </div>
+          </div>
+          <div class="flex items-center gap-3 p-3 rounded-md border border-ink-700 bg-ink-950">
+            <div class="w-8 h-8 rounded-full bg-accent/10 text-accent flex items-center justify-center font-mono text-sm">2</div>
+            <div>
+              <div class="font-medium text-sm">Design-partner footage</div>
+              <div class="text-xs text-muted">Real club tracking data — wider distribution, weekly workflow</div>
+            </div>
+          </div>
+          <div class="flex items-center gap-3 p-3 rounded-md border border-ink-700 bg-ink-950">
+            <div class="w-8 h-8 rounded-full bg-accent/10 text-accent flex items-center justify-center font-mono text-sm">3</div>
+            <div>
+              <div class="font-medium text-sm">From similarity to insight</div>
+              <div class="text-xs text-muted">Aggregate retrievals into recurring-pattern reports for analysts</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="border-t border-ink-800 bg-ink-950">
+  <div class="max-w-7xl mx-auto px-6 py-10 text-xs text-muted font-mono flex flex-wrap items-center justify-between gap-4">
+    <div>tactical similarity retrieval · research demo · phase 0 · v9c step 1250</div>
+    <div>training: 10 matches · 70 expert pairs · ckpt 2026-05-06</div>
+  </div>
+</footer>
+
+<!-- Render script -->
+<script>
+async function loadAudit() {
+  return window.__AUDIT__;
+}
+
+function badge(label) {
+  const cls = label === 'strong' ? 'badge-strong' : label === 'partial' ? 'badge-partial' : 'badge-miss';
+  const text = label === 'strong' ? 'Strong match' : label === 'partial' ? 'Partial match' : 'Miss';
+  return `<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono uppercase tracking-wider border ${cls}">${text}</span>`;
+}
+
+function chip(label, value) {
+  if (!value) return '';
+  return `<span class="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-ink-800 text-[11px] text-muted font-mono">
+    <span class="text-ink-600">${label}</span><span class="text-white">${value.replace(/_/g, ' ')}</span>
+  </span>`;
+}
+
+function videoCard({ mp4_url, label, similarity, badge_html, chips_html, title_html }) {
+  const sim_pct = similarity != null ? (similarity * 100).toFixed(0) : null;
+  return `
+    <div class="video-card flex-shrink-0 w-[280px] md:w-[320px] rounded-lg overflow-hidden bg-ink-800 border border-ink-700 group">
+      <div class="relative aspect-video bg-black">
+        <video src="${mp4_url}" autoplay muted loop playsinline preload="metadata" class="w-full h-full object-cover"></video>
+        ${badge_html ? `<div class="absolute top-2 right-2">${badge_html}</div>` : ''}
+        ${sim_pct != null ? `
+          <div class="absolute bottom-0 left-0 right-0 px-3 py-2 bg-gradient-to-t from-black/80 to-transparent">
+            <div class="flex items-center gap-2 text-[10px] font-mono text-muted">
+              <span>SIMILARITY</span>
+              <div class="flex-1 h-1 bg-ink-700 rounded-full overflow-hidden">
+                <div class="h-full sim-bar" style="width: ${sim_pct}%"></div>
+              </div>
+              <span class="text-white font-semibold">${sim_pct}%</span>
+            </div>
+          </div>` : ''}
+      </div>
+      <div class="p-3">
+        <div class="text-[10px] font-mono text-muted uppercase tracking-wider mb-1">${label}</div>
+        ${title_html || ''}
+        <div class="flex flex-wrap gap-1.5 mt-2">${chips_html}</div>
+      </div>
+    </div>
+  `;
+}
+
+function seedSection(s, idx) {
+  const seedStruct = s.seed.structured || {};
+  const roleColor = s.demo_role === 'strong_win' ? 'text-accent border-accent/30' :
+                    s.demo_role === 'partial' ? 'text-warn border-warn/30' : 'text-danger border-danger/30';
+  const roleLabel = s.demo_role === 'strong_win' ? 'Strong win' :
+                    s.demo_role === 'partial' ? 'Partial' : 'Honest miss';
+
+  // Seed card
+  const seedChips = [
+    chip('mechanism', s.seed.v1_category),
+    chip('pressure', seedStruct.pressure_context),
+    chip('zone', seedStruct.progression_zone),
+    chip('lane', seedStruct.progression_lane),
+  ].join('');
+  const seedCard = videoCard({
+    mp4_url: s.seed.mp4_url,
+    label: 'SEED · ANALYST PICK',
+    similarity: null,
+    badge_html: '',
+    chips_html: seedChips,
+    title_html: `<div class="text-sm font-medium leading-tight">${s.seed.notes ? s.seed.notes.split('.')[0] + '.' : 'Seed clip'}</div>`,
+  });
+
+  // Neighbors
+  const nnCards = s.neighbors.map((n, i) => {
+    const nnStruct = n.structured || {};
+    const chips = [
+      chip('mechanism', n.v1_category),
+      chip('pressure', nnStruct.pressure_context),
+      chip('zone', nnStruct.progression_zone),
+    ].join('');
+    return videoCard({
+      mp4_url: n.mp4_url,
+      label: `RANK ${i + 1}`,
+      similarity: n.similarity,
+      badge_html: badge(n.auto_label),
+      chips_html: chips,
+      title_html: '',
+    });
+  }).join('');
+
+  return `
+    <section id="seed-${idx}" class="anchor-target">
+      <div class="mb-6 flex flex-wrap items-baseline gap-3">
+        <span class="text-xs font-mono text-muted">EXAMPLE ${String(idx + 1).padStart(2, '0')}</span>
+        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono uppercase tracking-wider border ${roleColor}">${roleLabel}</span>
+      </div>
+      <h3 class="text-2xl md:text-3xl font-bold tracking-tight mb-3">${s.title}</h3>
+      <p class="text-muted text-base mb-2">${s.subtitle}</p>
+      <p class="text-muted text-sm max-w-3xl mb-8 leading-relaxed">${s.explanation}</p>
+
+      <div class="grid lg:grid-cols-[320px_1fr] gap-6 items-start">
+        <div>
+          <div class="text-[11px] font-mono text-muted uppercase tracking-wider mb-3">The seed clip</div>
+          ${seedCard}
+        </div>
+        <div>
+          <div class="flex items-center justify-between mb-3">
+            <div class="text-[11px] font-mono text-muted uppercase tracking-wider">Top 5 retrieved · cross-match only</div>
+          </div>
+          <div class="flex gap-4 overflow-x-auto pb-4 nice-scroll scroll-snap-x">
+            ${nnCards}
+          </div>
+        </div>
+      </div>
+    </section>
+  `;
+}
+
+(async () => {
+  try {
+    const audit = await loadAudit();
+    const html = audit.seeds.map(seedSection).join('');
+    document.getElementById('seed-sections').innerHTML = html;
+  } catch (err) {
+    console.error('Failed to load audit:', err);
+    document.getElementById('seed-sections').innerHTML =
+      `<div class="p-8 rounded border border-danger/30 bg-danger/5 text-danger">Failed to load audit: ${err.message}</div>`;
+  }
+})();
+</script>
+</body>
+</html>
