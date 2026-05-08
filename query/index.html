@@ -11,6 +11,10 @@
   .banner { background: #fff5d6; border-bottom: 2px solid #d4a017; padding: 10px 20px;
             font-size: 13px; color: #5a4108; }
   .banner b { color: #b8860b; }
+  .caveats { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+  .caveats .cv { background: #fff; border: 1px solid #d4a017; color: #5a4108;
+                 padding: 2px 8px; border-radius: 3px; font-size: 12px; }
+  .caveats .cv b { color: #b8860b; font-weight: 600; }
   header.page { padding: 16px 20px 4px 20px; background: #fff; border-bottom: 1px solid #e0e0e0; }
   header.page h1 { margin: 0 0 4px 0; font-size: 22px; }
   header.page .sub { color: #666; font-size: 13px; }
@@ -85,10 +89,17 @@
 </head>
 <body>
   <div class='banner'>
-    <b>EXPERIMENTAL — internal demo.</b>
-    Real-time LLM-query layer over the 175-clip card index. Calls a private endpoint on a
-    GPU box; may be offline if the tunnel is down. Live tactical-similarity demo at
-    <a href='..'>/</a> is unchanged. Phase 0b — no team/player filters, no multi-turn.
+    <b>EXPERIMENTAL.</b>
+    Real-time LLM-query layer over the 175-clip card index. The live tactical-similarity demo at
+    <a href='..'>/</a> is unchanged. Scope of this page:
+    <div class='caveats'>
+      <span class='cv'><b>Phase 0b experimental</b></span>
+      <span class='cv'>candidate clips only</span>
+      <span class='cv'>no exhaustive retrieval</span>
+      <span class='cv'>no team/player filters</span>
+      <span class='cv'>no multi-turn</span>
+      <span class='cv'>GPU/tunnel-dependent</span>
+    </div>
   </div>
   <header class='page'>
     <h1>Tactical query · ask the LLM, get 5 similar clips</h1>
