@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang='en'>
+<head>
+<meta charset='utf-8'/>
+<meta name='viewport' content='width=device-width, initial-scale=1.0'/>
+<title>FWM tactical query · experimental</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+         margin: 0; padding: 0; background: #f5f6f8; color: #1a1a1a; }
+  .banner { background: #fff5d6; border-bottom: 2px solid #d4a017; padding: 10px 20px;
+            font-size: 13px; color: #5a4108; }
+  .banner b { color: #b8860b; }
+  header.page { padding: 16px 20px 4px 20px; background: #fff; border-bottom: 1px solid #e0e0e0; }
+  header.page h1 { margin: 0 0 4px 0; font-size: 22px; }
+  header.page .sub { color: #666; font-size: 13px; }
+  header.page .sub code { background: #eef2fa; padding: 1px 5px; border-radius: 3px;
+                          font: 11.5px ui-monospace, Menlo, monospace; color: #1a4d8a; }
+  .container { padding: 16px 20px 40px 20px; max-width: 1400px; margin: 0 auto; }
+  .controls { background: #fff; border: 1px solid #e0e0e0; border-radius: 6px;
+              padding: 14px 16px; margin-bottom: 14px; }
+  .input-row { display: flex; gap: 8px; align-items: stretch; }
+  .input-row input { flex: 1; padding: 10px 12px; font-size: 15px; border: 1px solid #c0c4cc;
+                     border-radius: 4px; font-family: inherit; }
+  .input-row input:focus { outline: none; border-color: #1a4d8a; box-shadow: 0 0 0 2px rgba(26,77,138,0.15); }
+  .input-row button { background: #1a4d8a; color: #fff; border: none; border-radius: 4px;
+                      padding: 0 18px; font-size: 14px; font-weight: 600; cursor: pointer; }
+  .input-row button:hover { background: #133960; }
+  .input-row button:disabled { background: #aab1c0; cursor: not-allowed; }
+  .examples { margin-top: 10px; font-size: 12.5px; color: #555; }
+  .examples b { color: #333; }
+  .ex-btn { background: #eef2fa; border: 1px solid #c8d4e8; color: #1a4d8a; padding: 2px 8px;
+            border-radius: 3px; cursor: pointer; font-size: 12px; margin: 2px 4px 2px 0;
+            font-family: inherit; }
+  .ex-btn:hover { background: #d8e3f2; }
+  .health { font-size: 12px; color: #666; margin-top: 8px; }
+  .health.warm-yes { color: #1a7c1a; }
+  .health.warm-no { color: #b03030; }
+  .health.warm-warming { color: #d4a017; }
+  .results { display: grid; grid-template-columns: 320px 1fr; gap: 14px; }
+  .left-panel { background: #fff; border: 1px solid #e0e0e0; border-radius: 6px; padding: 14px; }
+  .left-panel h3 { margin: 0 0 8px 0; font-size: 12px; color: #555;
+                   text-transform: uppercase; letter-spacing: 0.5px; }
+  .left-panel pre { background: #f4f6f9; padding: 8px; border-radius: 4px;
+                    font: 11.5px ui-monospace, Menlo, monospace; overflow: auto;
+                    border: 1px solid #e3e7ee; max-height: 460px; }
+  .diag-row { font-size: 12px; color: #555; margin: 3px 0; }
+  .diag-row b { color: #333; }
+  .diag-row .gate-fired { background: #fff3cd; border: 1px solid #d4a017; border-radius: 3px;
+                          padding: 1px 5px; font-size: 11px; color: #5a4108; }
+  .right-panel { display: flex; flex-direction: column; gap: 10px; }
+  .right-panel h3 { margin: 0 0 0 4px; font-size: 12px; color: #555;
+                    text-transform: uppercase; letter-spacing: 0.5px; }
+  .clip-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+               gap: 10px; }
+  .clip { border: 1px solid #e3e7ee; border-radius: 4px; padding: 10px;
+          background: #fff; }
+  .clip-strong { border-color: #1a7c1a; background: #f3faf3; }
+  .clip-head { display: flex; gap: 4px; align-items: center; margin-bottom: 6px; }
+  .rank { background: #1a4d8a; color: #fff; padding: 1px 7px; border-radius: 3px;
+          font-weight: 700; font-size: 11px; min-width: 28px; text-align: center; }
+  .clip-id { font: 10px ui-monospace, Menlo, monospace; color: #888; flex: 1;
+             white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .badge-strong { background: #1a7c1a; color: #fff; padding: 1px 5px; border-radius: 3px;
+                   font-size: 10px; font-weight: 600; }
+  video { width: 100%; max-height: 180px; background: #000; border-radius: 3px; }
+  .clip-meta { margin-top: 6px; font-size: 12px; }
+  .clip-meta div { margin: 2px 0; }
+  .clip-meta .lbl { color: #888; font-weight: 500; }
+  .clip-meta code { font: 11px ui-monospace, Menlo, monospace; color: #1a4d8a; }
+  .empty, .err, .info { padding: 14px; color: #555; font-style: italic; font-size: 13px;
+                        background: #fff; border: 1px solid #e0e0e0; border-radius: 6px; }
+  .err { color: #b03030; background: #fff5f5; border-color: #ffd0d0; }
+  .info { color: #5a4108; background: #fff8e1; border-color: #ffd75a; }
+  .spinner { display: inline-block; width: 12px; height: 12px; border: 2px solid #c0c4cc;
+             border-top-color: #1a4d8a; border-radius: 50%; animation: spin 0.6s linear infinite;
+             vertical-align: middle; margin-right: 6px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  footer.page { text-align: center; padding: 14px 20px; color: #999; font-size: 12px; }
+  footer.page a { color: #1a4d8a; }
+  @media (max-width: 800px) {
+    .results { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+  <div class='banner'>
+    <b>EXPERIMENTAL — internal demo.</b>
+    Real-time LLM-query layer over the 175-clip card index. Calls a private endpoint on a
+    GPU box; may be offline if the tunnel is down. Live tactical-similarity demo at
+    <a href='..'>/</a> is unchanged. Phase 0b — no team/player filters, no multi-turn.
+  </div>
+  <header class='page'>
+    <h1>Tactical query · ask the LLM, get 5 similar clips</h1>
+    <div class='sub'>
+      Pipeline: <code>Qwen3-4B parser</code> → 3-stream hybrid (struct + Qwen-text + v9c+v11p football) →
+      <code>RRF k=10</code> → <code>reranker_v0 α_mech=0.30 + gate@0.8 (variant D)</code> → top-5
+    </div>
+  </header>
+
+  <div class='container'>
+    <div class='controls'>
+      <div class='input-row'>
+        <input id='q' type='text' placeholder='e.g. press break down the left side' autofocus
+               maxlength='500' onkeydown='if(event.key==="Enter") submit()'/>
+        <button id='go' onclick='submit()'>Search</button>
+      </div>
+      <div class='examples'>
+        <b>Try:</b>
+        <button class='ex-btn' onclick='setEx(this)'>press break down the left side</button>
+        <button class='ex-btn' onclick='setEx(this)'>build-up under high press</button>
+        <button class='ex-btn' onclick='setEx(this)'>switch of play under pressure</button>
+        <button class='ex-btn' onclick='setEx(this)'>middle-third progression through the centre</button>
+        <button class='ex-btn' onclick='setEx(this)'>cross from the right wing</button>
+        <button class='ex-btn' onclick='setEx(this)'>press break that doesn’t involve a long ball</button>
+        <button class='ex-btn' onclick='setEx(this)'>Liverpool press break</button>
+        <button class='ex-btn' onclick='setEx(this)'>good football</button>
+      </div>
+      <div id='health' class='health'>connecting…</div>
+    </div>
+
+    <div id='out'></div>
+  </div>
+  <footer class='page'>
+    <a href='..'>← live demo</a> ·
+    <a href='../audit/query/'>audit page (variants A/B/C/D)</a> ·
+    <a href='https://github.com/shreyas2231/tactical-similarity-demo'>source</a>
+  </footer>
+
+<script>
+  // API endpoint — Cloudflare quick-tunnel to GPU box. Tunnel URL is ephemeral;
+  // if requests fail, check /tmp/llm_query_server/tunnel.log on the host for the current URL.
+  var API = "https://hdtv-smith-bali-randy.trycloudflare.com";
+
+  function setEx(btn) {
+    document.getElementById('q').value = btn.textContent;
+    submit();
+  }
+
+  function escapeHtml(s) {
+    if (s === null || s === undefined) return '';
+    return String(s).replace(/[&<>"']/g, function(c) {
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+
+  async function pollHealth() {
+    var el = document.getElementById('health');
+    try {
+      var r = await fetch(API + "/api/health");
+      var j = await r.json();
+      if (j.warm) {
+        el.className = 'health warm-yes';
+        el.textContent = '✓ models warm · ' + j.config.parser;
+      } else {
+        el.className = 'health warm-warming';
+        el.textContent = '⏳ models warming up: ' + (j.warm_progress?.step || 'starting…') + ' (this takes ~1-2 min on cold start)';
+        setTimeout(pollHealth, 2500);
+      }
+    } catch (e) {
+      el.className = 'health warm-no';
+      el.textContent = '✗ cannot reach API at ' + API + ' — endpoint may be offline';
+      setTimeout(pollHealth, 5000);
+    }
+  }
+
+  async function submit() {
+    var q = document.getElementById('q').value.trim();
+    if (!q) return;
+    var out = document.getElementById('out');
+    var btn = document.getElementById('go');
+    out.innerHTML = "<div class='info'><span class='spinner'></span>Running parser + retrieval + rerank…</div>";
+    btn.disabled = true;
+    try {
+      var r = await fetch(API + "/api/query", {
+        method: "POST", headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({query: q}),
+      });
+      if (!r.ok) {
+        var detail;
+        try { detail = (await r.json()).detail; } catch(e) { detail = await r.text(); }
+        if (typeof detail === 'object') detail = JSON.stringify(detail);
+        out.innerHTML = "<div class='err'>HTTP " + r.status + " — " + escapeHtml(detail) + "</div>";
+        return;
+      }
+      var j = await r.json();
+      render(j);
+    } catch (e) {
+      out.innerHTML = "<div class='err'>Network error — " + escapeHtml(e.message) +
+        ". The API endpoint at " + escapeHtml(API) + " may be offline.</div>";
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  function render(j) {
+    var out = document.getElementById('out');
+    var parsed_mech = j.parse?.primary_mechanism;
+    var diag = j.diag || {};
+
+    var leftHtml = "<div class='left-panel'>"
+      + "<h3>parsed query</h3>"
+      + "<pre>" + escapeHtml(JSON.stringify(j.parse, null, 2)) + "</pre>"
+      + "<h3 style='margin-top:12px'>pipeline diag</h3>"
+      + "<div class='diag-row'><b>parser:</b> " + (diag.latency_ms_parse || 0) + " ms</div>"
+      + "<div class='diag-row'><b>total:</b> " + (diag.latency_ms_total || 0) + " ms</div>"
+      + (diag.n_stream_a !== undefined ?
+          "<div class='diag-row'><b>stream sizes:</b> A=" + diag.n_stream_a +
+          " · B=" + diag.n_stream_b + " · C=" + diag.n_stream_c + "</div>" : "")
+      + (diag.rrf_strong_share !== undefined ?
+          "<div class='diag-row'><b>RRF top-5 mech-share:</b> " + diag.rrf_strong_share + "</div>" : "")
+      + (diag.gate_fired ?
+          "<div class='diag-row'><span class='gate-fired'>gate fired → RRF preserved (no rerank)</span></div>" :
+          (j.rejected ? "" : "<div class='diag-row'><b>reranker:</b> applied (variant D, α_mech=0.30)</div>"))
+      + "</div>";
+
+    var rightHtml;
+    if (j.rejected) {
+      rightHtml = "<div class='info'><b>Query rejected.</b> " + escapeHtml(j.reason || 'unknown reason') +
+                  "<br/>Try one of the example queries above.</div>";
+    } else if (!j.top_5 || j.top_5.length === 0) {
+      rightHtml = "<div class='info'>No retrievals returned.</div>";
+    } else {
+      var clips = j.top_5.map(function(r, i) {
+        var matched = (r.v1_category === parsed_mech || r.primary_mechanism === parsed_mech);
+        var fc = r.feature_contribs || {};
+        var fcHtml = Object.entries(fc).filter(function(e) { return Math.abs(e[1]) > 0.001; })
+          .map(function(e) { return "<span style='background:#eef2fa;padding:1px 4px;border-radius:3px;font:10px ui-monospace,Menlo,monospace;color:#1a4d8a;margin-right:3px;'>" +
+            escapeHtml(e[0].replace('alpha_','')) + "=" + (e[1] >= 0 ? "+" : "") + e[1].toFixed(2) + "</span>"; }).join("");
+        var video = r.mp4_url ?
+          "<video src='" + escapeHtml(r.mp4_url) + "' controls preload='none' muted playsinline></video>" :
+          "<div style='height:80px;background:#f0f1f4;display:flex;align-items:center;justify-content:center;color:#aaa;font-style:italic;font-size:11px;border-radius:3px;'>(no mp4)</div>";
+        return "<div class='clip" + (matched ? " clip-strong" : "") + "'>"
+          + "<div class='clip-head'>"
+          + "<span class='rank'>#" + (i+1) + "</span>"
+          + "<span class='clip-id' title='" + escapeHtml(r.clip_id) + "'>" + escapeHtml((r.clip_id || '').slice(0,28)) + "…</span>"
+          + (matched ? "<span class='badge-strong'>STRONG</span>" : "")
+          + "</div>"
+          + video
+          + "<div class='clip-meta'>"
+          + "<div><span class='lbl'>cat:</span> <code>" + escapeHtml(r.v1_category) + "</code></div>"
+          + "<div><span class='lbl'>mech:</span> <code>" + escapeHtml(r.primary_mechanism) + "</code></div>"
+          + "<div><span class='lbl'>zone/lane:</span> " + escapeHtml(r.progression_zone) + " / " + escapeHtml(r.progression_lane) + "</div>"
+          + "<div><span class='lbl'>pressure:</span> " + escapeHtml(r.pressure_context || '—') + "</div>"
+          + "<div><span class='lbl'>score:</span> rerank=" + (r.score?.toFixed(4)||'?')
+          + " · stage1=" + (r.first_stage_score?.toFixed(4)||'?') + "</div>"
+          + (fcHtml ? "<div style='margin-top:4px;display:flex;flex-wrap:wrap;gap:3px;'>" + fcHtml + "</div>" : "")
+          + "</div></div>";
+      }).join("");
+      rightHtml = "<div><h3>top-5 retrievals (mechanism-matched highlighted in green)</h3>"
+        + "<div class='clip-grid'>" + clips + "</div></div>";
+    }
+
+    out.innerHTML = "<div class='results'>" + leftHtml + "<div class='right-panel'>" + rightHtml + "</div></div>";
+  }
+
+  pollHealth();
+</script>
+</body>
+</html>
