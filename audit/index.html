@@ -1,0 +1,1966 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reranker v0 — visual audit</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #0a0e16; color: #e5e9f0; font-family: 'Inter', sans-serif; padding: 24px 32px 100px; }
+h1 { font-size: 24pt; color: #00d6a4; margin-bottom: 4pt; }
+.sub { color: #7d8aa0; font-size: 11pt; margin-bottom: 24pt; }
+.legend { display: flex; gap: 24px; margin-bottom: 32px; padding: 12px 16px; background: #161e2c; border: 1px solid #2c394e; border-radius: 8px; font-size: 10.5pt; }
+.legend strong { color: #00d6a4; }
+.seed-block { margin: 36px 0; padding: 24px; background: #161e2c; border: 1px solid #2c394e; border-radius: 12px; }
+.seed-header { display: flex; align-items: baseline; gap: 18px; margin-bottom: 4px; }
+.seed-header h2 { font-size: 16pt; color: #ffffff; }
+.seed-header .cat { font-family: monospace; color: #00d6a4; font-size: 10.5pt; padding: 3px 8px; background: rgba(0,214,164,0.1); border-radius: 4px; }
+.seed-notes { color: #9aa5b8; font-size: 10pt; margin-bottom: 20px; max-width: 920px; line-height: 1.5; }
+.row { display: grid; grid-template-columns: 200px repeat(5, 1fr); gap: 10px; margin-bottom: 14px; align-items: stretch; }
+.row-label { display: flex; flex-direction: column; justify-content: center; padding: 0 8px; font-size: 9.5pt; color: #7d8aa0; }
+.row-label strong { color: #ffffff; font-size: 10.5pt; margin-bottom: 4px; display: block; }
+.row-label .strong-count { font-family: monospace; font-size: 12pt; color: #00d6a4; }
+.tile { background: #0a0e16; border: 1px solid #1f2a3c; border-radius: 6px; overflow: hidden; position: relative; transition: transform 0.15s; }
+.tile:hover { transform: translateY(-1px); }
+.tile.strong { border-color: #00d6a4; box-shadow: 0 0 0 1px rgba(0,214,164,0.2); }
+.tile.partial { border-color: #ffb547; }
+.tile.miss { border-color: #1f2a3c; }
+.tile video { width: 100%; aspect-ratio: 16/9; object-fit: cover; display: block; background: #000; }
+.tile-meta { padding: 6px 8px; font-size: 9pt; line-height: 1.35; }
+.tile-meta .badge { display: inline-block; font-family: monospace; padding: 1px 5px; border-radius: 3px; font-size: 8.5pt; margin-bottom: 3px; }
+.tile-meta .badge.strong { background: rgba(0,214,164,0.18); color: #00d6a4; }
+.tile-meta .badge.partial { background: rgba(255,181,71,0.18); color: #ffb547; }
+.tile-meta .badge.miss { background: rgba(255,107,126,0.10); color: #999; }
+.tile-meta .cat { font-family: monospace; color: #c8d3e6; font-size: 9pt; }
+.tile-meta .scores { color: #7d8aa0; margin-top: 2px; font-size: 8.5pt; }
+.tile-meta .contribs { color: #5d6478; font-size: 8pt; margin-top: 2px; line-height: 1.3; }
+.seed-tile { border-color: #00d6a4 !important; }
+.seed-tile .tile-meta { background: rgba(0,214,164,0.05); }
+.spacer { background: transparent; border: none; }
+.summary { padding: 12px 16px; background: rgba(0,214,164,0.05); border: 1px solid rgba(0,214,164,0.2); border-radius: 6px; margin-top: 14px; font-size: 10pt; color: #c8d3e6; }
+.summary strong { color: #00d6a4; }
+</style>
+</head><body>
+<h1>Reranker v0 — visual audit</h1>
+<p class="sub">9 demo seeds · top-5 cross-match retrievals · 3 variants · zero retrieval data baked into HTML (videos load from Vercel Blob)</p>
+
+<div class="legend">
+  <span><strong>14/45</strong> v9c raw (current demo)</span>
+  <span><strong>15/45</strong> ensemble (w=0.75) raw</span>
+  <span><strong>19/45</strong> v9c → reranker</span>
+  <span><strong>20/45</strong> ensemble → reranker (candidate demo)</span>
+</div>
+
+
+<p style="color:#9aa5b8; font-size:10.5pt; line-height:1.6; margin-bottom:18px;">
+Visual audit for CTO. Each block shows one demo seed (left, green border) and three variants of top-5 cross-match retrievals.
+The candidate demo path is <strong style="color:#00d6a4">ensemble → reranker</strong>; <strong>v9c raw</strong> is the current deployed demo.
+Strong-match tiles (retrieved clip's v1_category matches seed's) are highlighted in green.
+The reranker rows show feature contributions: <code>mech_match</code>, <code>zone_match</code>, <code>lane_match</code>, <code>pressure_match</code>, <code>role_jaccard</code>, and (penalty) <code>looks_alike_penalty</code>.
+</p>
+
+
+<p style="color:#ffb547; font-size:10pt; line-height:1.6; padding:10px 14px; background:rgba(255,181,71,0.06); border-radius:6px; margin-bottom:24px;">
+<strong>Priority seeds for inspection (per CTO):</strong> 3 (Deep build-up vs mid-block), 4 (Deep build-up — back three), 5 (Press break — left flank), 7 (Press break — CB carry), 8 (Middle-third progression — partial). Confirm reranker improvements are tactically real, not just label-driven.
+</p>
+
+
+<div class="seed-block" id="seed-0">
+  <div class="seed-header">
+    <h2>1. Switch of play</h2>
+    <span class="cat">seed: switch_of_play</span>
+  </div>
+  <div class="seed-notes">Unable to progress down the right side, the team quickly switches play to the opposite flank in search of a potential advantage. The opp team shifts across effectively, maintaining a compact structure</div>
+
+  <div class="row">
+    <div class="row-label"><strong>SEED clip</strong><span>(query)</span></div>
+    <div class="tile seed-tile">
+      <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c15_create_middle_1899585_1899585_4_1214.mp4" autoplay muted loop playsinline preload="metadata"></video>
+      <div class="tile-meta">
+        <span class="cat">switch_of_play</span>
+      </div>
+    </div>
+    <div class="spacer"></div><div class="spacer"></div><div class="spacer"></div><div class="spacer"></div>
+  </div>
+
+  
+<div class="row">
+  <div class="row-label">
+    <strong>Current demo (v9c raw)</strong>
+    <span>top-5 cross-match</span>
+    <span class="strong-count">1/5 strong</span>
+  </div>
+  
+<div class="tile strong">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c17_create_middle_1886347_1886347_82_15943.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge strong">STRONG</span>
+    <span class="cat">switch_of_play</span>
+    <div class="scores">cos=0.90</div>
+    
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c38_set_piece_1886347_1886347_173_34910.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">final_third_circulation</span>
+    <div class="scores">cos=0.65</div>
+    
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c19_cross_attempt_1925299_1925299_180_38820.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">middle_progression</span>
+    <div class="scores">cos=0.62</div>
+    
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c16_create_middle_1925299_1925299_267_60618.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">final_third_circulation</span>
+    <div class="scores">cos=0.60</div>
+    
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c06_create_finish_attack_1886347_1886347_127_26415.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">middle_circulation</span>
+    <div class="scores">cos=0.57</div>
+    
+  </div>
+</div>
+
+</div>
+
+<div class="row">
+  <div class="row-label">
+    <strong>Candidate demo (ensemble → reranker)</strong>
+    <span>top-5 cross-match</span>
+    <span class="strong-count">1/5 strong</span>
+  </div>
+  
+<div class="tile strong">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c17_create_middle_1886347_1886347_82_15943.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge strong">STRONG</span>
+    <span class="cat">switch_of_play</span>
+    <div class="scores">cos=0.81 · reranked=+1.01</div>
+    <div class="contribs">mech_match=+0.20</div>
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c38_set_piece_1886347_1886347_173_34910.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">final_third_circulation</span>
+    <div class="scores">cos=0.61 · reranked=+0.71</div>
+    <div class="contribs">zone_match=+0.10</div>
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c16_create_middle_1925299_1925299_267_60618.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">final_third_circulation</span>
+    <div class="scores">cos=0.56 · reranked=+0.71</div>
+    <div class="contribs">zone_match=+0.10 · role_jaccard=+0.05</div>
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c19_cross_attempt_1925299_1925299_180_38820.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">middle_progression</span>
+    <div class="scores">cos=0.61 · reranked=+0.71</div>
+    <div class="contribs">pressure_match=+0.10</div>
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c06_create_finish_attack_1886347_1886347_127_26415.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">middle_circulation</span>
+    <div class="scores">cos=0.53 · reranked=+0.66</div>
+    <div class="contribs">pressure_match=+0.10 · role_jaccard=+0.03</div>
+  </div>
+</div>
+
+</div>
+
+<div class="row">
+  <div class="row-label">
+    <strong>v9c → reranker (no ensemble)</strong>
+    <span>top-5 cross-match</span>
+    <span class="strong-count">1/5 strong</span>
+  </div>
+  
+<div class="tile strong">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c17_create_middle_1886347_1886347_82_15943.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge strong">STRONG</span>
+    <span class="cat">switch_of_play</span>
+    <div class="scores">cos=0.90 · reranked=+1.10</div>
+    <div class="contribs">mech_match=+0.20</div>
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c38_set_piece_1886347_1886347_173_34910.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">final_third_circulation</span>
+    <div class="scores">cos=0.65 · reranked=+0.75</div>
+    <div class="contribs">zone_match=+0.10</div>
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c16_create_middle_1925299_1925299_267_60618.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">final_third_circulation</span>
+    <div class="scores">cos=0.60 · reranked=+0.75</div>
+    <div class="contribs">zone_match=+0.10 · role_jaccard=+0.05</div>
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c19_cross_attempt_1925299_1925299_180_38820.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">middle_progression</span>
+    <div class="scores">cos=0.62 · reranked=+0.72</div>
+    <div class="contribs">pressure_match=+0.10</div>
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c06_create_finish_attack_1886347_1886347_127_26415.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">middle_circulation</span>
+    <div class="scores">cos=0.57 · reranked=+0.69</div>
+    <div class="contribs">pressure_match=+0.10 · role_jaccard=+0.03</div>
+  </div>
+</div>
+
+</div>
+
+  <div class="summary">Δ vs v9c raw: <strong>+0</strong> strong matches in top-5 (ensemble → reranker)</div>
+</div>
+
+<div class="seed-block" id="seed-1">
+  <div class="seed-header">
+    <h2>2. Switch of play — the reciprocal</h2>
+    <span class="cat">seed: switch_of_play</span>
+  </div>
+  <div class="seed-notes">LB unable to progress forward, plays back pass to CB. The plays is recycled and ends with a fast pass to the RB  with clear advantage. The opp team defends in a compact mid-block.</div>
+
+  <div class="row">
+    <div class="row-label"><strong>SEED clip</strong><span>(query)</span></div>
+    <div class="tile seed-tile">
+      <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c17_create_middle_1886347_1886347_82_15943.mp4" autoplay muted loop playsinline preload="metadata"></video>
+      <div class="tile-meta">
+        <span class="cat">switch_of_play</span>
+      </div>
+    </div>
+    <div class="spacer"></div><div class="spacer"></div><div class="spacer"></div><div class="spacer"></div>
+  </div>
+
+  
+<div class="row">
+  <div class="row-label">
+    <strong>Current demo (v9c raw)</strong>
+    <span>top-5 cross-match</span>
+    <span class="strong-count">1/5 strong</span>
+  </div>
+  
+<div class="tile strong">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c15_create_middle_1899585_1899585_4_1214.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge strong">STRONG</span>
+    <span class="cat">switch_of_play</span>
+    <div class="scores">cos=0.90</div>
+    
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c10_create_finish_attack_1899585_1899585_162_32416.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">middle_progression</span>
+    <div class="scores">cos=0.58</div>
+    
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c16_create_middle_1925299_1925299_267_60618.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">final_third_circulation</span>
+    <div class="scores">cos=0.55</div>
+    
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c35_recovery_press_1899585_1899585_91_17053.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">middle_progression</span>
+    <div class="scores">cos=0.49</div>
+    
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c19_cross_attempt_1925299_1925299_180_38820.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">middle_progression</span>
+    <div class="scores">cos=0.45</div>
+    
+  </div>
+</div>
+
+</div>
+
+<div class="row">
+  <div class="row-label">
+    <strong>Candidate demo (ensemble → reranker)</strong>
+    <span>top-5 cross-match</span>
+    <span class="strong-count">1/5 strong</span>
+  </div>
+  
+<div class="tile strong">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c15_create_middle_1899585_1899585_4_1214.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge strong">STRONG</span>
+    <span class="cat">switch_of_play</span>
+    <div class="scores">cos=0.81 · reranked=+1.01</div>
+    <div class="contribs">mech_match=+0.20</div>
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c16_create_middle_1925299_1925299_267_60618.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">final_third_circulation</span>
+    <div class="scores">cos=0.55 · reranked=+0.55</div>
+    
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c10_create_finish_attack_1899585_1899585_162_32416.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">middle_progression</span>
+    <div class="scores">cos=0.54 · reranked=+0.54</div>
+    
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c13_create_middle_1925299_1925299_119_26935.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">middle_circulation</span>
+    <div class="scores">cos=0.39 · reranked=+0.39</div>
+    
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c19_cross_attempt_1925299_1925299_180_38820.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">middle_progression</span>
+    <div class="scores">cos=0.36 · reranked=+0.36</div>
+    
+  </div>
+</div>
+
+</div>
+
+<div class="row">
+  <div class="row-label">
+    <strong>v9c → reranker (no ensemble)</strong>
+    <span>top-5 cross-match</span>
+    <span class="strong-count">1/5 strong</span>
+  </div>
+  
+<div class="tile strong">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c15_create_middle_1899585_1899585_4_1214.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge strong">STRONG</span>
+    <span class="cat">switch_of_play</span>
+    <div class="scores">cos=0.90 · reranked=+1.10</div>
+    <div class="contribs">mech_match=+0.20</div>
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c10_create_finish_attack_1899585_1899585_162_32416.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">middle_progression</span>
+    <div class="scores">cos=0.58 · reranked=+0.58</div>
+    
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c16_create_middle_1925299_1925299_267_60618.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">final_third_circulation</span>
+    <div class="scores">cos=0.55 · reranked=+0.55</div>
+    
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c35_recovery_press_1899585_1899585_91_17053.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">middle_progression</span>
+    <div class="scores">cos=0.49 · reranked=+0.49</div>
+    
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c19_cross_attempt_1925299_1925299_180_38820.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">middle_progression</span>
+    <div class="scores">cos=0.45 · reranked=+0.45</div>
+    
+  </div>
+</div>
+
+</div>
+
+  <div class="summary">Δ vs v9c raw: <strong>+0</strong> strong matches in top-5 (ensemble → reranker)</div>
+</div>
+
+<div class="seed-block" id="seed-2">
+  <div class="seed-header">
+    <h2>3. Deep build-up against a mid-block</h2>
+    <span class="cat">seed: deep_build_up</span>
+  </div>
+  <div class="seed-notes">Build-up from the back starting with the GK. The opposition sits in a mid-block with no high pressing. The team circulates possession without forcing forward passes.</div>
+
+  <div class="row">
+    <div class="row-label"><strong>SEED clip</strong><span>(query)</span></div>
+    <div class="tile seed-tile">
+      <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c05_buildup_own_half_1899585_1899585_119_23619.mp4" autoplay muted loop playsinline preload="metadata"></video>
+      <div class="tile-meta">
+        <span class="cat">deep_build_up</span>
+      </div>
+    </div>
+    <div class="spacer"></div><div class="spacer"></div><div class="spacer"></div><div class="spacer"></div>
+  </div>
+
+  
+<div class="row">
+  <div class="row-label">
+    <strong>Current demo (v9c raw)</strong>
+    <span>top-5 cross-match</span>
+    <span class="strong-count">2/5 strong</span>
+  </div>
+  
+<div class="tile strong">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c04_buildup_own_half_1925299_1925299_258_57972.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge strong">STRONG</span>
+    <span class="cat">deep_build_up</span>
+    <div class="scores">cos=0.79</div>
+    
+  </div>
+</div>
+
+
+<div class="tile strong">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c00_buildup_own_half_1886347_1886347_13_2095.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge strong">STRONG</span>
+    <span class="cat">deep_build_up</span>
+    <div class="scores">cos=0.69</div>
+    
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c38_set_piece_1886347_1886347_173_34910.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">final_third_circulation</span>
+    <div class="scores">cos=0.48</div>
+    
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c06_create_finish_attack_1886347_1886347_127_26415.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">middle_circulation</span>
+    <div class="scores">cos=0.48</div>
+    
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c08_create_finish_attack_1925299_1925299_119_27135.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">crossing_attack</span>
+    <div class="scores">cos=0.42</div>
+    
+  </div>
+</div>
+
+</div>
+
+<div class="row">
+  <div class="row-label">
+    <strong>Candidate demo (ensemble → reranker)</strong>
+    <span>top-5 cross-match</span>
+    <span class="strong-count">4/5 strong</span>
+  </div>
+  
+<div class="tile strong">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c00_buildup_own_half_1886347_1886347_13_2095.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge strong">STRONG</span>
+    <span class="cat">deep_build_up</span>
+    <div class="scores">cos=0.60 · reranked=+1.08</div>
+    <div class="contribs">mech_match=+0.20 · zone_match=+0.10 · lane_match=+0.05 · pressure_match=+0.10</div>
+  </div>
+</div>
+
+
+<div class="tile strong">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c04_buildup_own_half_1925299_1925299_258_57972.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge strong">STRONG</span>
+    <span class="cat">deep_build_up</span>
+    <div class="scores">cos=0.82 · reranked=+1.02</div>
+    <div class="contribs">mech_match=+0.20</div>
+  </div>
+</div>
+
+
+<div class="tile strong">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c01_buildup_own_half_1925299_1925299_26_5110.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge strong">STRONG</span>
+    <span class="cat">deep_build_up</span>
+    <div class="scores">cos=0.30 · reranked=+0.80</div>
+    <div class="contribs">mech_match=+0.20 · zone_match=+0.10 · lane_match=+0.05 · pressure_match=+0.10</div>
+  </div>
+</div>
+
+
+<div class="tile strong">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c03_buildup_own_half_1886347_1886347_139_28623.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge strong">STRONG</span>
+    <span class="cat">deep_build_up</span>
+    <div class="scores">cos=0.12 · reranked=+0.62</div>
+    <div class="contribs">mech_match=+0.20 · zone_match=+0.10 · lane_match=+0.05 · pressure_match=+0.10</div>
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c33_recovery_press_1925299_1925299_98_21424.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">middle_progression</span>
+    <div class="scores">cos=0.30 · reranked=+0.50</div>
+    <div class="contribs">pressure_match=+0.10 · role_jaccard=+0.10</div>
+  </div>
+</div>
+
+</div>
+
+<div class="row">
+  <div class="row-label">
+    <strong>v9c → reranker (no ensemble)</strong>
+    <span>top-5 cross-match</span>
+    <span class="strong-count">3/5 strong</span>
+  </div>
+  
+<div class="tile strong">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c00_buildup_own_half_1886347_1886347_13_2095.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge strong">STRONG</span>
+    <span class="cat">deep_build_up</span>
+    <div class="scores">cos=0.69 · reranked=+1.17</div>
+    <div class="contribs">mech_match=+0.20 · zone_match=+0.10 · lane_match=+0.05 · pressure_match=+0.10</div>
+  </div>
+</div>
+
+
+<div class="tile strong">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c04_buildup_own_half_1925299_1925299_258_57972.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge strong">STRONG</span>
+    <span class="cat">deep_build_up</span>
+    <div class="scores">cos=0.79 · reranked=+0.99</div>
+    <div class="contribs">mech_match=+0.20</div>
+  </div>
+</div>
+
+
+<div class="tile strong">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c01_buildup_own_half_1925299_1925299_26_5110.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge strong">STRONG</span>
+    <span class="cat">deep_build_up</span>
+    <div class="scores">cos=0.27 · reranked=+0.77</div>
+    <div class="contribs">mech_match=+0.20 · zone_match=+0.10 · lane_match=+0.05 · pressure_match=+0.10</div>
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c06_create_finish_attack_1886347_1886347_127_26415.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">middle_circulation</span>
+    <div class="scores">cos=0.48 · reranked=+0.63</div>
+    <div class="contribs">lane_match=+0.05 · pressure_match=+0.10</div>
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c33_recovery_press_1925299_1925299_98_21424.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">middle_progression</span>
+    <div class="scores">cos=0.39 · reranked=+0.59</div>
+    <div class="contribs">pressure_match=+0.10 · role_jaccard=+0.10</div>
+  </div>
+</div>
+
+</div>
+
+  <div class="summary">Δ vs v9c raw: <strong>+2</strong> strong matches in top-5 (ensemble → reranker)</div>
+</div>
+
+<div class="seed-block" id="seed-3">
+  <div class="seed-header">
+    <h2>4. Deep build-up — back three line</h2>
+    <span class="cat">seed: deep_build_up</span>
+  </div>
+  <div class="seed-notes">Build-up in first third with a clearly defined back three line, opposition pressure starts in Middle third. CM's drop close to CB's to attract pressure and create space in advanced areas.</div>
+
+  <div class="row">
+    <div class="row-label"><strong>SEED clip</strong><span>(query)</span></div>
+    <div class="tile seed-tile">
+      <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c00_buildup_own_half_1886347_1886347_13_2095.mp4" autoplay muted loop playsinline preload="metadata"></video>
+      <div class="tile-meta">
+        <span class="cat">deep_build_up</span>
+      </div>
+    </div>
+    <div class="spacer"></div><div class="spacer"></div><div class="spacer"></div><div class="spacer"></div>
+  </div>
+
+  
+<div class="row">
+  <div class="row-label">
+    <strong>Current demo (v9c raw)</strong>
+    <span>top-5 cross-match</span>
+    <span class="strong-count">2/5 strong</span>
+  </div>
+  
+<div class="tile strong">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c05_buildup_own_half_1899585_1899585_119_23619.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge strong">STRONG</span>
+    <span class="cat">deep_build_up</span>
+    <div class="scores">cos=0.69</div>
+    
+  </div>
+</div>
+
+
+<div class="tile strong">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c04_buildup_own_half_1925299_1925299_258_57972.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge strong">STRONG</span>
+    <span class="cat">deep_build_up</span>
+    <div class="scores">cos=0.53</div>
+    
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c46_transition_attack_1925299_1925299_48_8826.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">final_third_progression</span>
+    <div class="scores">cos=0.51</div>
+    
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c33_recovery_press_1925299_1925299_98_21424.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">middle_progression</span>
+    <div class="scores">cos=0.48</div>
+    
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c08_create_finish_attack_1925299_1925299_119_27135.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">crossing_attack</span>
+    <div class="scores">cos=0.45</div>
+    
+  </div>
+</div>
+
+</div>
+
+<div class="row">
+  <div class="row-label">
+    <strong>Candidate demo (ensemble → reranker)</strong>
+    <span>top-5 cross-match</span>
+    <span class="strong-count">3/5 strong</span>
+  </div>
+  
+<div class="tile strong">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c05_buildup_own_half_1899585_1899585_119_23619.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge strong">STRONG</span>
+    <span class="cat">deep_build_up</span>
+    <div class="scores">cos=0.60 · reranked=+1.08</div>
+    <div class="contribs">mech_match=+0.20 · zone_match=+0.10 · lane_match=+0.05 · pressure_match=+0.10</div>
+  </div>
+</div>
+
+
+<div class="tile strong">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c01_buildup_own_half_1925299_1925299_26_5110.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge strong">STRONG</span>
+    <span class="cat">deep_build_up</span>
+    <div class="scores">cos=0.32 · reranked=+0.80</div>
+    <div class="contribs">mech_match=+0.20 · zone_match=+0.10 · lane_match=+0.05 · pressure_match=+0.10</div>
+  </div>
+</div>
+
+
+<div class="tile strong">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c04_buildup_own_half_1925299_1925299_258_57972.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge strong">STRONG</span>
+    <span class="cat">deep_build_up</span>
+    <div class="scores">cos=0.47 · reranked=+0.67</div>
+    <div class="contribs">mech_match=+0.20</div>
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c35_recovery_press_1899585_1899585_91_17053.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">middle_progression</span>
+    <div class="scores">cos=0.46 · reranked=+0.61</div>
+    <div class="contribs">lane_match=+0.05 · pressure_match=+0.10</div>
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c33_recovery_press_1925299_1925299_98_21424.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">middle_progression</span>
+    <div class="scores">cos=0.45 · reranked=+0.58</div>
+    <div class="contribs">pressure_match=+0.10 · role_jaccard=+0.03</div>
+  </div>
+</div>
+
+</div>
+
+<div class="row">
+  <div class="row-label">
+    <strong>v9c → reranker (no ensemble)</strong>
+    <span>top-5 cross-match</span>
+    <span class="strong-count">3/5 strong</span>
+  </div>
+  
+<div class="tile strong">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c05_buildup_own_half_1899585_1899585_119_23619.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge strong">STRONG</span>
+    <span class="cat">deep_build_up</span>
+    <div class="scores">cos=0.69 · reranked=+1.17</div>
+    <div class="contribs">mech_match=+0.20 · zone_match=+0.10 · lane_match=+0.05 · pressure_match=+0.10</div>
+  </div>
+</div>
+
+
+<div class="tile strong">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c01_buildup_own_half_1925299_1925299_26_5110.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge strong">STRONG</span>
+    <span class="cat">deep_build_up</span>
+    <div class="scores">cos=0.38 · reranked=+0.86</div>
+    <div class="contribs">mech_match=+0.20 · zone_match=+0.10 · lane_match=+0.05 · pressure_match=+0.10</div>
+  </div>
+</div>
+
+
+<div class="tile strong">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c04_buildup_own_half_1925299_1925299_258_57972.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge strong">STRONG</span>
+    <span class="cat">deep_build_up</span>
+    <div class="scores">cos=0.53 · reranked=+0.73</div>
+    <div class="contribs">mech_match=+0.20</div>
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c33_recovery_press_1925299_1925299_98_21424.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">middle_progression</span>
+    <div class="scores">cos=0.48 · reranked=+0.61</div>
+    <div class="contribs">pressure_match=+0.10 · role_jaccard=+0.03</div>
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c35_recovery_press_1899585_1899585_91_17053.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">middle_progression</span>
+    <div class="scores">cos=0.44 · reranked=+0.59</div>
+    <div class="contribs">lane_match=+0.05 · pressure_match=+0.10</div>
+  </div>
+</div>
+
+</div>
+
+  <div class="summary">Δ vs v9c raw: <strong>+1</strong> strong matches in top-5 (ensemble → reranker)</div>
+</div>
+
+<div class="seed-block" id="seed-4">
+  <div class="seed-header">
+    <h2>5. Press break — combination on the flank</h2>
+    <span class="cat">seed: press_break</span>
+  </div>
+  <div class="seed-notes">Build up from the back, where a combination play on the left flank breaks the opp team’s high press, resulting in a positional advantage in the attacking half with space to advance toward the box.</div>
+
+  <div class="row">
+    <div class="row-label"><strong>SEED clip</strong><span>(query)</span></div>
+    <div class="tile seed-tile">
+      <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c20_cross_attempt_1899585_1899585_221_42990.mp4" autoplay muted loop playsinline preload="metadata"></video>
+      <div class="tile-meta">
+        <span class="cat">press_break</span>
+      </div>
+    </div>
+    <div class="spacer"></div><div class="spacer"></div><div class="spacer"></div><div class="spacer"></div>
+  </div>
+
+  
+<div class="row">
+  <div class="row-label">
+    <strong>Current demo (v9c raw)</strong>
+    <span>top-5 cross-match</span>
+    <span class="strong-count">3/5 strong</span>
+  </div>
+  
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c04_buildup_own_half_1925299_1925299_258_57972.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">deep_build_up</span>
+    <div class="scores">cos=0.81</div>
+    
+  </div>
+</div>
+
+
+<div class="tile strong">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c34_recovery_press_1886347_1886347_13_2315.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge strong">STRONG</span>
+    <span class="cat">press_break</span>
+    <div class="scores">cos=0.73</div>
+    
+  </div>
+</div>
+
+
+<div class="tile strong">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c18_cross_attempt_1886347_1886347_211_44356.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge strong">STRONG</span>
+    <span class="cat">press_break</span>
+    <div class="scores">cos=0.53</div>
+    
+  </div>
+</div>
+
+
+<div class="tile strong">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c27_high_press_own_half_1925299_1925299_199_44074.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge strong">STRONG</span>
+    <span class="cat">press_break</span>
+    <div class="scores">cos=0.51</div>
+    
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c28_high_press_own_half_1886347_1886347_96_19181.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">middle_circulation</span>
+    <div class="scores">cos=0.47</div>
+    
+  </div>
+</div>
+
+</div>
+
+<div class="row">
+  <div class="row-label">
+    <strong>Candidate demo (ensemble → reranker)</strong>
+    <span>top-5 cross-match</span>
+    <span class="strong-count">4/5 strong</span>
+  </div>
+  
+<div class="tile strong">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c34_recovery_press_1886347_1886347_13_2315.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge strong">STRONG</span>
+    <span class="cat">press_break</span>
+    <div class="scores">cos=0.75 · reranked=+1.30</div>
+    <div class="contribs">mech_match=+0.20 · zone_match=+0.10 · lane_match=+0.05 · pressure_match=+0.10</div>
+  </div>
+</div>
+
+
+<div class="tile strong">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c27_high_press_own_half_1925299_1925299_199_44074.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge strong">STRONG</span>
+    <span class="cat">press_break</span>
+    <div class="scores">cos=0.55 · reranked=+0.95</div>
+    <div class="contribs">mech_match=+0.20 · lane_match=+0.05 · pressure_match=+0.10 · role_jaccard=+0.05</div>
+  </div>
+</div>
+
+
+<div class="tile strong">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c30_recovery_press_1925299_1925299_114_25768.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge strong">STRONG</span>
+    <span class="cat">press_break</span>
+    <div class="scores">cos=0.35 · reranked=+0.90</div>
+    <div class="contribs">mech_match=+0.20 · zone_match=+0.10 · lane_match=+0.05 · pressure_match=+0.10</div>
+  </div>
+</div>
+
+
+<div class="tile strong">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c18_cross_attempt_1886347_1886347_211_44356.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge strong">STRONG</span>
+    <span class="cat">press_break</span>
+    <div class="scores">cos=0.57 · reranked=+0.77</div>
+    <div class="contribs">mech_match=+0.20</div>
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c04_buildup_own_half_1925299_1925299_258_57972.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">deep_build_up</span>
+    <div class="scores">cos=0.76 · reranked=+0.76</div>
+    
+  </div>
+</div>
+
+</div>
+
+<div class="row">
+  <div class="row-label">
+    <strong>v9c → reranker (no ensemble)</strong>
+    <span>top-5 cross-match</span>
+    <span class="strong-count">4/5 strong</span>
+  </div>
+  
+<div class="tile strong">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c34_recovery_press_1886347_1886347_13_2315.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge strong">STRONG</span>
+    <span class="cat">press_break</span>
+    <div class="scores">cos=0.73 · reranked=+1.28</div>
+    <div class="contribs">mech_match=+0.20 · zone_match=+0.10 · lane_match=+0.05 · pressure_match=+0.10</div>
+  </div>
+</div>
+
+
+<div class="tile strong">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c27_high_press_own_half_1925299_1925299_199_44074.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge strong">STRONG</span>
+    <span class="cat">press_break</span>
+    <div class="scores">cos=0.51 · reranked=+0.91</div>
+    <div class="contribs">mech_match=+0.20 · lane_match=+0.05 · pressure_match=+0.10 · role_jaccard=+0.05</div>
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c04_buildup_own_half_1925299_1925299_258_57972.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">deep_build_up</span>
+    <div class="scores">cos=0.81 · reranked=+0.81</div>
+    
+  </div>
+</div>
+
+
+<div class="tile strong">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c30_recovery_press_1925299_1925299_114_25768.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge strong">STRONG</span>
+    <span class="cat">press_break</span>
+    <div class="scores">cos=0.26 · reranked=+0.81</div>
+    <div class="contribs">mech_match=+0.20 · zone_match=+0.10 · lane_match=+0.05 · pressure_match=+0.10</div>
+  </div>
+</div>
+
+
+<div class="tile strong">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c18_cross_attempt_1886347_1886347_211_44356.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge strong">STRONG</span>
+    <span class="cat">press_break</span>
+    <div class="scores">cos=0.53 · reranked=+0.73</div>
+    <div class="contribs">mech_match=+0.20</div>
+  </div>
+</div>
+
+</div>
+
+  <div class="summary">Δ vs v9c raw: <strong>+1</strong> strong matches in top-5 (ensemble → reranker)</div>
+</div>
+
+<div class="seed-block" id="seed-5">
+  <div class="seed-header">
+    <h2>6. Press break — long ball, aerial duel, transition</h2>
+    <span class="cat">seed: press_break</span>
+  </div>
+  <div class="seed-notes">CB plays back to the GK under high pressure, who sent a long ball. The CF wins the aerial duel and lays it off to the CM who quickly open with LB who is in a positional advantage to go forward.</div>
+
+  <div class="row">
+    <div class="row-label"><strong>SEED clip</strong><span>(query)</span></div>
+    <div class="tile seed-tile">
+      <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c27_high_press_own_half_1925299_1925299_199_44074.mp4" autoplay muted loop playsinline preload="metadata"></video>
+      <div class="tile-meta">
+        <span class="cat">press_break</span>
+      </div>
+    </div>
+    <div class="spacer"></div><div class="spacer"></div><div class="spacer"></div><div class="spacer"></div>
+  </div>
+
+  
+<div class="row">
+  <div class="row-label">
+    <strong>Current demo (v9c raw)</strong>
+    <span>top-5 cross-match</span>
+    <span class="strong-count">3/5 strong</span>
+  </div>
+  
+<div class="tile strong">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c34_recovery_press_1886347_1886347_13_2315.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge strong">STRONG</span>
+    <span class="cat">press_break</span>
+    <div class="scores">cos=0.71</div>
+    
+  </div>
+</div>
+
+
+<div class="tile strong">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c18_cross_attempt_1886347_1886347_211_44356.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge strong">STRONG</span>
+    <span class="cat">press_break</span>
+    <div class="scores">cos=0.70</div>
+    
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c28_high_press_own_half_1886347_1886347_96_19181.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">middle_circulation</span>
+    <div class="scores">cos=0.58</div>
+    
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c47_transition_attack_1899585_1899585_246_48512.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">middle_progression</span>
+    <div class="scores">cos=0.57</div>
+    
+  </div>
+</div>
+
+
+<div class="tile strong">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c20_cross_attempt_1899585_1899585_221_42990.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge strong">STRONG</span>
+    <span class="cat">press_break</span>
+    <div class="scores">cos=0.51</div>
+    
+  </div>
+</div>
+
+</div>
+
+<div class="row">
+  <div class="row-label">
+    <strong>Candidate demo (ensemble → reranker)</strong>
+    <span>top-5 cross-match</span>
+    <span class="strong-count">3/5 strong</span>
+  </div>
+  
+<div class="tile strong">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c34_recovery_press_1886347_1886347_13_2315.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge strong">STRONG</span>
+    <span class="cat">press_break</span>
+    <div class="scores">cos=0.65 · reranked=+1.05</div>
+    <div class="contribs">mech_match=+0.20 · lane_match=+0.05 · pressure_match=+0.10 · role_jaccard=+0.05</div>
+  </div>
+</div>
+
+
+<div class="tile strong">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c20_cross_attempt_1899585_1899585_221_42990.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge strong">STRONG</span>
+    <span class="cat">press_break</span>
+    <div class="scores">cos=0.55 · reranked=+0.95</div>
+    <div class="contribs">mech_match=+0.20 · lane_match=+0.05 · pressure_match=+0.10 · role_jaccard=+0.05</div>
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c29_high_press_own_half_1899585_1899585_1_172.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">build_up_under_high_press</span>
+    <div class="scores">cos=0.36 · reranked=+0.91</div>
+    <div class="contribs">mech_match=+0.20 · zone_match=+0.10 · lane_match=+0.05 · pressure_match=+0.10</div>
+  </div>
+</div>
+
+
+<div class="tile strong">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c18_cross_attempt_1886347_1886347_211_44356.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge strong">STRONG</span>
+    <span class="cat">press_break</span>
+    <div class="scores">cos=0.61 · reranked=+0.81</div>
+    <div class="contribs">mech_match=+0.20</div>
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c12_create_middle_1899585_1899585_107_21707.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">build_up_under_high_press</span>
+    <div class="scores">cos=0.43 · reranked=+0.73</div>
+    <div class="contribs">zone_match=+0.10 · pressure_match=+0.10 · role_jaccard=+0.10</div>
+  </div>
+</div>
+
+</div>
+
+<div class="row">
+  <div class="row-label">
+    <strong>v9c → reranker (no ensemble)</strong>
+    <span>top-5 cross-match</span>
+    <span class="strong-count">3/5 strong</span>
+  </div>
+  
+<div class="tile strong">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c34_recovery_press_1886347_1886347_13_2315.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge strong">STRONG</span>
+    <span class="cat">press_break</span>
+    <div class="scores">cos=0.71 · reranked=+1.11</div>
+    <div class="contribs">mech_match=+0.20 · lane_match=+0.05 · pressure_match=+0.10 · role_jaccard=+0.05</div>
+  </div>
+</div>
+
+
+<div class="tile strong">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c20_cross_attempt_1899585_1899585_221_42990.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge strong">STRONG</span>
+    <span class="cat">press_break</span>
+    <div class="scores">cos=0.51 · reranked=+0.91</div>
+    <div class="contribs">mech_match=+0.20 · lane_match=+0.05 · pressure_match=+0.10 · role_jaccard=+0.05</div>
+  </div>
+</div>
+
+
+<div class="tile strong">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c18_cross_attempt_1886347_1886347_211_44356.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge strong">STRONG</span>
+    <span class="cat">press_break</span>
+    <div class="scores">cos=0.70 · reranked=+0.90</div>
+    <div class="contribs">mech_match=+0.20</div>
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c29_high_press_own_half_1899585_1899585_1_172.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">build_up_under_high_press</span>
+    <div class="scores">cos=0.30 · reranked=+0.85</div>
+    <div class="contribs">mech_match=+0.20 · zone_match=+0.10 · lane_match=+0.05 · pressure_match=+0.10</div>
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c12_create_middle_1899585_1899585_107_21707.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">build_up_under_high_press</span>
+    <div class="scores">cos=0.34 · reranked=+0.64</div>
+    <div class="contribs">zone_match=+0.10 · pressure_match=+0.10 · role_jaccard=+0.10</div>
+  </div>
+</div>
+
+</div>
+
+  <div class="summary">Δ vs v9c raw: <strong>+0</strong> strong matches in top-5 (ensemble → reranker)</div>
+</div>
+
+<div class="seed-block" id="seed-6">
+  <div class="seed-header">
+    <h2>7. Press break — centre-back progressive carry</h2>
+    <span class="cat">seed: press_break</span>
+  </div>
+  <div class="seed-notes">LCB breaks the press with a progressive carry and finds the free player in middle third, then plays a through pass into the flank with the RW. Opp. pressure leaves multiple players unmarked</div>
+
+  <div class="row">
+    <div class="row-label"><strong>SEED clip</strong><span>(query)</span></div>
+    <div class="tile seed-tile">
+      <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c34_recovery_press_1886347_1886347_13_2315.mp4" autoplay muted loop playsinline preload="metadata"></video>
+      <div class="tile-meta">
+        <span class="cat">press_break</span>
+      </div>
+    </div>
+    <div class="spacer"></div><div class="spacer"></div><div class="spacer"></div><div class="spacer"></div>
+  </div>
+
+  
+<div class="row">
+  <div class="row-label">
+    <strong>Current demo (v9c raw)</strong>
+    <span>top-5 cross-match</span>
+    <span class="strong-count">2/5 strong</span>
+  </div>
+  
+<div class="tile strong">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c20_cross_attempt_1899585_1899585_221_42990.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge strong">STRONG</span>
+    <span class="cat">press_break</span>
+    <div class="scores">cos=0.73</div>
+    
+  </div>
+</div>
+
+
+<div class="tile strong">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c27_high_press_own_half_1925299_1925299_199_44074.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge strong">STRONG</span>
+    <span class="cat">press_break</span>
+    <div class="scores">cos=0.71</div>
+    
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c47_transition_attack_1899585_1899585_246_48512.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">middle_progression</span>
+    <div class="scores">cos=0.65</div>
+    
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c04_buildup_own_half_1925299_1925299_258_57972.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">deep_build_up</span>
+    <div class="scores">cos=0.62</div>
+    
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c35_recovery_press_1899585_1899585_91_17053.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">middle_progression</span>
+    <div class="scores">cos=0.62</div>
+    
+  </div>
+</div>
+
+</div>
+
+<div class="row">
+  <div class="row-label">
+    <strong>Candidate demo (ensemble → reranker)</strong>
+    <span>top-5 cross-match</span>
+    <span class="strong-count">3/5 strong</span>
+  </div>
+  
+<div class="tile strong">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c20_cross_attempt_1899585_1899585_221_42990.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge strong">STRONG</span>
+    <span class="cat">press_break</span>
+    <div class="scores">cos=0.75 · reranked=+1.30</div>
+    <div class="contribs">mech_match=+0.20 · zone_match=+0.10 · lane_match=+0.05 · pressure_match=+0.10</div>
+  </div>
+</div>
+
+
+<div class="tile strong">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c27_high_press_own_half_1925299_1925299_199_44074.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge strong">STRONG</span>
+    <span class="cat">press_break</span>
+    <div class="scores">cos=0.65 · reranked=+1.05</div>
+    <div class="contribs">mech_match=+0.20 · lane_match=+0.05 · pressure_match=+0.10 · role_jaccard=+0.05</div>
+  </div>
+</div>
+
+
+<div class="tile strong">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c30_recovery_press_1925299_1925299_114_25768.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge strong">STRONG</span>
+    <span class="cat">press_break</span>
+    <div class="scores">cos=0.30 · reranked=+0.85</div>
+    <div class="contribs">mech_match=+0.20 · zone_match=+0.10 · lane_match=+0.05 · pressure_match=+0.10</div>
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c35_recovery_press_1899585_1899585_91_17053.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">middle_progression</span>
+    <div class="scores">cos=0.64 · reranked=+0.79</div>
+    <div class="contribs">zone_match=+0.10 · lane_match=+0.05</div>
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c47_transition_attack_1899585_1899585_246_48512.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">middle_progression</span>
+    <div class="scores">cos=0.62 · reranked=+0.72</div>
+    <div class="contribs">zone_match=+0.10</div>
+  </div>
+</div>
+
+</div>
+
+<div class="row">
+  <div class="row-label">
+    <strong>v9c → reranker (no ensemble)</strong>
+    <span>top-5 cross-match</span>
+    <span class="strong-count">3/5 strong</span>
+  </div>
+  
+<div class="tile strong">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c20_cross_attempt_1899585_1899585_221_42990.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge strong">STRONG</span>
+    <span class="cat">press_break</span>
+    <div class="scores">cos=0.73 · reranked=+1.28</div>
+    <div class="contribs">mech_match=+0.20 · zone_match=+0.10 · lane_match=+0.05 · pressure_match=+0.10</div>
+  </div>
+</div>
+
+
+<div class="tile strong">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c27_high_press_own_half_1925299_1925299_199_44074.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge strong">STRONG</span>
+    <span class="cat">press_break</span>
+    <div class="scores">cos=0.71 · reranked=+1.11</div>
+    <div class="contribs">mech_match=+0.20 · lane_match=+0.05 · pressure_match=+0.10 · role_jaccard=+0.05</div>
+  </div>
+</div>
+
+
+<div class="tile strong">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c30_recovery_press_1925299_1925299_114_25768.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge strong">STRONG</span>
+    <span class="cat">press_break</span>
+    <div class="scores">cos=0.25 · reranked=+0.80</div>
+    <div class="contribs">mech_match=+0.20 · zone_match=+0.10 · lane_match=+0.05 · pressure_match=+0.10</div>
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c35_recovery_press_1899585_1899585_91_17053.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">middle_progression</span>
+    <div class="scores">cos=0.62 · reranked=+0.77</div>
+    <div class="contribs">zone_match=+0.10 · lane_match=+0.05</div>
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c47_transition_attack_1899585_1899585_246_48512.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">middle_progression</span>
+    <div class="scores">cos=0.65 · reranked=+0.75</div>
+    <div class="contribs">zone_match=+0.10</div>
+  </div>
+</div>
+
+</div>
+
+  <div class="summary">Δ vs v9c raw: <strong>+1</strong> strong matches in top-5 (ensemble → reranker)</div>
+</div>
+
+<div class="seed-block" id="seed-7">
+  <div class="seed-header">
+    <h2>8. Middle-third progression — partial match</h2>
+    <span class="cat">seed: middle_progression</span>
+  </div>
+  <div class="seed-notes">RCB holds the ball with low pressure, plays with RB, who uses a movement to evade his marker and carries the ball forward, progressing down the flank. The opposition defends in a mid-block.</div>
+
+  <div class="row">
+    <div class="row-label"><strong>SEED clip</strong><span>(query)</span></div>
+    <div class="tile seed-tile">
+      <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c33_recovery_press_1925299_1925299_98_21424.mp4" autoplay muted loop playsinline preload="metadata"></video>
+      <div class="tile-meta">
+        <span class="cat">middle_progression</span>
+      </div>
+    </div>
+    <div class="spacer"></div><div class="spacer"></div><div class="spacer"></div><div class="spacer"></div>
+  </div>
+
+  
+<div class="row">
+  <div class="row-label">
+    <strong>Current demo (v9c raw)</strong>
+    <span>top-5 cross-match</span>
+    <span class="strong-count">0/5 strong</span>
+  </div>
+  
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c28_high_press_own_half_1886347_1886347_96_19181.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">middle_circulation</span>
+    <div class="scores">cos=0.74</div>
+    
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c18_cross_attempt_1886347_1886347_211_44356.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">press_break</span>
+    <div class="scores">cos=0.70</div>
+    
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c31_recovery_press_1886347_1886347_144_29689.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">switch_of_play</span>
+    <div class="scores">cos=0.60</div>
+    
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c14_create_middle_1886347_1886347_19_3540.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">middle_circulation</span>
+    <div class="scores">cos=0.57</div>
+    
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c34_recovery_press_1886347_1886347_13_2315.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">press_break</span>
+    <div class="scores">cos=0.56</div>
+    
+  </div>
+</div>
+
+</div>
+
+<div class="row">
+  <div class="row-label">
+    <strong>Candidate demo (ensemble → reranker)</strong>
+    <span>top-5 cross-match</span>
+    <span class="strong-count">1/5 strong</span>
+  </div>
+  
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c14_create_middle_1886347_1886347_19_3540.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">middle_circulation</span>
+    <div class="scores">cos=0.53 · reranked=+1.08</div>
+    <div class="contribs">mech_match=+0.20 · zone_match=+0.10 · lane_match=+0.05 · pressure_match=+0.10</div>
+  </div>
+</div>
+
+
+<div class="tile strong">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c35_recovery_press_1899585_1899585_91_17053.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge strong">STRONG</span>
+    <span class="cat">middle_progression</span>
+    <div class="scores">cos=0.40 · reranked=+0.80</div>
+    <div class="contribs">mech_match=+0.20 · zone_match=+0.10 · pressure_match=+0.10</div>
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c18_cross_attempt_1886347_1886347_211_44356.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">press_break</span>
+    <div class="scores">cos=0.75 · reranked=+0.75</div>
+    
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c31_recovery_press_1886347_1886347_144_29689.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">switch_of_play</span>
+    <div class="scores">cos=0.62 · reranked=+0.75</div>
+    <div class="contribs">pressure_match=+0.10 · role_jaccard=+0.03</div>
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c28_high_press_own_half_1886347_1886347_96_19181.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">middle_circulation</span>
+    <div class="scores">cos=0.74 · reranked=+0.74</div>
+    
+  </div>
+</div>
+
+</div>
+
+<div class="row">
+  <div class="row-label">
+    <strong>v9c → reranker (no ensemble)</strong>
+    <span>top-5 cross-match</span>
+    <span class="strong-count">1/5 strong</span>
+  </div>
+  
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c14_create_middle_1886347_1886347_19_3540.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">middle_circulation</span>
+    <div class="scores">cos=0.57 · reranked=+1.12</div>
+    <div class="contribs">mech_match=+0.20 · zone_match=+0.10 · lane_match=+0.05 · pressure_match=+0.10</div>
+  </div>
+</div>
+
+
+<div class="tile strong">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c35_recovery_press_1899585_1899585_91_17053.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge strong">STRONG</span>
+    <span class="cat">middle_progression</span>
+    <div class="scores">cos=0.37 · reranked=+0.77</div>
+    <div class="contribs">mech_match=+0.20 · zone_match=+0.10 · pressure_match=+0.10</div>
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c28_high_press_own_half_1886347_1886347_96_19181.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">middle_circulation</span>
+    <div class="scores">cos=0.74 · reranked=+0.74</div>
+    
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c31_recovery_press_1886347_1886347_144_29689.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">switch_of_play</span>
+    <div class="scores">cos=0.60 · reranked=+0.73</div>
+    <div class="contribs">pressure_match=+0.10 · role_jaccard=+0.03</div>
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c18_cross_attempt_1886347_1886347_211_44356.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">press_break</span>
+    <div class="scores">cos=0.70 · reranked=+0.70</div>
+    
+  </div>
+</div>
+
+</div>
+
+  <div class="summary">Δ vs v9c raw: <strong>+1</strong> strong matches in top-5 (ensemble → reranker)</div>
+</div>
+
+<div class="seed-block" id="seed-8">
+  <div class="seed-header">
+    <h2>9. Build-up under high press — honest miss</h2>
+    <span class="cat">seed: build_up_under_high_press</span>
+  </div>
+  <div class="seed-notes">GK under high pressing chooses to play to the free player, in this case the LB, who has space to carry the ball forward and progress down the flank.</div>
+
+  <div class="row">
+    <div class="row-label"><strong>SEED clip</strong><span>(query)</span></div>
+    <div class="tile seed-tile">
+      <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c12_create_middle_1899585_1899585_107_21707.mp4" autoplay muted loop playsinline preload="metadata"></video>
+      <div class="tile-meta">
+        <span class="cat">build_up_under_high_press</span>
+      </div>
+    </div>
+    <div class="spacer"></div><div class="spacer"></div><div class="spacer"></div><div class="spacer"></div>
+  </div>
+
+  
+<div class="row">
+  <div class="row-label">
+    <strong>Current demo (v9c raw)</strong>
+    <span>top-5 cross-match</span>
+    <span class="strong-count">0/5 strong</span>
+  </div>
+  
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c25_high_press_own_half_1886347_1886347_179_36305.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">circulation_under_high_press</span>
+    <div class="scores">cos=0.52</div>
+    
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c03_buildup_own_half_1886347_1886347_139_28623.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">deep_build_up</span>
+    <div class="scores">cos=0.51</div>
+    
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c01_buildup_own_half_1925299_1925299_26_5110.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">deep_build_up</span>
+    <div class="scores">cos=0.47</div>
+    
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c31_recovery_press_1886347_1886347_144_29689.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">switch_of_play</span>
+    <div class="scores">cos=0.47</div>
+    
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c24_high_press_own_half_1925299_1925299_219_49679.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">circulation_under_high_press</span>
+    <div class="scores">cos=0.39</div>
+    
+  </div>
+</div>
+
+</div>
+
+<div class="row">
+  <div class="row-label">
+    <strong>Candidate demo (ensemble → reranker)</strong>
+    <span>top-5 cross-match</span>
+    <span class="strong-count">0/5 strong</span>
+  </div>
+  
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c27_high_press_own_half_1925299_1925299_199_44074.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">press_break</span>
+    <div class="scores">cos=0.43 · reranked=+0.73</div>
+    <div class="contribs">zone_match=+0.10 · pressure_match=+0.10 · role_jaccard=+0.10</div>
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c25_high_press_own_half_1886347_1886347_179_36305.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">circulation_under_high_press</span>
+    <div class="scores">cos=0.49 · reranked=+0.72</div>
+    <div class="contribs">zone_match=+0.10 · pressure_match=+0.10 · role_jaccard=+0.03</div>
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c30_recovery_press_1925299_1925299_114_25768.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">press_break</span>
+    <div class="scores">cos=0.44 · reranked=+0.59</div>
+    <div class="contribs">pressure_match=+0.10 · role_jaccard=+0.05</div>
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c01_buildup_own_half_1925299_1925299_26_5110.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">deep_build_up</span>
+    <div class="scores">cos=0.49 · reranked=+0.59</div>
+    <div class="contribs">zone_match=+0.10</div>
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c03_buildup_own_half_1886347_1886347_139_28623.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">deep_build_up</span>
+    <div class="scores">cos=0.47 · reranked=+0.57</div>
+    <div class="contribs">zone_match=+0.10</div>
+  </div>
+</div>
+
+</div>
+
+<div class="row">
+  <div class="row-label">
+    <strong>v9c → reranker (no ensemble)</strong>
+    <span>top-5 cross-match</span>
+    <span class="strong-count">0/5 strong</span>
+  </div>
+  
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c25_high_press_own_half_1886347_1886347_179_36305.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">circulation_under_high_press</span>
+    <div class="scores">cos=0.52 · reranked=+0.76</div>
+    <div class="contribs">zone_match=+0.10 · pressure_match=+0.10 · role_jaccard=+0.03</div>
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c27_high_press_own_half_1925299_1925299_199_44074.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">press_break</span>
+    <div class="scores">cos=0.34 · reranked=+0.64</div>
+    <div class="contribs">zone_match=+0.10 · pressure_match=+0.10 · role_jaccard=+0.10</div>
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c03_buildup_own_half_1886347_1886347_139_28623.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">deep_build_up</span>
+    <div class="scores">cos=0.51 · reranked=+0.61</div>
+    <div class="contribs">zone_match=+0.10</div>
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c01_buildup_own_half_1925299_1925299_26_5110.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">deep_build_up</span>
+    <div class="scores">cos=0.47 · reranked=+0.57</div>
+    <div class="contribs">zone_match=+0.10</div>
+  </div>
+</div>
+
+
+<div class="tile miss">
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c30_recovery_press_1925299_1925299_114_25768.mp4" autoplay muted loop playsinline preload="metadata"></video>
+  <div class="tile-meta">
+    <span class="badge miss">other</span>
+    <span class="cat">press_break</span>
+    <div class="scores">cos=0.37 · reranked=+0.52</div>
+    <div class="contribs">pressure_match=+0.10 · role_jaccard=+0.05</div>
+  </div>
+</div>
+
+</div>
+
+  <div class="summary">Δ vs v9c raw: <strong>+0</strong> strong matches in top-5 (ensemble → reranker)</div>
+</div>
+
+</body></html>
