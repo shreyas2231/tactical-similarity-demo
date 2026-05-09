@@ -51,11 +51,23 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
 .boosts { margin-top:3px; font-size:10px; color:#666; }
 .empty { font-size:12px; color:#888; font-style:italic; padding:8px; }
 </style></head><body>
-<h1>Predicate Index v0 — Stage 2 audit</h1>
-<div class='lead'>
-  12-query offline audit over the SkillCorner Predicate Index v0 (7,306 windows).
-  Per CTO Stage-2 directive 2026-05-09. <b>Not a deployment</b> — internal audit only.
-  See <a href='../STAGE1_REPORT.md'>STAGE1_REPORT</a> for the underlying index.
+<h1>Predicate Index v0 — Stage 3 re-render (post CTO findings)</h1>
+<div class='lead' style='background:#fff3cd; border:1px solid #d4a017; padding:10px 14px; border-radius:4px;'>
+  <b style='color:#7a5500;'>Stage 3 update (2026-05-09):</b> CTO reviewed the original Stage-2 audit and reported 6 findings.
+  Verifying #6 (turnover semantic) surfaced a 7th: the Stage-1 phase-join was using the wrong key.
+  This re-render incorporates all 5 fixed findings + the phase-join fix.
+  See <a href='./VERIFIED_FINDINGS.md'>VERIFIED_FINDINGS</a> for the full list.
+  <br><br>
+  <b>Fixes applied since last render:</b>
+  <ul style='margin:4px 0 0 0; padding-left:20px;'>
+    <li><b>#1 y-axis lane inverted</b> — L↔R agreement against analyst labels went from 17% to 83% after inversion.</li>
+    <li><b>#2 "midfield" = central lane</b>, not middle third (per CTO clarification).</li>
+    <li><b>#3 carry definition tightened</b> — `meaningful_carry` requires n_carry≥1 AND ≥5m forward progress, kills CB-bouncing false positives.</li>
+    <li><b>#6 turnover/shot-or-goal flags now window-bounded</b>, not phase-inherited.</li>
+    <li><b>#7 phase-join was using OUR poss_idx as the SC phase index</b> — they're unrelated. Now uses frame-overlap. 20/20 spot-checked windows were joined to the wrong phase pre-fix.</li>
+  </ul>
+  <b>Deferred:</b> Finding #5 (Q6 same-side switch — needs `crosses_central_lane` predicate).<br>
+  <b style='color:#b8860b'>INTERNAL AUDIT — not a public demo.</b> v9c canonical demo, BEST_CHECKPOINT, /query/, and reranker_v0 unchanged.
 </div>
 
         <section class='query'>
@@ -81,7 +93,7 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
               <span class='conf conf-high'>high</span>
             </div>
             <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c07_create_finish_attack_1899585_1899585_271_54266.mp4" controls preload="none" muted class="vid"></video>
-            <div class='chips'><span class='chip'>start: middle</span> <span class='chip'>end: final</span> <span class='chip'>lane: left</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +34m</span> <span class='chip chip-phase'>direct</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>def-line -18m</span> <span class='chip chip-loss'>turnover</span></div>
+            <div class='chips'><span class='chip'>start: middle</span> <span class='chip'>end: final</span> <span class='chip'>lane: left</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +34m</span> <span class='chip chip-phase'>finish</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>def-line -18m</span> <span class='chip chip-pos'>→ shot/goal</span></div>
             
           </div>
         </div></div>
@@ -93,7 +105,7 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
               <span class='conf conf-high'>high</span>
             </div>
             <div class="no-mp4">no mp4</div>
-            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: left</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +83m</span> <span class='chip chip-phase'>build_up</span> <span class='chip chip-press'>under_pressure (high_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.048</span> <span class='chip'>def-line +49m</span></div>
+            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: left</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +83m</span> <span class='chip chip-phase'>build_up</span> <span class='chip chip-press'>under_pressure (high_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.048</span> <span class='chip'>def-line +49m</span> <span class='chip chip-pos'>→ shot/goal</span></div>
             
           </div>
         
@@ -104,7 +116,7 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
               <span class='conf conf-high'>high</span>
             </div>
             <div class="no-mp4">no mp4</div>
-            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: left</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +81m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.088</span> <span class='chip'>def-line +29m</span> <span class='chip chip-loss'>turnover</span></div>
+            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: left</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +81m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.088</span> <span class='chip'>def-line +29m</span> <span class='chip chip-pos'>→ shot/goal</span></div>
             
           </div>
         
@@ -115,7 +127,7 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
               <span class='conf conf-high'>high</span>
             </div>
             <div class="no-mp4">no mp4</div>
-            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: left</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +78m</span> <span class='chip chip-phase'>finish</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.144</span> <span class='chip'>def-line -11m</span></div>
+            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: left</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +78m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.144</span> <span class='chip'>def-line -11m</span></div>
             
           </div>
         
@@ -126,7 +138,7 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
               <span class='conf conf-high'>high</span>
             </div>
             <div class="no-mp4">no mp4</div>
-            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: left</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +76m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.109</span> <span class='chip'>def-line -38m</span></div>
+            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: left</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +76m</span> <span class='chip chip-phase'>transition</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.109</span> <span class='chip'>def-line -38m</span> <span class='chip chip-pos'>→ shot/goal</span></div>
             
           </div>
         
@@ -137,7 +149,7 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
               <span class='conf conf-high'>high</span>
             </div>
             <div class="no-mp4">no mp4</div>
-            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: left-hs</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +77m</span> <span class='chip chip-phase'>build_up</span> <span class='chip chip-press'>under_pressure (high_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.052</span> <span class='chip'>def-line +50m</span></div>
+            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: left-hs</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +77m</span> <span class='chip chip-phase'>finish</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.052</span> <span class='chip'>def-line +50m</span> <span class='chip chip-pos'>→ shot/goal</span></div>
             
           </div>
         </div></div>
@@ -178,7 +190,7 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
               <span class='conf conf-high'>high</span>
             </div>
             <div class="no-mp4">no mp4</div>
-            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: right</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +70m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.172</span> <span class='chip'>def-line +43m</span></div>
+            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: right</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +70m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.172</span> <span class='chip'>def-line +43m</span> <span class='chip chip-pos'>→ shot/goal</span></div>
             
           </div>
         
@@ -189,7 +201,7 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
               <span class='conf conf-high'>high</span>
             </div>
             <div class="no-mp4">no mp4</div>
-            <div class='chips'><span class='chip'>start: middle</span> <span class='chip'>end: final</span> <span class='chip'>lane: right</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +70m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.064</span> <span class='chip'>def-line +29m</span> <span class='chip chip-pos'>→ shot/goal</span></div>
+            <div class='chips'><span class='chip'>start: middle</span> <span class='chip'>end: final</span> <span class='chip'>lane: right</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +70m</span> <span class='chip chip-phase'>finish</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.064</span> <span class='chip'>def-line +29m</span> <span class='chip chip-loss'>turnover</span></div>
             
           </div>
         
@@ -200,7 +212,7 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
               <span class='conf conf-high'>high</span>
             </div>
             <div class="no-mp4">no mp4</div>
-            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: right</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +69m</span> <span class='chip chip-phase'>finish</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.073</span> <span class='chip'>def-line -44m</span></div>
+            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: right</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +69m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.073</span> <span class='chip'>def-line -44m</span> <span class='chip chip-pos'>→ shot/goal</span></div>
             
           </div>
         
@@ -211,7 +223,7 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
               <span class='conf conf-medium'>medium</span>
             </div>
             <div class="no-mp4">no mp4</div>
-            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: right-hs</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +70m</span> <span class='chip chip-phase'>chaotic</span> <span class='chip chip-loss'>turnover</span></div>
+            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: right-hs</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +70m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span></div>
             
           </div>
         </div></div>
@@ -222,13 +234,13 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
             <h2>Q3. central carry that moves the defensive line</h2>
             <div class='stats'>
               3 hard · 0 soft ·
-              <b>668</b> candidates · <b>6</b> displayable
+              <b>355</b> candidates · <b>4</b> displayable
             </div>
-            <div class='chip-row'><span class='chip-explain'>lane: central</span> <span class='chip-explain'>type: carry</span> <span class='chip-explain'>def line: pushed &gt; 4m</span></div>
+            <div class='chip-row'><span class='chip-explain'>lane: central</span> <span class='chip-explain'>type: meaningful carry (≥5m progression)</span> <span class='chip-explain'>def line: pushed &gt; 4m</span></div>
           </header>
           <div class='compiled'>
             <details><summary>compiled filters / boosts</summary>
-              <div><b>filters:</b><br>&nbsp;&nbsp;dominant_lane in [&#x27;central&#x27;]<br>&nbsp;&nbsp;n_carry_events ge 1<br>&nbsp;&nbsp;defensive_line_delta abs_gt 4.0</div>
+              <div><b>filters:</b><br>&nbsp;&nbsp;dominant_lane in [&#x27;central&#x27;]<br>&nbsp;&nbsp;meaningful_carry is_true True<br>&nbsp;&nbsp;defensive_line_delta abs_gt 4.0</div>
               <div><b>soft_boosts:</b><br>(none)</div>
             </details>
           </div>
@@ -240,7 +252,7 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
               <span class='conf conf-high'>high</span>
             </div>
             <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c18_cross_attempt_1886347_1886347_211_44356.mp4" controls preload="none" muted class="vid"></video>
-            <div class='chips'><span class='chip'>start: middle</span> <span class='chip'>end: final</span> <span class='chip'>lane: central</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +52m</span> <span class='chip chip-phase'>chaotic</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.305</span> <span class='chip'>def-line +32m</span> <span class='chip chip-loss'>turnover</span></div>
+            <div class='chips'><span class='chip'>start: middle</span> <span class='chip'>end: final</span> <span class='chip'>lane: central</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +52m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.305</span> <span class='chip'>def-line +32m</span> <span class='chip chip-pos'>→ shot/goal</span></div>
             
           </div>
         
@@ -251,7 +263,7 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
               <span class='conf conf-high'>high</span>
             </div>
             <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c34_recovery_press_1886347_1886347_13_2315.mp4" controls preload="none" muted class="vid"></video>
-            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: middle</span> <span class='chip'>lane: central</span> <span class='chip'>x_prog: +45m</span> <span class='chip chip-phase'>finish</span> <span class='chip'>def-line +20m</span> <span class='chip chip-pos'>→ shot/goal</span></div>
+            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: middle</span> <span class='chip'>lane: central</span> <span class='chip'>x_prog: +45m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip'>def-line +20m</span></div>
             
           </div>
         
@@ -262,7 +274,7 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
               <span class='conf conf-high'>high</span>
             </div>
             <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c30_recovery_press_1925299_1925299_114_25768.mp4" controls preload="none" muted class="vid"></video>
-            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: middle</span> <span class='chip'>lane: central</span> <span class='chip'>x_prog: +37m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip'>def-line -22m</span> <span class='chip chip-loss'>turnover</span></div>
+            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: middle</span> <span class='chip'>lane: central</span> <span class='chip'>x_prog: +37m</span> <span class='chip chip-phase'>build_up</span> <span class='chip chip-press'>under_pressure (high_block)</span> <span class='chip'>def-line -22m</span></div>
             
           </div>
         
@@ -274,17 +286,6 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
             </div>
             <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c28_high_press_own_half_1886347_1886347_96_19181.mp4" controls preload="none" muted class="vid"></video>
             <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: middle</span> <span class='chip'>lane: central</span> <span class='chip'>x_prog: +19m</span> <span class='chip chip-phase'>build_up</span> <span class='chip chip-press'>under_pressure (high_block)</span> <span class='chip'>def-line +8m</span></div>
-            
-          </div>
-        
-          <div class='card'>
-            <div class='card-head'>
-              <span class='rank'>#5</span>
-              <span class='wid' title='1899585:1899585:226:45138'>1899585:1899585:226:45138…</span>
-              <span class='conf conf-high'>high</span>
-            </div>
-            <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c02_buildup_own_half_1899585_1899585_226_45138.mp4" controls preload="none" muted class="vid"></video>
-            <div class='chips'><span class='chip'>start: middle</span> <span class='chip'>end: middle</span> <span class='chip'>lane: central</span> <span class='chip'>x_prog: -4m</span> <span class='chip chip-phase'>chaotic</span> <span class='chip'>def-line +30m</span> <span class='chip chip-loss'>turnover</span></div>
             
           </div>
         </div></div>
@@ -296,7 +297,7 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
               <span class='conf conf-high'>high</span>
             </div>
             <div class="no-mp4">no mp4</div>
-            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: central</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +73m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>def-line +20m</span> <span class='chip chip-loss'>turnover</span></div>
+            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: central</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +73m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>def-line +20m</span></div>
             
           </div>
         
@@ -307,7 +308,7 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
               <span class='conf conf-high'>high</span>
             </div>
             <div class="no-mp4">no mp4</div>
-            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: central</span> <span class='chip'>x_prog: +72m</span> <span class='chip chip-phase'>finish</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.069</span> <span class='chip'>def-line +31m</span></div>
+            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: central</span> <span class='chip'>x_prog: +72m</span> <span class='chip chip-phase'>direct</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.069</span> <span class='chip'>def-line +31m</span></div>
             
           </div>
         
@@ -318,7 +319,7 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
               <span class='conf conf-high'>high</span>
             </div>
             <div class="no-mp4">no mp4</div>
-            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: central</span> <span class='chip'>x_prog: +72m</span> <span class='chip chip-phase'>finish</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ -0.012</span> <span class='chip'>def-line -14m</span></div>
+            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: central</span> <span class='chip'>x_prog: +72m</span> <span class='chip chip-phase'>direct</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ -0.012</span> <span class='chip'>def-line -14m</span></div>
             
           </div>
         
@@ -329,7 +330,7 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
               <span class='conf conf-high'>high</span>
             </div>
             <div class="no-mp4">no mp4</div>
-            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: central</span> <span class='chip'>x_prog: +70m</span> <span class='chip chip-phase'>finish</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.012</span> <span class='chip'>def-line -40m</span></div>
+            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: central</span> <span class='chip'>x_prog: +70m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.012</span> <span class='chip'>def-line -40m</span></div>
             
           </div>
         
@@ -340,7 +341,7 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
               <span class='conf conf-high'>high</span>
             </div>
             <div class="no-mp4">no mp4</div>
-            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: central</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +67m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.075</span> <span class='chip'>def-line +48m</span> <span class='chip chip-loss'>turnover</span></div>
+            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: central</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +67m</span> <span class='chip chip-phase'>transition</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.075</span> <span class='chip'>def-line +48m</span> <span class='chip chip-pos'>→ shot/goal</span></div>
             
           </div>
         </div></div>
@@ -351,13 +352,13 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
             <h2>Q4. build-up under pressure progressing into midfield</h2>
             <div class='stats'>
               3 hard · 2 soft ·
-              <b>218</b> candidates · <b>4</b> displayable
+              <b>104</b> candidates · <b>2</b> displayable
             </div>
-            <div class='chip-row'><span class='chip-explain'>end zone: middle third</span> <span class='chip-explain'>progressive (≥10m)</span> <span class='chip-explain'>pressure: generic (soft boost, strict + structured)</span> <span class='chip-explain'>phase: build-up</span></div>
+            <div class='chip-row'><span class='chip-explain'>midfield = central lane (not middle third)</span> <span class='chip-explain'>progressive (≥10m)</span> <span class='chip-explain'>pressure: generic (soft boost, strict + structured)</span> <span class='chip-explain'>phase: build-up</span></div>
           </header>
           <div class='compiled'>
             <details><summary>compiled filters / boosts</summary>
-              <div><b>filters:</b><br>&nbsp;&nbsp;end_zone eq middle_third<br>&nbsp;&nbsp;progressive_action is_true True<br>&nbsp;&nbsp;phase_type in [&#x27;build_up&#x27;, &#x27;deep_build_up&#x27;]</div>
+              <div><b>filters:</b><br>&nbsp;&nbsp;dominant_lane eq central<br>&nbsp;&nbsp;progressive_action is_true True<br>&nbsp;&nbsp;phase_type in [&#x27;build_up&#x27;, &#x27;deep_build_up&#x27;]</div>
               <div><b>soft_boosts:</b><br>&nbsp;&nbsp;under_pressure is_true True → +0.20<br>&nbsp;&nbsp;pressure_strength eq structured → +0.10</div>
             </details>
           </div>
@@ -365,11 +366,11 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
           <div class='card'>
             <div class='card-head'>
               <span class='rank'>#1</span>
-              <span class='wid' title='1899585:1899585:107:21707'>1899585:1899585:107:21707…</span>
+              <span class='wid' title='1925299:1925299:114:25768'>1925299:1925299:114:25768…</span>
               <span class='conf conf-high'>high</span>
             </div>
-            <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c12_create_middle_1899585_1899585_107_21707.mp4" controls preload="none" muted class="vid"></video>
-            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: middle</span> <span class='chip'>lane: left</span> <span class='chip'>x_prog: +39m</span> <span class='chip chip-phase'>build_up</span> <span class='chip chip-press'>under_pressure (high_block)</span> <span class='chip'>def-line -41m</span> <span class='chip chip-loss'>turnover</span></div>
+            <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c30_recovery_press_1925299_1925299_114_25768.mp4" controls preload="none" muted class="vid"></video>
+            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: middle</span> <span class='chip'>lane: central</span> <span class='chip'>x_prog: +37m</span> <span class='chip chip-phase'>build_up</span> <span class='chip chip-press'>under_pressure (high_block)</span> <span class='chip'>def-line -22m</span></div>
             <div class='boosts'>boosts: under_pressure=True → +0.20</div>
           </div>
         
@@ -383,82 +384,60 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
             <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: middle</span> <span class='chip'>lane: central</span> <span class='chip'>x_prog: +19m</span> <span class='chip chip-phase'>build_up</span> <span class='chip chip-press'>under_pressure (high_block)</span> <span class='chip'>def-line +8m</span></div>
             <div class='boosts'>boosts: under_pressure=True → +0.20</div>
           </div>
-        
-          <div class='card'>
-            <div class='card-head'>
-              <span class='rank'>#3</span>
-              <span class='wid' title='1925299:1925299:199:44074'>1925299:1925299:199:44074…</span>
-              <span class='conf conf-high'>high</span>
-            </div>
-            <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c27_high_press_own_half_1925299_1925299_199_44074.mp4" controls preload="none" muted class="vid"></video>
-            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: middle</span> <span class='chip'>lane: right-hs</span> <span class='chip'>x_prog: +15m</span> <span class='chip chip-phase'>build_up</span> <span class='chip chip-press'>under_pressure (high_block)</span> <span class='chip'>def-line +20m</span></div>
-            <div class='boosts'>boosts: under_pressure=True → +0.20</div>
-          </div>
-        
-          <div class='card'>
-            <div class='card-head'>
-              <span class='rank'>#4</span>
-              <span class='wid' title='1925299:1925299:119:26935'>1925299:1925299:119:26935…</span>
-              <span class='conf conf-high'>high</span>
-            </div>
-            <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c13_create_middle_1925299_1925299_119_26935.mp4" controls preload="none" muted class="vid"></video>
-            <div class='chips'><span class='chip'>start: middle</span> <span class='chip'>end: middle</span> <span class='chip'>lane: right</span> <span class='chip'>x_prog: +13m</span> <span class='chip chip-phase'>build_up</span> <span class='chip chip-press'>under_pressure (high_block)</span> <span class='chip'>def-line +14m</span></div>
-            <div class='boosts'>boosts: under_pressure=True → +0.20</div>
-          </div>
         </div></div>
           <div class='section'><h3>top-5 coverage (any window)</h3><div class='card-grid'>
           <div class='card'>
             <div class='card-head'>
               <span class='rank'>#1</span>
-              <span class='wid' title='2013725:2013725:89:23228'>2013725:2013725:89:23228…</span>
-              <span class='conf conf-high'>high</span>
+              <span class='wid' title='1953632:1953632:102:27119'>1953632:1953632:102:27119…</span>
+              <span class='conf conf-medium'>medium</span>
             </div>
             <div class="no-mp4">no mp4</div>
-            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: middle</span> <span class='chip'>lane: left-hs</span> <span class='chip'>x_prog: +64m</span> <span class='chip chip-phase'>build_up</span> <span class='chip chip-press'>under_pressure (high_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.011</span> <span class='chip'>def-line -36m</span></div>
+            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: central</span> <span class='chip'>x_prog: +57m</span> <span class='chip chip-phase'>build_up</span> <span class='chip chip-press'>under_pressure (high_block)</span></div>
             <div class='boosts'>boosts: under_pressure=True → +0.20</div>
           </div>
         
           <div class='card'>
             <div class='card-head'>
               <span class='rank'>#2</span>
-              <span class='wid' title='2015213:2015213:112:22283'>2015213:2015213:112:22283…</span>
+              <span class='wid' title='1996435:1996435:60:9686'>1996435:1996435:60:9686…</span>
               <span class='conf conf-high'>high</span>
             </div>
             <div class="no-mp4">no mp4</div>
-            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: middle</span> <span class='chip'>lane: central</span> <span class='chip'>x_prog: +57m</span> <span class='chip chip-phase'>build_up</span> <span class='chip chip-press'>under_pressure (high_block)</span> <span class='chip'>xT Δ +0.013</span> <span class='chip'>def-line +20m</span> <span class='chip chip-loss'>turnover</span></div>
+            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: middle</span> <span class='chip'>lane: central</span> <span class='chip'>x_prog: +57m</span> <span class='chip chip-phase'>build_up</span> <span class='chip chip-press'>under_pressure (high_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>def-line +10m</span></div>
             <div class='boosts'>boosts: under_pressure=True → +0.20</div>
           </div>
         
           <div class='card'>
             <div class='card-head'>
               <span class='rank'>#3</span>
-              <span class='wid' title='2015213:2015213:185:45350'>2015213:2015213:185:45350…</span>
+              <span class='wid' title='1925299:1925299:90:20242'>1925299:1925299:90:20242…</span>
               <span class='conf conf-high'>high</span>
             </div>
             <div class="no-mp4">no mp4</div>
-            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: middle</span> <span class='chip'>lane: left-hs</span> <span class='chip'>x_prog: +54m</span> <span class='chip chip-phase'>build_up</span> <span class='chip chip-press'>under_pressure (high_block)</span> <span class='chip'>def-line -18m</span></div>
+            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: central</span> <span class='chip'>x_prog: +54m</span> <span class='chip chip-phase'>build_up</span> <span class='chip chip-press'>under_pressure (high_block)</span> <span class='chip'>def-line +5m</span></div>
             <div class='boosts'>boosts: under_pressure=True → +0.20</div>
           </div>
         
           <div class='card'>
             <div class='card-head'>
               <span class='rank'>#4</span>
-              <span class='wid' title='1953632:1953632:226:55126'>1953632:1953632:226:55126…</span>
-              <span class='conf conf-medium'>medium</span>
+              <span class='wid' title='2017461:2017461:85:15412'>2017461:2017461:85:15412…</span>
+              <span class='conf conf-high'>high</span>
             </div>
             <div class="no-mp4">no mp4</div>
-            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: middle</span> <span class='chip'>lane: left</span> <span class='chip'>x_prog: +51m</span> <span class='chip chip-phase'>build_up</span> <span class='chip chip-press'>under_pressure (high_block)</span></div>
+            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: middle</span> <span class='chip'>lane: central</span> <span class='chip'>x_prog: +51m</span> <span class='chip chip-phase'>build_up</span> <span class='chip chip-press'>under_pressure (high_block)</span> <span class='chip'>xT Δ +0.018</span> <span class='chip'>def-line +26m</span></div>
             <div class='boosts'>boosts: under_pressure=True → +0.20</div>
           </div>
         
           <div class='card'>
             <div class='card-head'>
               <span class='rank'>#5</span>
-              <span class='wid' title='2015213:2015213:29:6601'>2015213:2015213:29:6601…</span>
+              <span class='wid' title='2017461:2017461:245:55316'>2017461:2017461:245:55316…</span>
               <span class='conf conf-high'>high</span>
             </div>
             <div class="no-mp4">no mp4</div>
-            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: middle</span> <span class='chip'>lane: right</span> <span class='chip'>x_prog: +47m</span> <span class='chip chip-phase'>build_up</span> <span class='chip chip-press'>under_pressure (high_block)</span> <span class='chip'>xT Δ +0.012</span> <span class='chip'>def-line +21m</span></div>
+            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: middle</span> <span class='chip'>lane: central</span> <span class='chip'>x_prog: +50m</span> <span class='chip chip-phase'>build_up</span> <span class='chip chip-press'>under_pressure (high_block)</span></div>
             <div class='boosts'>boosts: under_pressure=True → +0.20</div>
           </div>
         </div></div>
@@ -483,28 +462,39 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
           <div class='card'>
             <div class='card-head'>
               <span class='rank'>#1</span>
-              <span class='wid' title='1899585:1899585:51:8714'>1899585:1899585:51:8714…</span>
+              <span class='wid' title='1886347:1886347:211:44356'>1886347:1886347:211:44356…</span>
               <span class='conf conf-high'>high</span>
             </div>
-            <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c45_transition_attack_1899585_1899585_51_8714.mp4" controls preload="none" muted class="vid"></video>
-            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: middle</span> <span class='chip'>lane: central</span> <span class='chip'>x_prog: +40m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span></div>
+            <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c18_cross_attempt_1886347_1886347_211_44356.mp4" controls preload="none" muted class="vid"></video>
+            <div class='chips'><span class='chip'>start: middle</span> <span class='chip'>end: final</span> <span class='chip'>lane: central</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +52m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.305</span> <span class='chip'>def-line +32m</span> <span class='chip chip-pos'>→ shot/goal</span></div>
             <div class='boosts'>boosts: under_pressure=True → +0.20 · pressure_strength=structured → +0.10</div>
           </div>
         
           <div class='card'>
             <div class='card-head'>
               <span class='rank'>#2</span>
-              <span class='wid' title='1925299:1925299:114:25768'>1925299:1925299:114:25768…</span>
+              <span class='wid' title='1886347:1886347:13:2315'>1886347:1886347:13:2315…</span>
               <span class='conf conf-high'>high</span>
             </div>
-            <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c30_recovery_press_1925299_1925299_114_25768.mp4" controls preload="none" muted class="vid"></video>
-            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: middle</span> <span class='chip'>lane: central</span> <span class='chip'>x_prog: +37m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip'>def-line -22m</span> <span class='chip chip-loss'>turnover</span></div>
+            <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c34_recovery_press_1886347_1886347_13_2315.mp4" controls preload="none" muted class="vid"></video>
+            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: middle</span> <span class='chip'>lane: central</span> <span class='chip'>x_prog: +45m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip'>def-line +20m</span></div>
             <div class='boosts'>boosts: under_pressure=True → +0.20 · pressure_strength=structured → +0.10</div>
           </div>
         
           <div class='card'>
             <div class='card-head'>
               <span class='rank'>#3</span>
+              <span class='wid' title='1925299:1925299:114:25768'>1925299:1925299:114:25768…</span>
+              <span class='conf conf-high'>high</span>
+            </div>
+            <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c30_recovery_press_1925299_1925299_114_25768.mp4" controls preload="none" muted class="vid"></video>
+            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: middle</span> <span class='chip'>lane: central</span> <span class='chip'>x_prog: +37m</span> <span class='chip chip-phase'>build_up</span> <span class='chip chip-press'>under_pressure (high_block)</span> <span class='chip'>def-line -22m</span></div>
+            <div class='boosts'>boosts: under_pressure=True → +0.20</div>
+          </div>
+        
+          <div class='card'>
+            <div class='card-head'>
+              <span class='rank'>#4</span>
               <span class='wid' title='1886347:1886347:96:19181'>1886347:1886347:96:19181…</span>
               <span class='conf conf-high'>high</span>
             </div>
@@ -515,23 +505,12 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
         
           <div class='card'>
             <div class='card-head'>
-              <span class='rank'>#4</span>
-              <span class='wid' title='1886347:1886347:211:44356'>1886347:1886347:211:44356…</span>
-              <span class='conf conf-high'>high</span>
-            </div>
-            <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c18_cross_attempt_1886347_1886347_211_44356.mp4" controls preload="none" muted class="vid"></video>
-            <div class='chips'><span class='chip'>start: middle</span> <span class='chip'>end: final</span> <span class='chip'>lane: central</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +52m</span> <span class='chip chip-phase'>chaotic</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.305</span> <span class='chip'>def-line +32m</span> <span class='chip chip-loss'>turnover</span></div>
-            
-          </div>
-        
-          <div class='card'>
-            <div class='card-head'>
               <span class='rank'>#5</span>
-              <span class='wid' title='1886347:1886347:13:2315'>1886347:1886347:13:2315…</span>
+              <span class='wid' title='1899585:1899585:51:8714'>1899585:1899585:51:8714…</span>
               <span class='conf conf-high'>high</span>
             </div>
-            <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c34_recovery_press_1886347_1886347_13_2315.mp4" controls preload="none" muted class="vid"></video>
-            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: middle</span> <span class='chip'>lane: central</span> <span class='chip'>x_prog: +45m</span> <span class='chip chip-phase'>finish</span> <span class='chip'>def-line +20m</span> <span class='chip chip-pos'>→ shot/goal</span></div>
+            <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c45_transition_attack_1899585_1899585_51_8714.mp4" controls preload="none" muted class="vid"></video>
+            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: middle</span> <span class='chip'>lane: central</span> <span class='chip'>x_prog: +40m</span> <span class='chip chip-phase'>chaotic</span></div>
             
           </div>
         </div></div>
@@ -543,18 +522,18 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
               <span class='conf conf-high'>high</span>
             </div>
             <div class="no-mp4">no mp4</div>
-            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: central</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +73m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>def-line +20m</span> <span class='chip chip-loss'>turnover</span></div>
+            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: central</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +73m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>def-line +20m</span></div>
             <div class='boosts'>boosts: under_pressure=True → +0.20 · pressure_strength=structured → +0.10</div>
           </div>
         
           <div class='card'>
             <div class='card-head'>
               <span class='rank'>#2</span>
-              <span class='wid' title='2011166:2011166:13:5165'>2011166:2011166:13:5165…</span>
+              <span class='wid' title='1925299:1925299:169:35916'>1925299:1925299:169:35916…</span>
               <span class='conf conf-high'>high</span>
             </div>
             <div class="no-mp4">no mp4</div>
-            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: central</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +67m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.075</span> <span class='chip'>def-line +48m</span> <span class='chip chip-loss'>turnover</span></div>
+            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: central</span> <span class='chip'>x_prog: +70m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.012</span> <span class='chip'>def-line -40m</span></div>
             <div class='boosts'>boosts: under_pressure=True → +0.20 · pressure_strength=structured → +0.10</div>
           </div>
         
@@ -583,11 +562,11 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
           <div class='card'>
             <div class='card-head'>
               <span class='rank'>#5</span>
-              <span class='wid' title='1996435:1996435:23:3948'>1996435:1996435:23:3948…</span>
+              <span class='wid' title='2017461:2017461:91:17079'>2017461:2017461:91:17079…</span>
               <span class='conf conf-high'>high</span>
             </div>
             <div class="no-mp4">no mp4</div>
-            <div class='chips'><span class='chip'>start: middle</span> <span class='chip'>end: final</span> <span class='chip'>lane: central</span> <span class='chip'>x_prog: +56m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.378</span> <span class='chip'>def-line -30m</span> <span class='chip chip-loss'>turnover</span></div>
+            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: central</span> <span class='chip'>x_prog: +62m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.038</span> <span class='chip'>def-line +28m</span></div>
             <div class='boosts'>boosts: under_pressure=True → +0.20 · pressure_strength=structured → +0.10</div>
           </div>
         </div></div>
@@ -616,7 +595,7 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
               <span class='conf conf-high'>high</span>
             </div>
             <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c18_cross_attempt_1886347_1886347_211_44356.mp4" controls preload="none" muted class="vid"></video>
-            <div class='chips'><span class='chip'>start: middle</span> <span class='chip'>end: final</span> <span class='chip'>lane: central</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +52m</span> <span class='chip chip-phase'>chaotic</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.305</span> <span class='chip'>def-line +32m</span> <span class='chip chip-loss'>turnover</span></div>
+            <div class='chips'><span class='chip'>start: middle</span> <span class='chip'>end: final</span> <span class='chip'>lane: central</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +52m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.305</span> <span class='chip'>def-line +32m</span> <span class='chip chip-pos'>→ shot/goal</span></div>
             <div class='boosts'>boosts: end_zone=final_third → +0.10</div>
           </div>
         
@@ -638,7 +617,7 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
               <span class='conf conf-high'>high</span>
             </div>
             <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c34_recovery_press_1886347_1886347_13_2315.mp4" controls preload="none" muted class="vid"></video>
-            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: middle</span> <span class='chip'>lane: central</span> <span class='chip'>x_prog: +45m</span> <span class='chip chip-phase'>finish</span> <span class='chip'>def-line +20m</span> <span class='chip chip-pos'>→ shot/goal</span></div>
+            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: middle</span> <span class='chip'>lane: central</span> <span class='chip'>x_prog: +45m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip'>def-line +20m</span></div>
             <div class='boosts'>boosts: end_zone=middle_third → +0.10</div>
           </div>
         
@@ -649,7 +628,7 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
               <span class='conf conf-high'>high</span>
             </div>
             <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c12_create_middle_1899585_1899585_107_21707.mp4" controls preload="none" muted class="vid"></video>
-            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: middle</span> <span class='chip'>lane: left</span> <span class='chip'>x_prog: +39m</span> <span class='chip chip-phase'>build_up</span> <span class='chip chip-press'>under_pressure (high_block)</span> <span class='chip'>def-line -41m</span> <span class='chip chip-loss'>turnover</span></div>
+            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: middle</span> <span class='chip'>lane: left</span> <span class='chip'>x_prog: +39m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip'>def-line -41m</span></div>
             <div class='boosts'>boosts: end_zone=middle_third → +0.10</div>
           </div>
         
@@ -660,7 +639,7 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
               <span class='conf conf-high'>high</span>
             </div>
             <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c07_create_finish_attack_1899585_1899585_271_54266.mp4" controls preload="none" muted class="vid"></video>
-            <div class='chips'><span class='chip'>start: middle</span> <span class='chip'>end: final</span> <span class='chip'>lane: left</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +34m</span> <span class='chip chip-phase'>direct</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>def-line -18m</span> <span class='chip chip-loss'>turnover</span></div>
+            <div class='chips'><span class='chip'>start: middle</span> <span class='chip'>end: final</span> <span class='chip'>lane: left</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +34m</span> <span class='chip chip-phase'>finish</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>def-line -18m</span> <span class='chip chip-pos'>→ shot/goal</span></div>
             <div class='boosts'>boosts: end_zone=final_third → +0.10</div>
           </div>
         </div></div>
@@ -672,7 +651,7 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
               <span class='conf conf-high'>high</span>
             </div>
             <div class="no-mp4">no mp4</div>
-            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: left</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +83m</span> <span class='chip chip-phase'>build_up</span> <span class='chip chip-press'>under_pressure (high_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.048</span> <span class='chip'>def-line +49m</span></div>
+            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: left</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +83m</span> <span class='chip chip-phase'>build_up</span> <span class='chip chip-press'>under_pressure (high_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.048</span> <span class='chip'>def-line +49m</span> <span class='chip chip-pos'>→ shot/goal</span></div>
             <div class='boosts'>boosts: end_zone=final_third → +0.10</div>
           </div>
         
@@ -683,7 +662,7 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
               <span class='conf conf-high'>high</span>
             </div>
             <div class="no-mp4">no mp4</div>
-            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: left</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +76m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.109</span> <span class='chip'>def-line -38m</span></div>
+            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: left</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +76m</span> <span class='chip chip-phase'>transition</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.109</span> <span class='chip'>def-line -38m</span> <span class='chip chip-pos'>→ shot/goal</span></div>
             <div class='boosts'>boosts: end_zone=final_third → +0.10</div>
           </div>
         
@@ -705,7 +684,7 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
               <span class='conf conf-high'>high</span>
             </div>
             <div class="no-mp4">no mp4</div>
-            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: central</span> <span class='chip'>x_prog: +70m</span> <span class='chip chip-phase'>finish</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.012</span> <span class='chip'>def-line -40m</span></div>
+            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: central</span> <span class='chip'>x_prog: +70m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.012</span> <span class='chip'>def-line -40m</span></div>
             <div class='boosts'>boosts: end_zone=final_third → +0.10</div>
           </div>
         
@@ -716,7 +695,7 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
               <span class='conf conf-high'>high</span>
             </div>
             <div class="no-mp4">no mp4</div>
-            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: right-hs</span> <span class='chip'>x_prog: +70m</span> <span class='chip chip-phase'>chaotic</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.033</span> <span class='chip'>def-line -39m</span> <span class='chip chip-pos'>→ shot/goal</span></div>
+            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: right-hs</span> <span class='chip'>x_prog: +70m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.033</span> <span class='chip'>def-line -39m</span></div>
             <div class='boosts'>boosts: end_zone=final_third → +0.10</div>
           </div>
         </div></div>
@@ -756,7 +735,7 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
               <span class='conf conf-high'>high</span>
             </div>
             <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c47_transition_attack_1899585_1899585_246_48512.mp4" controls preload="none" muted class="vid"></video>
-            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: right-hs</span> <span class='chip'>x_prog: +46m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.026</span> <span class='chip'>def-line +14m</span></div>
+            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: right-hs</span> <span class='chip'>x_prog: +46m</span> <span class='chip chip-phase'>transition</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.026</span> <span class='chip'>def-line +14m</span></div>
             <div class='boosts'>boosts: end_zone=final_third → +0.15</div>
           </div>
         
@@ -767,7 +746,7 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
               <span class='conf conf-high'>high</span>
             </div>
             <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c19_cross_attempt_1925299_1925299_180_38820.mp4" controls preload="none" muted class="vid"></video>
-            <div class='chips'><span class='chip'>start: middle</span> <span class='chip'>end: final</span> <span class='chip'>lane: right-hs</span> <span class='chip'>x_prog: +31m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.070</span> <span class='chip'>def-line -70m</span> <span class='chip chip-loss'>turnover</span></div>
+            <div class='chips'><span class='chip'>start: middle</span> <span class='chip'>end: final</span> <span class='chip'>lane: right-hs</span> <span class='chip'>x_prog: +31m</span> <span class='chip chip-phase'>finish</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.070</span> <span class='chip'>def-line -70m</span> <span class='chip chip-pos'>→ shot/goal</span></div>
             <div class='boosts'>boosts: end_zone=final_third → +0.15</div>
           </div>
         
@@ -778,7 +757,7 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
               <span class='conf conf-high'>high</span>
             </div>
             <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c44_transition_attack_1925299_1925299_222_50367.mp4" controls preload="none" muted class="vid"></video>
-            <div class='chips'><span class='chip'>start: middle</span> <span class='chip'>end: final</span> <span class='chip'>lane: right</span> <span class='chip'>x_prog: +23m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ -0.025</span> <span class='chip'>def-line -65m</span></div>
+            <div class='chips'><span class='chip'>start: middle</span> <span class='chip'>end: final</span> <span class='chip'>lane: right</span> <span class='chip'>x_prog: +23m</span> <span class='chip chip-phase'>quick_break</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ -0.025</span> <span class='chip'>def-line -65m</span></div>
             <div class='boosts'>boosts: end_zone=final_third → +0.15</div>
           </div>
         
@@ -789,7 +768,7 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
               <span class='conf conf-high'>high</span>
             </div>
             <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c08_create_finish_attack_1925299_1925299_119_27135.mp4" controls preload="none" muted class="vid"></video>
-            <div class='chips'><span class='chip'>start: final</span> <span class='chip'>end: final</span> <span class='chip'>lane: right-hs</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +7m</span> <span class='chip chip-phase'>build_up</span> <span class='chip chip-press'>under_pressure (high_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>def-line +91m</span></div>
+            <div class='chips'><span class='chip'>start: final</span> <span class='chip'>end: final</span> <span class='chip'>lane: right-hs</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +7m</span> <span class='chip chip-phase'>finish</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>def-line +91m</span></div>
             <div class='boosts'>boosts: end_zone=final_third → +0.15</div>
           </div>
         </div></div>
@@ -801,7 +780,7 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
               <span class='conf conf-high'>high</span>
             </div>
             <div class="no-mp4">no mp4</div>
-            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: right</span> <span class='chip'>x_prog: +74m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.035</span> <span class='chip'>def-line +39m</span> <span class='chip chip-loss'>turnover</span></div>
+            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: right</span> <span class='chip'>x_prog: +74m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.035</span> <span class='chip'>def-line +39m</span></div>
             <div class='boosts'>boosts: end_zone=final_third → +0.15</div>
           </div>
         
@@ -812,7 +791,7 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
               <span class='conf conf-high'>high</span>
             </div>
             <div class="no-mp4">no mp4</div>
-            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: right</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +70m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.172</span> <span class='chip'>def-line +43m</span></div>
+            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: right</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +70m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.172</span> <span class='chip'>def-line +43m</span> <span class='chip chip-pos'>→ shot/goal</span></div>
             <div class='boosts'>boosts: end_zone=final_third → +0.15</div>
           </div>
         
@@ -823,7 +802,7 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
               <span class='conf conf-high'>high</span>
             </div>
             <div class="no-mp4">no mp4</div>
-            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: right</span> <span class='chip'>x_prog: +71m</span> <span class='chip chip-phase'>transition</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.016</span> <span class='chip'>def-line +30m</span> <span class='chip chip-loss'>turnover</span></div>
+            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: right</span> <span class='chip'>x_prog: +71m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.016</span> <span class='chip'>def-line +30m</span> <span class='chip chip-pos'>→ shot/goal</span></div>
             <div class='boosts'>boosts: end_zone=final_third → +0.15</div>
           </div>
         
@@ -834,7 +813,7 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
               <span class='conf conf-high'>high</span>
             </div>
             <div class="no-mp4">no mp4</div>
-            <div class='chips'><span class='chip'>start: middle</span> <span class='chip'>end: final</span> <span class='chip'>lane: right</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +70m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.064</span> <span class='chip'>def-line +29m</span> <span class='chip chip-pos'>→ shot/goal</span></div>
+            <div class='chips'><span class='chip'>start: middle</span> <span class='chip'>end: final</span> <span class='chip'>lane: right</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +70m</span> <span class='chip chip-phase'>finish</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.064</span> <span class='chip'>def-line +29m</span> <span class='chip chip-loss'>turnover</span></div>
             <div class='boosts'>boosts: end_zone=final_third → +0.15</div>
           </div>
         
@@ -845,7 +824,7 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
               <span class='conf conf-high'>high</span>
             </div>
             <div class="no-mp4">no mp4</div>
-            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: right-hs</span> <span class='chip'>x_prog: +70m</span> <span class='chip chip-phase'>chaotic</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.033</span> <span class='chip'>def-line -39m</span> <span class='chip chip-pos'>→ shot/goal</span></div>
+            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: right-hs</span> <span class='chip'>x_prog: +70m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.033</span> <span class='chip'>def-line -39m</span></div>
             <div class='boosts'>boosts: end_zone=final_third → +0.15</div>
           </div>
         </div></div>
@@ -874,7 +853,7 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
               <span class='conf conf-high'>high</span>
             </div>
             <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c20_cross_attempt_1899585_1899585_221_42990.mp4" controls preload="none" muted class="vid"></video>
-            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: left</span> <span class='chip'>x_prog: +56m</span> <span class='chip chip-phase'>direct</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.210</span> <span class='chip'>def-line +47m</span> <span class='chip chip-loss'>turnover</span></div>
+            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: left</span> <span class='chip'>x_prog: +56m</span> <span class='chip chip-phase'>transition</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.210</span> <span class='chip'>def-line +47m</span> <span class='chip chip-pos'>→ shot/goal</span></div>
             
           </div>
         
@@ -885,7 +864,7 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
               <span class='conf conf-high'>high</span>
             </div>
             <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c18_cross_attempt_1886347_1886347_211_44356.mp4" controls preload="none" muted class="vid"></video>
-            <div class='chips'><span class='chip'>start: middle</span> <span class='chip'>end: final</span> <span class='chip'>lane: central</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +52m</span> <span class='chip chip-phase'>chaotic</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.305</span> <span class='chip'>def-line +32m</span> <span class='chip chip-loss'>turnover</span></div>
+            <div class='chips'><span class='chip'>start: middle</span> <span class='chip'>end: final</span> <span class='chip'>lane: central</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +52m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.305</span> <span class='chip'>def-line +32m</span> <span class='chip chip-pos'>→ shot/goal</span></div>
             
           </div>
         
@@ -907,7 +886,7 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
               <span class='conf conf-high'>high</span>
             </div>
             <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c47_transition_attack_1899585_1899585_246_48512.mp4" controls preload="none" muted class="vid"></video>
-            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: right-hs</span> <span class='chip'>x_prog: +46m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.026</span> <span class='chip'>def-line +14m</span></div>
+            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: right-hs</span> <span class='chip'>x_prog: +46m</span> <span class='chip chip-phase'>transition</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.026</span> <span class='chip'>def-line +14m</span></div>
             
           </div>
         
@@ -918,7 +897,7 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
               <span class='conf conf-high'>high</span>
             </div>
             <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c23_cross_attempt_1899585_1899585_156_31216.mp4" controls preload="none" muted class="vid"></video>
-            <div class='chips'><span class='chip'>start: middle</span> <span class='chip'>end: final</span> <span class='chip'>lane: left-hs</span> <span class='chip'>x_prog: +44m</span> <span class='chip chip-phase'>finish</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.211</span> <span class='chip'>def-line +63m</span></div>
+            <div class='chips'><span class='chip'>start: middle</span> <span class='chip'>end: final</span> <span class='chip'>lane: left-hs</span> <span class='chip'>x_prog: +44m</span> <span class='chip chip-phase'>transition</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.211</span> <span class='chip'>def-line +63m</span> <span class='chip chip-pos'>→ shot/goal</span></div>
             
           </div>
         </div></div>
@@ -930,7 +909,7 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
               <span class='conf conf-high'>high</span>
             </div>
             <div class="no-mp4">no mp4</div>
-            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: left</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +83m</span> <span class='chip chip-phase'>build_up</span> <span class='chip chip-press'>under_pressure (high_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.048</span> <span class='chip'>def-line +49m</span></div>
+            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: left</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +83m</span> <span class='chip chip-phase'>build_up</span> <span class='chip chip-press'>under_pressure (high_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.048</span> <span class='chip'>def-line +49m</span> <span class='chip chip-pos'>→ shot/goal</span></div>
             
           </div>
         
@@ -941,7 +920,7 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
               <span class='conf conf-high'>high</span>
             </div>
             <div class="no-mp4">no mp4</div>
-            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: left</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +81m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.088</span> <span class='chip'>def-line +29m</span> <span class='chip chip-loss'>turnover</span></div>
+            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: left</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +81m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.088</span> <span class='chip'>def-line +29m</span> <span class='chip chip-pos'>→ shot/goal</span></div>
             
           </div>
         
@@ -952,7 +931,7 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
               <span class='conf conf-high'>high</span>
             </div>
             <div class="no-mp4">no mp4</div>
-            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: left</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +78m</span> <span class='chip chip-phase'>finish</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.144</span> <span class='chip'>def-line -11m</span></div>
+            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: left</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +78m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.144</span> <span class='chip'>def-line -11m</span></div>
             
           </div>
         
@@ -963,7 +942,7 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
               <span class='conf conf-high'>high</span>
             </div>
             <div class="no-mp4">no mp4</div>
-            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: left</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +76m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.109</span> <span class='chip'>def-line -38m</span></div>
+            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: left</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +76m</span> <span class='chip chip-phase'>transition</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.109</span> <span class='chip'>def-line -38m</span> <span class='chip chip-pos'>→ shot/goal</span></div>
             
           </div>
         
@@ -974,7 +953,7 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
               <span class='conf conf-high'>high</span>
             </div>
             <div class="no-mp4">no mp4</div>
-            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: left-hs</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +77m</span> <span class='chip chip-phase'>build_up</span> <span class='chip chip-press'>under_pressure (high_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.052</span> <span class='chip'>def-line +50m</span></div>
+            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: left-hs</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +77m</span> <span class='chip chip-phase'>finish</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.052</span> <span class='chip'>def-line +50m</span> <span class='chip chip-pos'>→ shot/goal</span></div>
             
           </div>
         </div></div>
@@ -985,13 +964,13 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
             <h2>Q9. carry from defensive third into middle third</h2>
             <div class='stats'>
               3 hard · 0 soft ·
-              <b>777</b> candidates · <b>6</b> displayable
+              <b>761</b> candidates · <b>6</b> displayable
             </div>
-            <div class='chip-row'><span class='chip-explain'>end zone: middle third</span> <span class='chip-explain'>start zone: defensive third</span> <span class='chip-explain'>type: carry</span></div>
+            <div class='chip-row'><span class='chip-explain'>end zone: middle third</span> <span class='chip-explain'>start zone: defensive third</span> <span class='chip-explain'>type: meaningful carry (≥5m progression)</span></div>
           </header>
           <div class='compiled'>
             <details><summary>compiled filters / boosts</summary>
-              <div><b>filters:</b><br>&nbsp;&nbsp;end_zone eq middle_third<br>&nbsp;&nbsp;start_zone eq defensive_third<br>&nbsp;&nbsp;n_carry_events ge 1</div>
+              <div><b>filters:</b><br>&nbsp;&nbsp;end_zone eq middle_third<br>&nbsp;&nbsp;start_zone eq defensive_third<br>&nbsp;&nbsp;meaningful_carry is_true True</div>
               <div><b>soft_boosts:</b><br>(none)</div>
             </details>
           </div>
@@ -1003,7 +982,7 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
               <span class='conf conf-high'>high</span>
             </div>
             <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c34_recovery_press_1886347_1886347_13_2315.mp4" controls preload="none" muted class="vid"></video>
-            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: middle</span> <span class='chip'>lane: central</span> <span class='chip'>x_prog: +45m</span> <span class='chip chip-phase'>finish</span> <span class='chip'>def-line +20m</span> <span class='chip chip-pos'>→ shot/goal</span></div>
+            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: middle</span> <span class='chip'>lane: central</span> <span class='chip'>x_prog: +45m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip'>def-line +20m</span></div>
             
           </div>
         
@@ -1014,7 +993,7 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
               <span class='conf conf-high'>high</span>
             </div>
             <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c12_create_middle_1899585_1899585_107_21707.mp4" controls preload="none" muted class="vid"></video>
-            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: middle</span> <span class='chip'>lane: left</span> <span class='chip'>x_prog: +39m</span> <span class='chip chip-phase'>build_up</span> <span class='chip chip-press'>under_pressure (high_block)</span> <span class='chip'>def-line -41m</span> <span class='chip chip-loss'>turnover</span></div>
+            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: middle</span> <span class='chip'>lane: left</span> <span class='chip'>x_prog: +39m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip'>def-line -41m</span></div>
             
           </div>
         
@@ -1025,7 +1004,7 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
               <span class='conf conf-high'>high</span>
             </div>
             <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c30_recovery_press_1925299_1925299_114_25768.mp4" controls preload="none" muted class="vid"></video>
-            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: middle</span> <span class='chip'>lane: central</span> <span class='chip'>x_prog: +37m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip'>def-line -22m</span> <span class='chip chip-loss'>turnover</span></div>
+            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: middle</span> <span class='chip'>lane: central</span> <span class='chip'>x_prog: +37m</span> <span class='chip chip-phase'>build_up</span> <span class='chip chip-press'>under_pressure (high_block)</span> <span class='chip'>def-line -22m</span></div>
             
           </div>
         
@@ -1036,7 +1015,7 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
               <span class='conf conf-high'>high</span>
             </div>
             <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c33_recovery_press_1925299_1925299_98_21424.mp4" controls preload="none" muted class="vid"></video>
-            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: middle</span> <span class='chip'>lane: right</span> <span class='chip'>x_prog: +36m</span> <span class='chip chip-phase'>direct</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>def-line -40m</span> <span class='chip chip-loss'>turnover</span></div>
+            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: middle</span> <span class='chip'>lane: right</span> <span class='chip'>x_prog: +36m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>def-line -40m</span></div>
             
           </div>
         
@@ -1059,7 +1038,7 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
               <span class='conf conf-high'>high</span>
             </div>
             <div class="no-mp4">no mp4</div>
-            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: middle</span> <span class='chip'>lane: left-hs</span> <span class='chip'>x_prog: +64m</span> <span class='chip chip-phase'>build_up</span> <span class='chip chip-press'>under_pressure (high_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.011</span> <span class='chip'>def-line -36m</span></div>
+            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: middle</span> <span class='chip'>lane: left-hs</span> <span class='chip'>x_prog: +64m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.011</span> <span class='chip'>def-line -36m</span></div>
             
           </div>
         
@@ -1070,7 +1049,7 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
               <span class='conf conf-high'>high</span>
             </div>
             <div class="no-mp4">no mp4</div>
-            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: middle</span> <span class='chip'>lane: right</span> <span class='chip'>x_prog: +62m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.035</span> <span class='chip'>def-line +41m</span> <span class='chip chip-loss'>turnover</span></div>
+            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: middle</span> <span class='chip'>lane: right</span> <span class='chip'>x_prog: +62m</span> <span class='chip chip-phase'>build_up</span> <span class='chip chip-press'>under_pressure (high_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.035</span> <span class='chip'>def-line +41m</span></div>
             
           </div>
         
@@ -1081,7 +1060,7 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
               <span class='conf conf-high'>high</span>
             </div>
             <div class="no-mp4">no mp4</div>
-            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: middle</span> <span class='chip'>lane: central</span> <span class='chip'>x_prog: +61m</span> <span class='chip chip-phase'>chaotic</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.056</span> <span class='chip'>def-line +42m</span> <span class='chip chip-loss'>turnover</span></div>
+            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: middle</span> <span class='chip'>lane: central</span> <span class='chip'>x_prog: +61m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.056</span> <span class='chip'>def-line +42m</span> <span class='chip chip-pos'>→ shot/goal</span></div>
             
           </div>
         
@@ -1092,7 +1071,7 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
               <span class='conf conf-high'>high</span>
             </div>
             <div class="no-mp4">no mp4</div>
-            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: middle</span> <span class='chip'>lane: right</span> <span class='chip'>x_prog: +60m</span> <span class='chip chip-phase'>transition</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.041</span> <span class='chip'>def-line +32m</span> <span class='chip chip-loss'>turnover</span></div>
+            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: middle</span> <span class='chip'>lane: right</span> <span class='chip'>x_prog: +60m</span> <span class='chip chip-phase'>build_up</span> <span class='chip chip-press'>under_pressure (high_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.041</span> <span class='chip'>def-line +32m</span> <span class='chip chip-pos'>→ shot/goal</span></div>
             
           </div>
         
@@ -1103,7 +1082,7 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
               <span class='conf conf-high'>high</span>
             </div>
             <div class="no-mp4">no mp4</div>
-            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: middle</span> <span class='chip'>lane: right-hs</span> <span class='chip'>x_prog: +60m</span> <span class='chip chip-phase'>finish</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.043</span> <span class='chip'>def-line -11m</span></div>
+            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: middle</span> <span class='chip'>lane: right-hs</span> <span class='chip'>x_prog: +60m</span> <span class='chip chip-phase'>build_up</span> <span class='chip chip-press'>under_pressure (high_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.043</span> <span class='chip'>def-line -11m</span></div>
             
           </div>
         </div></div>
@@ -1114,7 +1093,7 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
             <h2>Q10. high-pressure sequence that ends in a turnover</h2>
             <div class='stats'>
               2 hard · 0 soft ·
-              <b>943</b> candidates · <b>5</b> displayable
+              <b>54</b> candidates · <b>0</b> displayable
             </div>
             <div class='chip-row'><span class='chip-explain'>pressure: high press (strict)</span> <span class='chip-explain'>turnover: possession loss</span></div>
           </header>
@@ -1124,115 +1103,60 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
               <div><b>soft_boosts:</b><br>(none)</div>
             </details>
           </div>
-          <div class='section'><h3>top-5 displayable (broadcast MP4)</h3><div class='card-grid'>
-          <div class='card'>
-            <div class='card-head'>
-              <span class='rank'>#1</span>
-              <span class='wid' title='1899585:1899585:107:21707'>1899585:1899585:107:21707…</span>
-              <span class='conf conf-high'>high</span>
-            </div>
-            <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c12_create_middle_1899585_1899585_107_21707.mp4" controls preload="none" muted class="vid"></video>
-            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: middle</span> <span class='chip'>lane: left</span> <span class='chip'>x_prog: +39m</span> <span class='chip chip-phase'>build_up</span> <span class='chip chip-press'>under_pressure (high_block)</span> <span class='chip'>def-line -41m</span> <span class='chip chip-loss'>turnover</span></div>
-            
-          </div>
-        
-          <div class='card'>
-            <div class='card-head'>
-              <span class='rank'>#2</span>
-              <span class='wid' title='1925299:1925299:114:25768'>1925299:1925299:114:25768…</span>
-              <span class='conf conf-high'>high</span>
-            </div>
-            <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c30_recovery_press_1925299_1925299_114_25768.mp4" controls preload="none" muted class="vid"></video>
-            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: middle</span> <span class='chip'>lane: central</span> <span class='chip'>x_prog: +37m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip'>def-line -22m</span> <span class='chip chip-loss'>turnover</span></div>
-            
-          </div>
-        
-          <div class='card'>
-            <div class='card-head'>
-              <span class='rank'>#3</span>
-              <span class='wid' title='1925299:1925299:180:38820'>1925299:1925299:180:38820…</span>
-              <span class='conf conf-high'>high</span>
-            </div>
-            <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c19_cross_attempt_1925299_1925299_180_38820.mp4" controls preload="none" muted class="vid"></video>
-            <div class='chips'><span class='chip'>start: middle</span> <span class='chip'>end: final</span> <span class='chip'>lane: right-hs</span> <span class='chip'>x_prog: +31m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.070</span> <span class='chip'>def-line -70m</span> <span class='chip chip-loss'>turnover</span></div>
-            
-          </div>
-        
-          <div class='card'>
-            <div class='card-head'>
-              <span class='rank'>#4</span>
-              <span class='wid' title='1886347:1886347:82:15943'>1886347:1886347:82:15943…</span>
-              <span class='conf conf-high'>high</span>
-            </div>
-            <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c17_create_middle_1886347_1886347_82_15943.mp4" controls preload="none" muted class="vid"></video>
-            <div class='chips'><span class='chip'>start: middle</span> <span class='chip'>end: final</span> <span class='chip'>lane: left-hs</span> <span class='chip'>x_prog: +2m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip'>def-line -6m</span> <span class='chip chip-loss'>turnover</span></div>
-            
-          </div>
-        
-          <div class='card'>
-            <div class='card-head'>
-              <span class='rank'>#5</span>
-              <span class='wid' title='1886347:1886347:127:26415'>1886347:1886347:127:26415…</span>
-              <span class='conf conf-high'>high</span>
-            </div>
-            <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c06_create_finish_attack_1886347_1886347_127_26415.mp4" controls preload="none" muted class="vid"></video>
-            <div class='chips'><span class='chip'>start: final</span> <span class='chip'>end: middle</span> <span class='chip'>lane: left</span> <span class='chip'>x_prog: -22m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip'>def-line -5m</span> <span class='chip chip-loss'>turnover</span></div>
-            
-          </div>
-        </div></div>
+          <div class='empty'>top-5 displayable (broadcast MP4): no candidates</div>
           <div class='section'><h3>top-5 coverage (any window)</h3><div class='card-grid'>
           <div class='card'>
             <div class='card-head'>
               <span class='rank'>#1</span>
-              <span class='wid' title='2013725:2013725:90:23812'>2013725:2013725:90:23812…</span>
+              <span class='wid' title='2015213:2015213:203:48510'>2015213:2015213:203:48510…</span>
               <span class='conf conf-high'>high</span>
             </div>
             <div class="no-mp4">no mp4</div>
-            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: left</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +81m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.088</span> <span class='chip'>def-line +29m</span> <span class='chip chip-loss'>turnover</span></div>
+            <div class='chips'><span class='chip'>start: middle</span> <span class='chip'>end: final</span> <span class='chip'>lane: central</span> <span class='chip'>x_prog: +60m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ -0.044</span> <span class='chip'>def-line -5m</span> <span class='chip chip-loss'>turnover</span></div>
             
           </div>
         
           <div class='card'>
             <div class='card-head'>
               <span class='rank'>#2</span>
-              <span class='wid' title='2006229:2006229:156:34925'>2006229:2006229:156:34925…</span>
+              <span class='wid' title='2013725:2013725:284:60797'>2013725:2013725:284:60797…</span>
               <span class='conf conf-high'>high</span>
             </div>
             <div class="no-mp4">no mp4</div>
-            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: right</span> <span class='chip'>x_prog: +74m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.035</span> <span class='chip'>def-line +39m</span> <span class='chip chip-loss'>turnover</span></div>
+            <div class='chips'><span class='chip'>start: middle</span> <span class='chip'>end: final</span> <span class='chip'>lane: right-hs</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +54m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip'>def-line -19m</span> <span class='chip chip-loss'>turnover</span></div>
             
           </div>
         
           <div class='card'>
             <div class='card-head'>
               <span class='rank'>#3</span>
-              <span class='wid' title='2013725:2013725:31:11264'>2013725:2013725:31:11264…</span>
+              <span class='wid' title='1886347:1886347:2:185'>1886347:1886347:2:185…</span>
               <span class='conf conf-high'>high</span>
             </div>
             <div class="no-mp4">no mp4</div>
-            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: left</span> <span class='chip'>x_prog: +73m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>def-line +37m</span> <span class='chip chip-loss'>turnover</span></div>
+            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: left</span> <span class='chip'>x_prog: +53m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip'>def-line +5m</span> <span class='chip chip-loss'>turnover</span></div>
             
           </div>
         
           <div class='card'>
             <div class='card-head'>
               <span class='rank'>#4</span>
-              <span class='wid' title='2006229:2006229:55:12633'>2006229:2006229:55:12633…</span>
+              <span class='wid' title='1899585:1899585:109:22369'>1899585:1899585:109:22369…</span>
               <span class='conf conf-high'>high</span>
             </div>
             <div class="no-mp4">no mp4</div>
-            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: central</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +73m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>def-line +20m</span> <span class='chip chip-loss'>turnover</span></div>
+            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: left</span> <span class='chip'>x_prog: +51m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.039</span> <span class='chip'>def-line +21m</span> <span class='chip chip-loss'>turnover</span></div>
             
           </div>
         
           <div class='card'>
             <div class='card-head'>
               <span class='rank'>#5</span>
-              <span class='wid' title='2013725:2013725:90:23792'>2013725:2013725:90:23792…</span>
+              <span class='wid' title='2013725:2013725:247:56848'>2013725:2013725:247:56848…</span>
               <span class='conf conf-high'>high</span>
             </div>
             <div class="no-mp4">no mp4</div>
-            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: left</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +73m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.088</span> <span class='chip'>def-line +29m</span> <span class='chip chip-loss'>turnover</span></div>
+            <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: middle</span> <span class='chip'>lane: right</span> <span class='chip'>x_prog: +50m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip'>def-line +28m</span> <span class='chip chip-loss'>turnover</span></div>
             
           </div>
         </div></div>
@@ -1249,7 +1173,7 @@ section.query h2 { margin:0 0 4px 0; font-size:15px; font-family:ui-monospace,Me
               <header><h2>Q12. show me everything tactically interesting</h2>
                 <div class='rej'>REJECTED — Query too vague — no specific tactical predicate detected.</div>
               </header>
-              <div class='unav'>unavailable: specific_predicate:none (everything)</div>
+              <div class='unav'>unavailable: specific_predicate:none (interesting)</div>
             </section>
             
 </body></html>
