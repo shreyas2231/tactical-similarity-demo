@@ -1,0 +1,171 @@
+<!doctype html>
+<html><head><meta charset='utf-8'>
+<title>Q08 — progressive pass into the final third</title>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<link rel='stylesheet' href='styles.css'>
+</head><body>
+
+        <header class='page-head'>
+          <div class='breadcrumb'>
+            <a href='index.html'>/audit/query-predicate/</a> &middot; Q08
+          </div>
+          <h1><span class='qid-large'>Q08.</span> progressive pass into the final third</h1>
+          <div class='chips chip-row-large'><span class='chip chip-explain'>end zone: final third</span> <span class='chip chip-explain'>progressive (≥10m)</span> <span class='chip chip-explain'>type: pass</span></div>
+          <div class='banner'>
+  <div class='banner-line'><b>Candidate tactical moments, not exhaustive retrieval.</b></div>
+  <div class='banner-line'><b>Internal audit page, not the deployed demo.</b>
+    v9c canonical demo, BEST_CHECKPOINT, <code>/query/</code>, and reranker_v0 unchanged.</div>
+  <div class='banner-sub'>Query compiler is keyword-based (deterministic, not an LLM).
+    Player and team filters are intentionally rejected. Coverage column may include
+    windows without broadcast video.</div>
+</div>
+        </header>
+
+        <div class='two-col'>
+          <section class='block col-left'>
+            <h2>Parsed query</h2>
+            <h3>Hard filters</h3>
+            <ul class='predlist'><li><code>end_zone</code> <em>eq</em> <code>&#x27;final_third&#x27;</code> &mdash; end_zone = final_third</li><li><code>progressive_action</code> <em>is_true</em> <code>True</code> &mdash; progressive_action = True (≥10m)</li><li><code>n_pass_events</code> <em>ge</em> <code>1</code> &mdash; n_pass_events ≥ 1</li></ul>
+            <h3>Soft boosts</h3>
+            <p class='muted'>(no soft boosts)</p>
+            <h3>Unavailable predicates</h3>
+            <p class='muted'>(none)</p>
+          </section>
+          <div class='col-right'>
+
+            <section class='counts'>
+              <div class='count-tile'>
+                <div class='count-num'>1470</div>
+                <div class='count-lbl'>candidate windows<br/><span class='muted'>(any window passing hard filters)</span></div>
+              </div>
+              <div class='count-tile'>
+                <div class='count-num'>16</div>
+                <div class='count-lbl'>displayable<br/><span class='muted'>(broadcast MP4, high confidence)</span></div>
+              </div>
+              <div class='count-tile'>
+                <div class='count-num'>3 <span class='muted'>/</span> 0</div>
+                <div class='count-lbl'>hard / soft predicates</div>
+              </div>
+            </section>
+
+            <section class='block'>
+              <h2>Top-5 displayable (broadcast MP4)</h2>
+              <div class='card-grid'><div class='card'>
+  <div class='card-head'>
+    <span class='rank'>#1</span>
+    <span class='wid' title='1899585:1899585:221:42990'>1899585:1899585:221:42990</span>
+    <span class='conf conf-high'>high</span>
+  </div>
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c20_cross_attempt_1899585_1899585_221_42990.mp4" controls preload="none" muted class="vid"></video>
+  <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: left</span> <span class='chip'>x_prog: +56m</span> <span class='chip chip-phase'>transition</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.210</span> <span class='chip'>def-line +47m</span> <span class='chip chip-pos'>→ shot/goal</span></div>
+  <div class='score'>score 0.0058</div>
+
+</div><div class='card'>
+  <div class='card-head'>
+    <span class='rank'>#2</span>
+    <span class='wid' title='1886347:1886347:211:44356'>1886347:1886347:211:44356</span>
+    <span class='conf conf-high'>high</span>
+  </div>
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c18_cross_attempt_1886347_1886347_211_44356.mp4" controls preload="none" muted class="vid"></video>
+  <div class='chips'><span class='chip'>start: middle</span> <span class='chip'>end: final</span> <span class='chip'>lane: central</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +52m</span> <span class='chip'>y_disp: +29m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.305</span> <span class='chip'>def-line +32m</span> <span class='chip chip-pos'>→ shot/goal</span></div>
+  <div class='score'>score 0.0055</div>
+
+</div><div class='card'>
+  <div class='card-head'>
+    <span class='rank'>#3</span>
+    <span class='wid' title='1886347:1886347:144:29689'>1886347:1886347:144:29689</span>
+    <span class='conf conf-high'>high</span>
+  </div>
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c31_recovery_press_1886347_1886347_144_29689.mp4" controls preload="none" muted class="vid"></video>
+  <div class='chips'><span class='chip'>start: middle</span> <span class='chip'>end: final</span> <span class='chip'>lane: right-hs</span> <span class='chip'>x_prog: +48m</span> <span class='chip'>y_disp: +37m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.021</span> <span class='chip'>def-line -62m</span></div>
+  <div class='score'>score 0.0049</div>
+
+</div><div class='card'>
+  <div class='card-head'>
+    <span class='rank'>#4</span>
+    <span class='wid' title='1899585:1899585:246:48512'>1899585:1899585:246:48512</span>
+    <span class='conf conf-high'>high</span>
+  </div>
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c47_transition_attack_1899585_1899585_246_48512.mp4" controls preload="none" muted class="vid"></video>
+  <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: right-hs</span> <span class='chip'>x_prog: +46m</span> <span class='chip'>y_disp: +15m</span> <span class='chip chip-phase'>transition</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.026</span> <span class='chip'>def-line +14m</span></div>
+  <div class='score'>score 0.0047</div>
+
+</div><div class='card'>
+  <div class='card-head'>
+    <span class='rank'>#5</span>
+    <span class='wid' title='1899585:1899585:156:31216'>1899585:1899585:156:31216</span>
+    <span class='conf conf-high'>high</span>
+  </div>
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c23_cross_attempt_1899585_1899585_156_31216.mp4" controls preload="none" muted class="vid"></video>
+  <div class='chips'><span class='chip'>start: middle</span> <span class='chip'>end: final</span> <span class='chip'>lane: left-hs</span> <span class='chip'>x_prog: +44m</span> <span class='chip chip-phase'>transition</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.211</span> <span class='chip'>def-line +63m</span> <span class='chip chip-pos'>→ shot/goal</span></div>
+  <div class='score'>score 0.0046</div>
+
+</div></div>
+            </section>
+
+            <section class='block'>
+              <h2>Top-5 coverage (any window)</h2>
+              <p class='muted'>Coverage includes windows without broadcast video and (where allowed)
+                 medium-confidence windows (e.g. match 1953632, no event-derived predicates).</p>
+              <div class='card-grid'><div class='card'>
+  <div class='card-head'>
+    <span class='rank'>#1</span>
+    <span class='wid' title='2011166:2011166:104:23303'>2011166:2011166:104:23303</span>
+    <span class='conf conf-high'>high</span>
+  </div>
+
+  <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: left</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +83m</span> <span class='chip'>y_disp: +26m</span> <span class='chip chip-phase'>build_up</span> <span class='chip chip-press'>under_pressure (high_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.048</span> <span class='chip'>def-line +49m</span> <span class='chip chip-pos'>→ shot/goal</span></div>
+  <div class='score'>score 0.0083</div>
+
+</div><div class='card'>
+  <div class='card-head'>
+    <span class='rank'>#2</span>
+    <span class='wid' title='2013725:2013725:90:23812'>2013725:2013725:90:23812</span>
+    <span class='conf conf-high'>high</span>
+  </div>
+
+  <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: left</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +81m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.088</span> <span class='chip'>def-line +29m</span> <span class='chip chip-pos'>→ shot/goal</span></div>
+  <div class='score'>score 0.0081</div>
+
+</div><div class='card'>
+  <div class='card-head'>
+    <span class='rank'>#3</span>
+    <span class='wid' title='1886347:1886347:174:35239'>1886347:1886347:174:35239</span>
+    <span class='conf conf-high'>high</span>
+  </div>
+
+  <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: left</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +78m</span> <span class='chip'>y_disp: +11m</span> <span class='chip chip-phase'>create</span> <span class='chip chip-press'>under_pressure (medium_block)</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.144</span> <span class='chip'>def-line -11m</span></div>
+  <div class='score'>score 0.0079</div>
+
+</div><div class='card'>
+  <div class='card-head'>
+    <span class='rank'>#4</span>
+    <span class='wid' title='2013725:2013725:11:6278'>2013725:2013725:11:6278</span>
+    <span class='conf conf-high'>high</span>
+  </div>
+
+  <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: left</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +76m</span> <span class='chip'>y_disp: +25m</span> <span class='chip chip-phase'>transition</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.109</span> <span class='chip'>def-line -38m</span> <span class='chip chip-pos'>→ shot/goal</span></div>
+  <div class='score'>score 0.0077</div>
+
+</div><div class='card'>
+  <div class='card-head'>
+    <span class='rank'>#5</span>
+    <span class='wid' title='2011166:2011166:104:23323'>2011166:2011166:104:23323</span>
+    <span class='conf conf-high'>high</span>
+  </div>
+
+  <div class='chips'><span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip'>lane: left-hs</span> <span class='chip chip-pos'>box ✓</span> <span class='chip'>x_prog: +77m</span> <span class='chip'>y_disp: +20m</span> <span class='chip chip-phase'>finish</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>xT Δ +0.052</span> <span class='chip'>def-line +50m</span> <span class='chip chip-pos'>→ shot/goal</span></div>
+  <div class='score'>score 0.0077</div>
+
+</div></div>
+            </section>
+
+          </div>
+        </div>
+
+        <nav class='nav-row'>
+          <a class='nav-link' href='q07.html'>&larr; q07</a>
+          <a class='nav-link nav-home' href='index.html'>all queries</a>
+          <a class='nav-link' href='q09.html'>q09 &rarr;</a>
+        </nav>
+</body></html>

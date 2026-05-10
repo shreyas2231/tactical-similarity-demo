@@ -1,0 +1,134 @@
+<!doctype html>
+<html><head><meta charset='utf-8'>
+<title>Predicate retrieval — internal audit</title>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<link rel='stylesheet' href='styles.css'>
+</head><body>
+
+        <header class='page-head'>
+          <div class='breadcrumb'>/audit/query-predicate/</div>
+          <h1>Predicate retrieval &mdash; internal audit</h1>
+          <p class='lead'>
+            12 curated tactical queries compiled against the SkillCorner predicate
+            index v0 (7,306 records, post Stage-3 fix bundle). Static page; one
+            detail view per query. Updated 2026-05-10.
+          </p>
+          <div class='banner'>
+  <div class='banner-line'><b>Candidate tactical moments, not exhaustive retrieval.</b></div>
+  <div class='banner-line'><b>Internal audit page, not the deployed demo.</b>
+    v9c canonical demo, BEST_CHECKPOINT, <code>/query/</code>, and reranker_v0 unchanged.</div>
+  <div class='banner-sub'>Query compiler is keyword-based (deterministic, not an LLM).
+    Player and team filters are intentionally rejected. Coverage column may include
+    windows without broadcast video.</div>
+</div>
+        </header>
+
+        <section class='qgrid'>
+          <a class='qcard' href='q01.html'>
+  <div class='qcard-head'>
+    <span class='qid'>Q01</span>
+    <span class='conf conf-high'>high</span>
+  </div>
+  <div class='qtext'>left flank progression into the box</div>
+  <div class='qchips'><span class='chip chip-explain'>lane: left flank</span> <span class='chip chip-explain'>box: enters box</span> <span class='chip chip-explain'>progressive (≥10m)</span></div>
+  <div class='qstats'><b>178</b> candidates &middot; <b>1</b> displayable &middot; 3 hard / 0 soft</div>
+</a><a class='qcard' href='q02.html'>
+  <div class='qcard-head'>
+    <span class='qid'>Q02</span>
+    <span class='conf conf-high'>high</span>
+  </div>
+  <div class='qtext'>right flank progression into the box</div>
+  <div class='qchips'><span class='chip chip-explain'>lane: right flank</span> <span class='chip chip-explain'>box: enters box</span> <span class='chip chip-explain'>progressive (≥10m)</span></div>
+  <div class='qstats'><b>143</b> candidates &middot; <b>0</b> displayable &middot; 3 hard / 0 soft</div>
+</a><a class='qcard' href='q03.html'>
+  <div class='qcard-head'>
+    <span class='qid'>Q03</span>
+    <span class='conf conf-high'>high</span>
+  </div>
+  <div class='qtext'>central carry that moves the defensive line</div>
+  <div class='qchips'><span class='chip chip-explain'>lane: central</span> <span class='chip chip-explain'>type: meaningful carry (≥5m progression)</span> <span class='chip chip-explain'>def line: pushed &gt; 4m</span></div>
+  <div class='qstats'><b>355</b> candidates &middot; <b>4</b> displayable &middot; 3 hard / 0 soft</div>
+</a><a class='qcard' href='q04.html'>
+  <div class='qcard-head'>
+    <span class='qid'>Q04</span>
+    <span class='conf conf-medium'>medium</span>
+  </div>
+  <div class='qtext'>build-up under pressure progressing into midfield</div>
+  <div class='qchips'><span class='chip chip-explain'>midfield = central lane (not middle third)</span> <span class='chip chip-explain'>progressive (≥10m)</span> <span class='chip chip-explain'>pressure: generic (soft boost, strict + structured)</span> <span class='chip chip-explain'>phase: build-up</span></div>
+  <div class='qstats'><b>104</b> candidates &middot; <b>2</b> displayable &middot; 3 hard / 2 soft</div>
+</a><a class='qcard' href='q05.html'>
+  <div class='qcard-head'>
+    <span class='qid'>Q05</span>
+    <span class='conf conf-high'>high</span>
+  </div>
+  <div class='qtext'>press break through the centre</div>
+  <div class='qchips'><span class='chip chip-explain'>lane: central</span> <span class='chip chip-explain'>pressure: generic (soft boost, strict + structured)</span> <span class='chip chip-explain'>press break: progression hard, pressure soft</span></div>
+  <div class='qstats'><b>466</b> candidates &middot; <b>5</b> displayable &middot; 2 hard / 2 soft</div>
+</a><a class='qcard' href='q06.html'>
+  <div class='qcard-head'>
+    <span class='qid'>Q06</span>
+    <span class='conf conf-high'>high</span>
+  </div>
+  <div class='qtext'>switch of play to the weak side</div>
+  <div class='qchips'><span class='chip chip-explain'>switch: y-displacement &gt; 25m</span> <span class='chip chip-explain'>weak-side: end past midfield (soft)</span></div>
+  <div class='qstats'><b>2704</b> candidates &middot; <b>15</b> displayable &middot; 1 hard / 1 soft</div>
+</a><a class='qcard' href='q07.html'>
+  <div class='qcard-head'>
+    <span class='qid'>Q07</span>
+    <span class='conf conf-high'>high</span>
+  </div>
+  <div class='qtext'>dangerous right-sided attack</div>
+  <div class='qchips'><span class='chip chip-explain'>lane: right side</span> <span class='chip chip-explain'>danger: dangerous=True</span> <span class='chip chip-explain'>attack: end in final third (soft)</span></div>
+  <div class='qstats'><b>949</b> candidates &middot; <b>7</b> displayable &middot; 2 hard / 1 soft</div>
+</a><a class='qcard' href='q08.html'>
+  <div class='qcard-head'>
+    <span class='qid'>Q08</span>
+    <span class='conf conf-high'>high</span>
+  </div>
+  <div class='qtext'>progressive pass into the final third</div>
+  <div class='qchips'><span class='chip chip-explain'>end zone: final third</span> <span class='chip chip-explain'>progressive (≥10m)</span> <span class='chip chip-explain'>type: pass</span></div>
+  <div class='qstats'><b>1470</b> candidates &middot; <b>16</b> displayable &middot; 3 hard / 0 soft</div>
+</a><a class='qcard' href='q09.html'>
+  <div class='qcard-head'>
+    <span class='qid'>Q09</span>
+    <span class='conf conf-high'>high</span>
+  </div>
+  <div class='qtext'>carry from defensive third into middle third</div>
+  <div class='qchips'><span class='chip chip-explain'>end zone: middle third</span> <span class='chip chip-explain'>start zone: defensive third</span> <span class='chip chip-explain'>type: meaningful carry (≥5m progression)</span></div>
+  <div class='qstats'><b>761</b> candidates &middot; <b>6</b> displayable &middot; 3 hard / 0 soft</div>
+</a><a class='qcard' href='q10.html'>
+  <div class='qcard-head'>
+    <span class='qid'>Q10</span>
+    <span class='conf conf-high'>high</span>
+  </div>
+  <div class='qtext'>high-pressure sequence that ends in a turnover</div>
+  <div class='qchips'><span class='chip chip-explain'>pressure: high press (strict)</span> <span class='chip chip-explain'>turnover: possession loss</span></div>
+  <div class='qstats'><b>54</b> candidates &middot; <b>0</b> displayable &middot; 2 hard / 0 soft</div>
+</a><a class='qcard qcard-rejected' href='q11.html'>
+  <div class='qcard-head'>
+    <span class='qid'>Q11</span>
+    <span class='conf conf-rejected'>rejected</span>
+  </div>
+  <div class='qtext'>Liverpool&#x27;s high press</div>
+  <div class='qchips'><span class='chip chip-explain'>unavailable: team filter (liverpool)</span></div>
+  <div class='qstats'><span class='rej'>REJECTED</span> &mdash; Team filter not supported in this prototype: &#x27;liverpool&#x27; detected.</div>
+</a><a class='qcard qcard-rejected' href='q12.html'>
+  <div class='qcard-head'>
+    <span class='qid'>Q12</span>
+    <span class='conf conf-rejected'>rejected</span>
+  </div>
+  <div class='qtext'>show me everything tactically interesting</div>
+  <div class='qchips'><span class='chip chip-explain'>unavailable: vague query (interesting)</span></div>
+  <div class='qstats'><span class='rej'>REJECTED</span> &mdash; Query too vague — no specific tactical predicate detected.</div>
+</a>
+        </section>
+
+        <footer class='page-foot'>
+          <p>Source: <code>predicate_query_compiler_v0.py</code> &middot;
+             results: <code>stage2_query_audit/results.json</code> &middot;
+             generator: <code>_generate.py</code></p>
+          <p>Sister surfaces: <a href='../predicate/'>/audit/predicate/</a>
+             (per-predicate audit) &middot;
+             <a href='../../query/'>/query/</a> (deployed LLM demo, unchanged)</p>
+        </footer>
+</body></html>

@@ -1,0 +1,129 @@
+* { box-sizing: border-box; }
+body {
+  font: 14px/1.55 -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  margin: 0; padding: 18px 24px; background: #f5f6f8; color: #222;
+  max-width: 1500px; margin: 0 auto;
+}
+a { color: #1a4d8a; text-decoration: none; }
+a:hover { text-decoration: underline; }
+code { font: 12px ui-monospace, Menlo, monospace; background: #eef0f4; padding: 1px 4px; border-radius: 3px; }
+.muted { color: #888; }
+
+/* Page chrome */
+.page-head { margin-bottom: 18px; }
+.page-head h1 { margin: 4px 0 6px 0; font-size: 22px; }
+.qid-large { color: #1a4d8a; font-family: ui-monospace, Menlo, monospace; }
+.breadcrumb { font: 12px ui-monospace, Menlo, monospace; color: #888; margin-bottom: 4px; }
+.lead { color: #555; margin: 0 0 14px 0; max-width: 800px; }
+.page-foot { margin-top: 28px; padding-top: 14px; border-top: 1px solid #ddd;
+  font-size: 12px; color: #888; }
+
+/* Banner */
+.banner {
+  background: #fff3cd; border: 1px solid #d4a017; padding: 10px 14px;
+  border-radius: 5px; margin-bottom: 14px; color: #5a4108;
+}
+.banner b { color: #7a5500; }
+.banner-line { font-size: 13px; }
+.banner-line + .banner-line { margin-top: 3px; }
+.banner-sub { font-size: 12px; color: #7a6520; margin-top: 6px; }
+
+/* Landing grid */
+.qgrid {
+  display: grid; gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+}
+.qcard {
+  display: block; background: #fff; border: 1px solid #ddd; border-radius: 6px;
+  padding: 12px 14px; color: inherit; transition: box-shadow 0.1s, border-color 0.1s;
+}
+.qcard:hover { text-decoration: none; border-color: #1a4d8a;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+.qcard-rejected { background: #fff8e1; border-color: #d4a017; }
+.qcard-head { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.qid { font: 11px ui-monospace, Menlo, monospace; background: #1a4d8a; color: #fff;
+  padding: 2px 7px; border-radius: 3px; font-weight: 700; }
+.qtext { font-size: 14px; font-weight: 500; margin-bottom: 8px; min-height: 2.6em; }
+.qchips { margin-bottom: 8px; min-height: 22px; }
+.qstats { font-size: 12px; color: #555; }
+.qstats b { color: #222; }
+
+/* Detail two-column */
+.two-col { display: grid; grid-template-columns: 320px 1fr; gap: 18px; }
+.col-left { background: #fff; border: 1px solid #ddd; border-radius: 6px;
+  padding: 12px 14px; align-self: start; }
+.col-left h2 { margin: 0 0 6px 0; font-size: 14px; }
+.col-left h3 { margin: 12px 0 4px 0; font-size: 11px; text-transform: uppercase;
+  letter-spacing: 0.5px; color: #888; }
+.col-right { display: flex; flex-direction: column; gap: 14px; }
+@media (max-width: 800px) {
+  .two-col { grid-template-columns: 1fr; }
+}
+
+.predlist { margin: 0; padding-left: 18px; font-size: 12.5px; line-height: 1.55; }
+.predlist li { margin-bottom: 3px; }
+.predlist em { color: #1a7c1a; font-style: normal; font-family: ui-monospace, Menlo, monospace;
+  font-size: 11px; }
+
+/* Counts strip */
+.counts { display: flex; gap: 10px; }
+.count-tile {
+  background: #fff; border: 1px solid #ddd; border-radius: 6px;
+  padding: 12px 14px; flex: 1;
+}
+.count-num { font-size: 24px; font-weight: 700; color: #1a4d8a; line-height: 1; }
+.count-lbl { font-size: 12px; color: #555; margin-top: 4px; }
+
+/* Result block */
+.block { background: #fff; border: 1px solid #ddd; border-radius: 6px;
+  padding: 12px 14px; }
+.block h2 { margin: 0 0 8px 0; font-size: 14px; }
+
+/* Cards (results) */
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
+.card { background: #fafbfd; border: 1px solid #e3e7ee; border-radius: 5px; padding: 8px; }
+.card-head { display: flex; align-items: center; gap: 6px; margin-bottom: 5px; }
+.rank { background: #1a4d8a; color: #fff; padding: 1px 7px; border-radius: 3px;
+  font-weight: 700; font-size: 10px; }
+.wid { font: 10px ui-monospace, Menlo, monospace; color: #666; flex: 1;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.conf { font-size: 9px; padding: 1px 6px; border-radius: 3px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.3px; }
+.conf-high { background: #1a7c1a; color: #fff; }
+.conf-medium { background: #d4a017; color: #fff; }
+.conf-low { background: #b03030; color: #fff; }
+.conf-rejected { background: #b8860b; color: #fff; }
+.vid { width: 100%; max-height: 130px; background: #000; border-radius: 3px;
+  margin-bottom: 5px; }
+.no-mp4 { height: 60px; background: #f0f1f4; display: flex; align-items: center;
+  justify-content: center; color: #999; font-size: 11px; font-style: italic;
+  border-radius: 3px; margin-bottom: 5px; }
+.chips { display: flex; flex-wrap: wrap; gap: 3px; }
+.chip { background: #eef2fa; color: #1a4d8a; padding: 1px 6px; border-radius: 3px;
+  font-size: 10.5px; }
+.chip-pos { background: #dcf3dc; color: #1a7c1a; }
+.chip-press { background: #ffe5dc; color: #b8551a; }
+.chip-danger { background: #fde0e0; color: #b03030; }
+.chip-loss { background: #fff3cd; color: #5a4108; }
+.chip-phase { background: #e8e0fc; color: #4a2a8a; }
+.chip-explain { background: #eef; color: #1a4d8a; padding: 2px 8px; font-size: 11px; }
+.chip-unav { background: #f8e0e0; color: #b03030; }
+.chip-row-large { margin-top: 2px; }
+.score { font: 10px ui-monospace, Menlo, monospace; color: #999; margin-top: 4px; }
+.boosts { font-size: 10px; color: #666; margin-top: 2px; }
+
+/* Reject panel */
+.reject-box { background: #fff8e1; border: 1px solid #d4a017; border-radius: 6px;
+  padding: 14px 16px; }
+.reject-box h2 { margin: 0 0 8px 0; color: #7a5500; }
+.reject-reason { font-size: 14px; color: #5a4108; margin: 0 0 10px 0; }
+
+/* Nav */
+.nav-row { display: flex; justify-content: space-between; align-items: center;
+  margin-top: 22px; padding-top: 14px; border-top: 1px solid #ddd; }
+.nav-link { font: 12px ui-monospace, Menlo, monospace; padding: 4px 10px;
+  background: #fff; border: 1px solid #ccc; border-radius: 4px; color: #1a4d8a; }
+.nav-link:hover { background: #eef; text-decoration: none; }
+.nav-home { background: #1a4d8a; color: #fff; border-color: #1a4d8a; }
+.nav-home:hover { background: #163e6f; color: #fff; }
+.rej { color: #b8860b; font-weight: 700; }

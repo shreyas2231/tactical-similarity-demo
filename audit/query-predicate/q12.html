@@ -1,0 +1,54 @@
+<!doctype html>
+<html><head><meta charset='utf-8'>
+<title>Q12 — show me everything tactically interesting</title>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<link rel='stylesheet' href='styles.css'>
+</head><body>
+
+        <header class='page-head'>
+          <div class='breadcrumb'>
+            <a href='index.html'>/audit/query-predicate/</a> &middot; Q12
+          </div>
+          <h1><span class='qid-large'>Q12.</span> show me everything tactically interesting</h1>
+          <div class='chips chip-row-large'><span class='chip chip-explain'>unavailable: vague query (interesting)</span></div>
+          <div class='banner'>
+  <div class='banner-line'><b>Candidate tactical moments, not exhaustive retrieval.</b></div>
+  <div class='banner-line'><b>Internal audit page, not the deployed demo.</b>
+    v9c canonical demo, BEST_CHECKPOINT, <code>/query/</code>, and reranker_v0 unchanged.</div>
+  <div class='banner-sub'>Query compiler is keyword-based (deterministic, not an LLM).
+    Player and team filters are intentionally rejected. Coverage column may include
+    windows without broadcast video.</div>
+</div>
+        </header>
+
+        <div class='two-col'>
+          <section class='block col-left'>
+            <h2>Parsed query</h2>
+            <h3>Hard filters</h3>
+            <p class='muted'>(no hard filters)</p>
+            <h3>Soft boosts</h3>
+            <p class='muted'>(no soft boosts)</p>
+            <h3>Unavailable predicates</h3>
+            <div class='chips'><span class='chip chip-unav'>unavailable: specific_predicate:none (interesting)</span></div>
+          </section>
+          <div class='col-right'>
+
+<section class='reject-box'>
+  <h2>Query rejected</h2>
+  <p class='reject-reason'>Query too vague — no specific tactical predicate detected.</p>
+  <p class='muted'>The compiler intentionally refuses team and player filters
+     (no <code>player_id</code> / <code>team_filter</code> in the predicate index)
+     and refuses queries with no specific tactical predicate. This is the
+     expected behaviour, not a bug.</p>
+  <div class='chips'><span class='chip chip-unav'>unavailable: specific_predicate:none (interesting)</span></div>
+</section>
+
+          </div>
+        </div>
+
+        <nav class='nav-row'>
+          <a class='nav-link' href='q11.html'>&larr; q11</a>
+          <a class='nav-link nav-home' href='index.html'>all queries</a>
+          <span></span>
+        </nav>
+</body></html>
