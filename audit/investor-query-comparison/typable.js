@@ -10,9 +10,26 @@ function setQ(t) {
   return false;
 }
 
+// V2 football-correct vocabulary — surface with a distinct class so they stand
+// out visually from v1 lane/zone chips. Backend (_predicate_chips) emits these
+// strings; matching here decides chip style.
+const V2_CHIP_PREFIXES = [
+  "block: ", "through ball", "line-breaking pass", "between lines",
+  "diagonal switch", "past last line", "reception: ", "counter-press: ",
+  "carry (v2)", "box-entry: ", "tracking-only",
+];
+
+function chipClassFor(text) {
+  for (const p of V2_CHIP_PREFIXES) {
+    if (text.startsWith(p) || text === p.trim()) return "chip-explain chip-v2";
+  }
+  return "chip-explain";
+}
+
 function chip(text, cls) {
   const safe = String(text).replace(/[<>&"']/g, c => ({"<":"&lt;",">":"&gt;","&":"&amp;",'"':"&quot;","'":"&#39;"}[c]));
-  return `<span class="chip ${cls||""}">${safe}</span>`;
+  const finalCls = cls ? cls : chipClassFor(String(text));
+  return `<span class="chip ${finalCls}">${safe}</span>`;
 }
 
 function mediaTile(r) {

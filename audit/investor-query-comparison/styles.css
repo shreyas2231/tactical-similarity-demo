@@ -132,6 +132,8 @@ code { font: 12px ui-monospace, Menlo, monospace; background: #eef0f4; padding: 
 .chip-loss   { background: #fff3cd; color: #5a4108; }
 .chip-phase  { background: #e8e0fc; color: #4a2a8a; }
 .chip-explain { background: #eef; color: #1a4d8a; padding: 2px 8px; font-size: 11px; }
+.chip-v2 { background: #ddf3eb; color: #0c6b4f; padding: 2px 8px; font-size: 11px;
+  border: 1px solid #9bd6c1; }
 .chip-rudy-explain { background: #fde2c1; color: #8a4a00; padding: 2px 8px; font-size: 11px; }
 .chip-rudy-mech { background: #fff1d8; color: #8a4a00; }
 .chip-rudy-score { background: #f3e7d4; color: #553200; }
