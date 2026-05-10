@@ -18,8 +18,10 @@
   <div class='banner-line'><b>Internal audit page, not the deployed demo.</b>
     v9c canonical demo, BEST_CHECKPOINT, <code>/query/</code>, and reranker_v0 unchanged.</div>
   <div class='banner-sub'>Query compiler is keyword-based (deterministic, not an LLM).
-    Player and team filters are intentionally rejected. Coverage column may include
-    windows without broadcast video.</div>
+    Player and team filters are intentionally rejected. Tiles tagged
+    <span class='tag-broadcast'>broadcast</span> are SkillCorner clips;
+    <span class='tag-anim'>pitch animation</span> tiles are anonymised
+    top-down renders (105×68, no player_id) for windows without broadcast video.</div>
 </div>
         </header>
 
@@ -70,8 +72,8 @@
     <span class='conf conf-high'>high</span>
   </div>
   <div class='qtext'>switch of play to the weak side</div>
-  <div class='qchips'><span class='chip chip-explain'>switch: y-displacement &gt; 25m</span> <span class='chip chip-explain'>weak-side: end past midfield (soft)</span></div>
-  <div class='qstats'><b>2704</b> candidates &middot; <b>15</b> displayable &middot; 1 hard / 1 soft</div>
+  <div class='qchips'><span class='chip chip-explain'>switch: crosses central lane (sign change + ≥20m)</span> <span class='chip chip-explain'>weak-side: crosses central lane (soft +0.10)</span></div>
+  <div class='qstats'><b>2803</b> candidates &middot; <b>15</b> displayable &middot; 1 hard / 1 soft</div>
 </a><a class='qcard' href='q07.html'>
   <div class='qcard-head'>
     <span class='qid'>Q07</span>

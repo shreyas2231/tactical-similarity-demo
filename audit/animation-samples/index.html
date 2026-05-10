@@ -1,0 +1,57 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<title>Pitch animation — 5 random samples</title>
+<style>
+body { font: 13px/1.5 -apple-system, sans-serif; margin: 24px; max-width: 1200px; }
+h1 { margin: 0 0 4px 0; }
+.lead { color: #666; margin-bottom: 18px; font-size: 13px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 18px; }
+.card { border: 1px solid #ddd; border-radius: 6px; padding: 10px; background: #fff; }
+.wid { font: 11px ui-monospace, Menlo, monospace; color: #333; }
+.match { font-size: 11px; color: #888; }
+video { width: 100%; max-width: 640px; background: #0f3d2a; border-radius: 4px; }
+.banner { background: #fff8e1; border: 1px solid #d4a017; border-radius: 6px;
+  padding: 12px 14px; margin-bottom: 18px; font-size: 12px; color: #5a4108; }
+</style></head><body>
+<h1>Pitch animation — 5 random samples</h1>
+<div class="lead">
+  Per CTO Gate-2 provisional acceptance (2026-05-10): 5 animations sampled
+  deterministically (seed=20260510) from the pool of 7,306 successful
+  renders for visual sanity check.
+</div>
+<div class="banner">
+  <b>Spec:</b> 640×416 @ 10 fps, 100 frames (~10 s window), libx264 + yuv420p +faststart, mean ~144 KB.
+  Anonymised — only team-class (possessing/defending/unknown) drives dot colour. No player_id.
+  Renderer: <code>fwm.sanity.render_windows.draw_pitch</code>; data source: <code>data/shards_v0/&lt;match_id&gt;.npz</code>.
+</div>
+<div class="grid">
+  <div class="card">
+    <div class="wid">1925299:1925299:221:50222</div>
+    <div class="match">match 1925299 · 154 KB</div>
+    <video src="1925299_1925299_221_50222.mp4" controls preload="metadata" muted></video>
+  </div>
+  <div class="card">
+    <div class="wid">2006229:2006229:170:37978</div>
+    <div class="match">match 2006229 · 118 KB</div>
+    <video src="2006229_2006229_170_37978.mp4" controls preload="metadata" muted></video>
+  </div>
+  <div class="card">
+    <div class="wid">1953632:1953632:151:38476</div>
+    <div class="match">match 1953632 · 156 KB · medium-confidence (no events file)</div>
+    <video src="1953632_1953632_151_38476.mp4" controls preload="metadata" muted></video>
+  </div>
+  <div class="card">
+    <div class="wid">2011166:2011166:9:4067</div>
+    <div class="match">match 2011166 · 134 KB</div>
+    <video src="2011166_2011166_9_4067.mp4" controls preload="metadata" muted></video>
+  </div>
+  <div class="card">
+    <div class="wid">2015213:2015213:123:24405</div>
+    <div class="match">match 2015213 · 131 KB</div>
+    <video src="2015213_2015213_123_24405.mp4" controls preload="metadata" muted></video>
+  </div>
+</div>
+<p style="margin-top: 24px; font-size: 12px; color: #888;">
+  Internal audit page. Not the deployed demo. v9c canonical demo / BEST_CHECKPOINT / <code>/query/</code> / reranker_v0 unchanged.
+</p>
+</body></html>

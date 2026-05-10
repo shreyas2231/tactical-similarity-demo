@@ -16,6 +16,14 @@ from textwrap import dedent
 
 HERE = Path(__file__).parent
 RESULTS = Path("/home/ubuntu/fwm/runs/skillcorner_predicate_index_v0/stage2_query_audit/results.json")
+# Web manifest of pitch-animation URLs, keyed by window_id. Populated by
+# copy_referenced_animations.py for the 12 audit queries (top-5 disp + top-5
+# coverage). Path is relative to a qNN.html page.
+ANIMATION_URLS_FILE = HERE / "animation_urls.json"
+try:
+    ANIMATION_URLS = json.loads(ANIMATION_URLS_FILE.read_text()) if ANIMATION_URLS_FILE.exists() else {}
+except Exception:
+    ANIMATION_URLS = {}
 
 
 # ---------------------------------------------------------------------------
@@ -87,13 +95,24 @@ def render_card(rank: int, item: dict, *, with_video: bool) -> str:
     score = item.get("score", 0.0)
     mp4 = item.get("mp4_url")
     boosts = item.get("boosts", [])
+    # Animation fallback: when broadcast mp4 is missing, use the pitch
+    # animation rendered for all 7,306 windows (Workstream C, 2026-05-10).
+    anim = ANIMATION_URLS.get(wid)
 
-    if with_video and mp4:
+    if mp4:
+        # Broadcast MP4 preferred when available
         media = (
             f'<video src="{html.escape(mp4)}" controls preload="none" muted class="vid"></video>'
+            f'<div class="media-tag tag-broadcast">broadcast</div>'
+        )
+    elif anim:
+        # Pitch animation fallback (top-down 105×68 with anonymised dots)
+        media = (
+            f'<video src="{html.escape(anim)}" controls preload="none" muted class="vid vid-anim"></video>'
+            f'<div class="media-tag tag-anim">pitch animation</div>'
         )
     elif with_video:
-        media = '<div class="no-mp4">no broadcast mp4</div>'
+        media = '<div class="no-mp4">no broadcast mp4 / animation</div>'
     else:
         media = ""
 
@@ -127,8 +146,10 @@ def banner_html() -> str:
           <div class='banner-line'><b>Internal audit page, not the deployed demo.</b>
             v9c canonical demo, BEST_CHECKPOINT, <code>/query/</code>, and reranker_v0 unchanged.</div>
           <div class='banner-sub'>Query compiler is keyword-based (deterministic, not an LLM).
-            Player and team filters are intentionally rejected. Coverage column may include
-            windows without broadcast video.</div>
+            Player and team filters are intentionally rejected. Tiles tagged
+            <span class='tag-broadcast'>broadcast</span> are SkillCorner clips;
+            <span class='tag-anim'>pitch animation</span> tiles are anonymised
+            top-down renders (105×68, no player_id) for windows without broadcast video.</div>
         </div>
     """).strip()
 
