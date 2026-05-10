@@ -1,0 +1,80 @@
+<!doctype html>
+<html><head><meta charset='utf-8'>
+<title>Q12 — show me everything tactically interesting</title>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<link rel='stylesheet' href='styles.css'>
+</head><body>
+
+        <header class='page-head'>
+          <div class='breadcrumb'>
+            <a href='index.html'>/audit/investor-query-comparison/</a> &middot; Q12
+          </div>
+          <h1><span class='qid-large'>Q12.</span> show me everything tactically interesting</h1>
+          <div class='chips chip-row-large'><span class='chip chip-explain'>unavailable: vague query (interesting)</span> </div>
+          <div class='banner'>
+  <div class='banner-line'><b>Internal investor demo &mdash; candidate retrieval, not exhaustive production search.</b></div>
+  <div class='banner-line'>Predicate Search and Rudy Tactical Similarity Search are complementary modes; neither claims ground truth.</div>
+  <div class='banner-sub'>Predicate column compiles deterministic football predicates (lane, zone, pressure,
+    progression). Rudy column does anchor-then-similarity over expert tactical labels and learned embeddings
+    (v9c + v11p + reranker_v0). Tiles tagged <span class='tag-broadcast tag-inline'>🟢 broadcast</span>
+    are SkillCorner clips; <span class='tag-anim tag-inline'>🟣 pitch animation</span> tiles are
+    anonymised top-down renders (105×68, no player_id) for windows without broadcast video.</div>
+</div>
+        </header>
+
+        <div class='two-col'>
+
+<section class='reject-box col-pred'>
+  <h3>Predicate Search rejected</h3>
+  <p class='reject-reason'>Query too vague — no specific tactical predicate detected.</p>
+  <p class='muted'>The deterministic predicate compiler refuses team filters
+     (no <code>team_filter</code> in the predicate index) and refuses queries with no
+     specific tactical predicate. This is the expected behaviour, not a bug.</p>
+</section>
+
+
+<section class='reject-box col-rudy'>
+  <h3>Rudy Tactical Similarity returned no results</h3>
+  <p class='reject-reason'>low-confidence intent (vague) — Rudy refuses to invent results when the intent has no usable anchor.</p>
+</section>
+
+        </div>
+
+
+<section class='diff-row'>
+  <section class='block diff-panel diff-empty'>
+    <h3 class='diff-title'>Diff row unavailable</h3>
+    <p class='diff-sub'>One side returned no results, so there is no symmetric diff to draw. The honest-fail panel above shows why.</p>
+  </section>
+</section>
+
+
+
+<section class='page-foot-blocks'>
+  <div class='foot-block foot-shows'>
+    <h3>What this shows</h3>
+    <p>This query returned <b>0</b> candidate(s) by predicate filters
+       and <b>0</b> candidate(s) by Rudy similarity. The diff row highlights where
+       the two modes disagree &mdash; that disagreement is the informative signal, not a defect.</p>
+  </div>
+  <div class='foot-block foot-not'>
+    <h3>What this does not prove</h3>
+    <p>Not exhaustive. Not ground truth. Predicate scoring is heuristic. Rudy <em>propagated</em>
+       labels are inferred from the nearest hand-labelled anchor and are explicitly tiered
+       (<code>labelled</code> &gt; <code>propagated_high</code> &gt; <code>propagated_med</code>);
+       high-confidence propagation is not the same as a human label.</p>
+  </div>
+</section>
+
+
+        <nav class='nav-row'>
+          <a class='nav-link' href='q11.html'>&larr; q11</a>
+          <a class='nav-link nav-home' href='index.html'>all queries</a>
+          <a class='nav-link' href='q13.html'>q13 &rarr;</a>
+        </nav>
+
+        <footer class='page-foot'>
+          <p>Generator: <code>_generate.py</code> &middot;
+             intent: <code>parsed_intents.json</code> entry 12</p>
+        </footer>
+</body></html>
