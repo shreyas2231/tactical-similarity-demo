@@ -3,16 +3,17 @@
 <title>Predicate vs Rudy — investor demo</title>
 <meta name='viewport' content='width=device-width, initial-scale=1'>
 <link rel='stylesheet' href='styles.css'>
+<script src='typable.js' defer></script>
 </head><body>
 
         <header class='page-head'>
           <div class='breadcrumb'>/audit/investor-query-comparison/</div>
           <h1>Predicate Search vs Rudy Tactical Similarity &mdash; Investor Demo</h1>
           <p class='lead'>
-            Type or pick a tactical query. We retrieve in two complementary modes: explicit football
-            predicates (lane, zone, pressure, progression) over 7,306 SkillCorner windows, AND expert-label
-            similarity over the same corpus using Rudy's tactical labels and learned embeddings.
-            The two panels often agree; sometimes only one finds the moment. That contrast is the product.
+            Type your own tactical query below, or pick one of the curated examples. We retrieve in two
+            complementary modes: explicit football predicates (lane, zone, pressure, progression) over
+            7,306 SkillCorner windows, AND expert-label similarity over the same corpus using Rudy's
+            tactical labels and learned embeddings.
           </p>
           <p class='lead'><b>Curated subset:</b> MINER curation not yet available; all 16 queries from <code>query_intents.json</code> are rendered.</p>
           <div class='banner'>
@@ -26,6 +27,27 @@
 </div>
         </header>
 
+        <section class='typable'>
+          <h2>Try your own query</h2>
+          <p class='typable-sub'>Free-form query &rarr; deterministic intent parser &rarr;
+            predicate retrieval &amp; Rudy similarity retrieval over the full 7,187-window bank. Live backend.</p>
+          <form id='qform' onsubmit='return runQuery(event)'>
+            <input id='qinput' type='text' placeholder='e.g. left flank progression into the box'
+                   autocomplete='off' />
+            <button type='submit' id='qbtn'>Search</button>
+          </form>
+          <div id='qexamples' class='typable-examples'>
+            try:
+            <a href='#' onclick='setQ("press break through the centre")'>press break through the centre</a> &middot;
+            <a href='#' onclick='setQ("dangerous right-sided attack")'>dangerous right-sided attack</a> &middot;
+            <a href='#' onclick='setQ("clips tactically similar to a press break")'>tactically similar to a press break</a> &middot;
+            <a href='#' onclick='setQ("Liverpool high press")'>Liverpool high press</a> <span class='muted'>(honest fail)</span>
+          </div>
+          <div id='qstatus' class='qstatus'></div>
+          <div id='qresult'></div>
+        </section>
+
+        <h2 class='qgrid-header'>Curated query gallery</h2>
         <section class='qgrid'>
           <a class='qcard' href='q01.html'>
   <div class='qcard-head'>

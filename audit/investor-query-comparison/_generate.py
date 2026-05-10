@@ -294,13 +294,15 @@ def banner_html() -> str:
     """).strip()
 
 
-def page_head(title: str) -> str:
+def page_head(title: str, *, with_typable: bool = False) -> str:
+    js = "<script src='typable.js' defer></script>" if with_typable else ""
     return dedent(f"""\
         <!doctype html>
         <html><head><meta charset='utf-8'>
         <title>{html.escape(title)}</title>
         <meta name='viewport' content='width=device-width, initial-scale=1'>
         <link rel='stylesheet' href='styles.css'>
+        {js}
         </head><body>
     """)
 
@@ -370,15 +372,36 @@ def render_landing(pred_results: list[dict], rudy_results: dict, intents: dict, 
           <div class='breadcrumb'>/audit/investor-query-comparison/</div>
           <h1>Predicate Search vs Rudy Tactical Similarity &mdash; Investor Demo</h1>
           <p class='lead'>
-            Type or pick a tactical query. We retrieve in two complementary modes: explicit football
-            predicates (lane, zone, pressure, progression) over 7,306 SkillCorner windows, AND expert-label
-            similarity over the same corpus using Rudy's tactical labels and learned embeddings.
-            The two panels often agree; sometimes only one finds the moment. That contrast is the product.
+            Type your own tactical query below, or pick one of the curated examples. We retrieve in two
+            complementary modes: explicit football predicates (lane, zone, pressure, progression) over
+            7,306 SkillCorner windows, AND expert-label similarity over the same corpus using Rudy's
+            tactical labels and learned embeddings.
           </p>
           {rec_note}
           {banner_html()}
         </header>
 
+        <section class='typable'>
+          <h2>Try your own query</h2>
+          <p class='typable-sub'>Free-form query &rarr; deterministic intent parser &rarr;
+            predicate retrieval &amp; Rudy similarity retrieval over the full 7,187-window bank. Live backend.</p>
+          <form id='qform' onsubmit='return runQuery(event)'>
+            <input id='qinput' type='text' placeholder='e.g. left flank progression into the box'
+                   autocomplete='off' />
+            <button type='submit' id='qbtn'>Search</button>
+          </form>
+          <div id='qexamples' class='typable-examples'>
+            try:
+            <a href='#' onclick='setQ("press break through the centre")'>press break through the centre</a> &middot;
+            <a href='#' onclick='setQ("dangerous right-sided attack")'>dangerous right-sided attack</a> &middot;
+            <a href='#' onclick='setQ("clips tactically similar to a press break")'>tactically similar to a press break</a> &middot;
+            <a href='#' onclick='setQ("Liverpool high press")'>Liverpool high press</a> <span class='muted'>(honest fail)</span>
+          </div>
+          <div id='qstatus' class='qstatus'></div>
+          <div id='qresult'></div>
+        </section>
+
+        <h2 class='qgrid-header'>Curated query gallery</h2>
         <section class='qgrid'>
           {''.join(cards)}
         </section>
@@ -396,7 +419,7 @@ def render_landing(pred_results: list[dict], rudy_results: dict, intents: dict, 
           </p>
         </footer>
     """)
-    return page_head("Predicate vs Rudy \u2014 investor demo") + body + page_foot()
+    return page_head("Predicate vs Rudy \u2014 investor demo", with_typable=True) + body + page_foot()
 
 
 # ---------------------------------------------------------------------------
