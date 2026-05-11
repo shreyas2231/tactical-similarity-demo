@@ -106,19 +106,32 @@ const TEAM_Q_LABELS = {
   press_break_received:  "When does their press get broken?",
 };
 
-function pctBar(pct, label) {
+function pctBar(pct, label, baseline) {
   const w = Math.max(2, Math.round(pct * 100));
+  let baselineEl = "";
+  let deltaEl = "";
+  if (typeof baseline === "number" && baseline > 0) {
+    const bw = Math.max(2, Math.round(baseline * 100));
+    baselineEl = `<span class="bar-baseline" style="left:${bw}%"></span>`;
+    const ratio = pct / baseline;
+    const sign = ratio >= 1 ? "+" : "";
+    const cls = ratio >= 1.2 ? "delta-up" : (ratio <= 0.8 ? "delta-down" : "delta-flat");
+    deltaEl = `<span class="bar-delta ${cls}" title="vs league avg ${(baseline*100).toFixed(0)}%">${sign}${((ratio-1)*100).toFixed(0)}%</span>`;
+  }
   return `<div class="bar-row"><span class="bar-lbl">${label}</span>
-    <span class="bar-track"><span class="bar-fill" style="width:${w}%"></span></span>
-    <span class="bar-pct">${(pct*100).toFixed(0)}%</span></div>`;
+    <span class="bar-track">
+      <span class="bar-fill" style="width:${w}%"></span>${baselineEl}
+    </span>
+    <span class="bar-pct">${(pct*100).toFixed(0)}%</span>${deltaEl}</div>`;
 }
 
-function distBlock(title, distObj) {
+function distBlock(title, distObj, baselineDist) {
   if (!distObj || !distObj.pct) return "";
   const entries = Object.entries(distObj.pct).sort((a,b) => b[1]-a[1]).filter(([k,v]) => v > 0);
   if (!entries.length) return "";
-  const bars = entries.map(([k,v]) => pctBar(v, String(k))).join("");
-  return `<div class="dist-block"><h4>${title} <span class="muted">(n=${distObj.n})</span></h4>${bars}</div>`;
+  const bars = entries.map(([k,v]) => pctBar(v, String(k), baselineDist ? baselineDist[k] : null)).join("");
+  const blegend = baselineDist ? `<span class="muted small"> grey tick = league avg</span>` : "";
+  return `<div class="dist-block"><h4>${title} <span class="muted">(n=${distObj.n})</span>${blegend}</h4>${bars}</div>`;
 }
 
 function teamProofRow(qid, clips) {
@@ -130,10 +143,18 @@ function teamProofRow(qid, clips) {
   const cards = clips.slice(0,5).map((r, i) => {
     const chipsHtml = (r.predicate_chips || []).slice(0,5).map(c => chip(c)).join(" ");
     const media = mediaTile(r);
+    // Fire 3: "recurring N×" badge if the clip is part of a recurring (team, pattern) tuple
+    let recurringBadge = "";
+    if (r.pattern_recurrence && r.pattern_recurrence.is_recurring) {
+      const n = r.pattern_recurrence.occurrences;
+      const sig = r.pattern_recurrence.signature;
+      recurringBadge = `<div class="recur-badge" title="pattern: ${sig}">recurring &times;${n}</div>`;
+    }
     return `<div class="card">
       <div class="card-head"><span class="rank">#${i+1}</span>
         <span class="wid" title="${r.window_id}">${r.window_id}</span></div>
       ${media}
+      ${recurringBadge}
       <div class="chips">${chipsHtml}</div>
     </div>`;
   }).join("");
@@ -147,12 +168,15 @@ function teamProofRow(qid, clips) {
 function renderTeamPanel(data) {
   const a = data.attacking || {};
   const d = data.defending || {};
+  const lb = data.league_baselines || {};
+  const lba = (lb.attacking || {});
+  const lbd = (lb.defending || {});
   const dists = `<div class="team-dists">
-    ${distBlock("Attacking — modal lane",       a.modal_lane_distribution)}
-    ${distBlock("Attacking — midfield progression type", a.progression_type_in_middle_third)}
-    ${distBlock("Attacking — box entry method",  a.box_entry_method_distribution)}
-    ${distBlock("Defending — block type",        d.block_type_distribution)}
-    ${distBlock("Defending — counter-press outcomes", d.counter_press_distribution)}
+    ${distBlock("Attacking — modal lane",                 a.modal_lane_distribution,            lba.modal_lane_distribution)}
+    ${distBlock("Attacking — midfield progression type",  a.progression_type_in_middle_third,   lba.progression_type_in_middle_third)}
+    ${distBlock("Attacking — box entry method",           a.box_entry_method_distribution,      lba.box_entry_method_distribution)}
+    ${distBlock("Defending — block type",                 d.block_type_distribution,            lbd.block_type_distribution)}
+    ${distBlock("Defending — counter-press outcomes",     d.counter_press_distribution,         lbd.counter_press_distribution)}
   </div>`;
   const proofRows = Object.keys(TEAM_Q_LABELS)
     .map(qid => teamProofRow(qid, (data.proof_clips || {})[qid]))
@@ -163,10 +187,63 @@ function renderTeamPanel(data) {
       <div class="muted">attacking windows: <b>${data.n_attacking_windows}</b> &middot;
         defending windows: <b>${data.n_defending_windows}</b> &middot;
         matches attacking: ${data.matches_attacking.length} &middot; matches defending: ${data.matches_defending.length}</div>
+      <div class="muted small">bars show team distribution; grey tick = league avg (12-team corpus); delta = team/league ratio</div>
     </div>
     ${dists}
     <div class="team-proofs"><h3>Proof clips per analyst question</h3>${proofRows}</div>
   </div>`;
+}
+
+// --- COMPARE MODE (Fire 3) ---
+function extractComparePair(q) {
+  // "compare 4177 vs 1804", "4177 vs 1804", "team 4177 versus team 1804"
+  const m = q.match(/\b(\d{3,4})\b[\s\S]*?\b(?:vs|versus|v\.)\b[\s\S]*?\b(\d{3,4})\b/i);
+  return m ? [m[1], m[2]] : null;
+}
+
+function renderCompareSide(team, baselines) {
+  const a = team.attacking || {};
+  const d = team.defending || {};
+  const lba = baselines.attacking || {};
+  const lbd = baselines.defending || {};
+  return `<div class="compare-side">
+    <div class="team-header">
+      <h2>Team <code>${team.team_id}</code></h2>
+      <div class="muted small">att=${team.n_attacking_windows} · def=${team.n_defending_windows}</div>
+    </div>
+    ${distBlock("Modal lane", a.modal_lane_distribution, lba.modal_lane_distribution)}
+    ${distBlock("Block type", d.block_type_distribution, lbd.block_type_distribution)}
+    ${distBlock("Box entry method", a.box_entry_method_distribution, lba.box_entry_method_distribution)}
+    ${distBlock("Counter-press", d.counter_press_distribution, lbd.counter_press_distribution)}
+    <div class="muted small" style="margin-top:8px"><b>top proof clips (press style):</b></div>
+    <div class="card-grid">${(team.proof_clips.press_style || []).slice(0,3).map((r,i) => `<div class="card">
+      <div class="card-head"><span class="rank">#${i+1}</span>
+        <span class="wid">${r.window_id.split(':').slice(-2).join(':')}</span></div>
+      ${mediaTile(r)}
+    </div>`).join("")}</div>
+  </div>`;
+}
+
+async function runCompareQuery(teamA, teamB, status, out) {
+  status.textContent = `Comparing ${teamA} vs ${teamB} ...`;
+  try {
+    const t0 = performance.now();
+    const resp = await fetch(BACKEND_URL + `/api/compare/${encodeURIComponent(teamA)}/${encodeURIComponent(teamB)}`);
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({detail: "unknown"}));
+      status.innerHTML = `<span class="rej">${err.detail || "compare failed"}</span>`;
+      return;
+    }
+    const data = await resp.json();
+    const dt = Math.round(performance.now() - t0);
+    status.innerHTML = `<b>Compare: ${teamA} vs ${teamB}</b> &mdash; ${dt} ms`;
+    out.innerHTML = `<div class="compare-grid">
+      ${renderCompareSide(data.team_a, data.league_baselines)}
+      ${renderCompareSide(data.team_b, data.league_baselines)}
+    </div>`;
+  } catch (err) {
+    status.innerHTML = `<span class="rej">error: ${String(err).replace(/</g,"&lt;")}</span>`;
+  }
 }
 
 // Extract a team_id from a free-form query — match either bare 4-digit numbers
@@ -212,7 +289,15 @@ async function runQuery(e) {
   btn.disabled = true;
   out.innerHTML = "";
 
-  // Detect team-focus queries: if the query contains a team_id, switch modes.
+  // Compare mode: "4177 vs 1804" / "compare 4177 vs 1804"
+  const pair = extractComparePair(q);
+  if (pair) {
+    await runCompareQuery(pair[0], pair[1], status, out);
+    btn.disabled = false;
+    return false;
+  }
+
+  // Team-focus mode: bare team_id, or "how does 4177 build up"
   const teamId = extractTeamId(q);
   if (teamId) {
     await runTeamQuery(teamId, status, out);
