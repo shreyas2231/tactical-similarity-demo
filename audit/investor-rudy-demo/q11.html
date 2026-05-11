@@ -1,0 +1,100 @@
+<!doctype html>
+<html><head><meta charset='utf-8'>
+<title>Q11 — Liverpool&#x27;s high press</title>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<link rel='stylesheet' href='styles.css'>
+</head><body>
+
+        <header class='page-head'>
+          <div class='breadcrumb'>
+            <a href='index.html'>/audit/investor-rudy-demo/</a> · Q11
+          </div>
+          <h1><span class='qid-large'>Q11.</span> Liverpool&#x27;s high press</h1>
+          <div class='chips chip-row-large'><span class='chip chip-explain'>unavailable: team filter (liverpool)</span> </div>
+          <div class='banner'>
+  <div class='banner-line'><b>Internal investor demo.</b> Trained on Rudy's <b>175 hand-labelled clips</b> + <b>46 analyst pair judgments</b>.</div>
+  <div class='banner-line'><b>Demo-tuned.</b> Awaiting fresh query-window labels (queue ready at <a href='label-queue/'>/audit/investor-rudy-demo/label-queue/</a>).</div>
+  <div class='banner-line'><b>Not exhaustive production search.</b> Right-hand panel is candidate ranking, not ground truth.</div>
+  <div class='banner-sub'><b>Model rankings fallback:</b> using the prior <code>ensemble + reranker_v0</code> baseline. Trained-model rankings will replace this once <code>artifacts/model_rankings.jsonl</code> ships from the TRAIN workstream.</div>
+</div>
+        </header>
+
+
+            <section class='expected-block'>
+              <h3>EXPECTED (written before generating results)</h3>
+              <pre>- **Expected predicate**: **REJECT** — predicate compiler has no
+  `team_filter` field; intent is marked `confidence=low`.
+- **Expected Rudy**: **REJECT** — Rudy index is anonymised (no `team_id`).
+- **Expected winner**: **honest fail (both refuse)**.
+- **Why**: explicit limitation of the demo; we don&#x27;t fake team-aware
+  retrieval.
+- **Known risk**: none — this is the test that both modes know to refuse.</pre>
+            </section>
+
+
+        <div class='two-col'>
+
+<section class='reject-box col-pred'>
+  <h3>SkillCorner Predicate Search rejected</h3>
+  <p class='reject-reason'>Team filter not supported in this prototype: &#x27;liverpool&#x27; detected.</p>
+  <p class='muted'>The deterministic predicate compiler has no team filter and no
+    concept of "vague tactical interest", so it refuses cleanly rather than
+    inventing results.</p>
+</section>
+
+
+<section class='reject-box col-rudy'>
+  <h3>Rudy-Trained Tactical Search returned no results</h3>
+  <p class='reject-reason'>Intent has no usable anchor mechanism — the trained ranker
+    refuses to invent results rather than degrade silently.</p>
+</section>
+
+        </div>
+
+
+<section class='diff-row'>
+  <section class='block diff-panel diff-empty'>
+    <h3 class='diff-title'>Diff unavailable</h3>
+    <p class='diff-sub'>One side returned no results — see honest-fail above.</p>
+  </section>
+</section>
+
+
+
+<section class='block prose-block'>
+  <h3>What Rudy labels added</h3>
+  <p>Both panels return the same windows for this query — predicate and Rudy agree.</p>
+</section>
+
+
+        <section class='legend block'>
+  <h3>Confidence tags — the trust boundary</h3>
+  <div class='legend-row'>
+    <span class='conf-tag conf-tag-labelled'>🟢 LABELLED</span>
+    <span class='legend-sub'>window is one of Rudy's 175 hand-labelled clip cards.</span>
+  </div>
+  <div class='legend-row'>
+    <span class='conf-tag conf-tag-suggested'>🟣 SUGGESTED</span>
+    <span class='legend-sub'>high-similarity to a labelled anchor (<code>confidence_tier=propagated_high</code>) — model-inferred, not a human label.</span>
+  </div>
+  <div class='legend-row'>
+    <span class='conf-tag conf-tag-model'>⚪ MODEL-RANKED</span>
+    <span class='legend-sub'>trained ranker placed it in top-5 with no labelled / propagated-high anchor.</span>
+  </div>
+  <div class='legend-row'>
+    <span class='conf-tag conf-tag-pred'>🟦 PREDICATE-MATCH</span>
+    <span class='legend-sub'>matched the deterministic predicate filter (left panel only).</span>
+  </div>
+</section>
+
+        <nav class='nav-row'>
+          <a class='nav-link' href='q10.html'>← q10</a>
+          <a class='nav-link nav-home' href='index.html'>all queries</a>
+          <a class='nav-link' href='q12.html'>q12 →</a>
+        </nav>
+
+        <footer class='page-foot'>
+          <p>Generator: <code>_generate.py</code> · sources: <code>_old_predicate_results.json</code>,
+             <code>_old_rudy_results.json</code>, <code>rudy_semantic_index.jsonl</code></p>
+        </footer>
+</body></html>

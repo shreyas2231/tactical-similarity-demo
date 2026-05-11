@@ -1,0 +1,336 @@
+{
+  "_meta": {
+    "schema_version": "QueryIntent_v1",
+    "generated_by": "PARSER workstream \u2014 hand-authored static intents",
+    "compiler_target": "fwm/eval/predicate_query_compiler_v0.py (keyword vocab)",
+    "notes": [
+      "Honest fails marked: Q11 (team filter) and Q12 (vague). Both have confidence=low and a non-empty unsupported/rejection_reason field.",
+      "Lane/zone/pressure values match the compiler's keyword vocabulary so downstream EMB / PRED / PAGE workstreams can route the same intent through either the predicate compiler or a structured retriever.",
+      "primary_mechanism uses the high-level intent vocab from the task spec, NOT the v1 taxonomy enums in qwen_parser_v0.py \u2014 the parser-side mapping is documented in parser_failure_taxonomy.md.",
+      "rudy_analogy_mode=true on Q13/Q15/Q16 \u2014 these queries explicitly ask for tactical-pattern grouping rather than literal predicate match."
+    ]
+  },
+  "1": {
+    "raw_query": "left flank progression into the box",
+    "primary_mechanism": "flank_progression",
+    "lane": [
+      "left",
+      "left_half_space"
+    ],
+    "zone_start": [],
+    "zone_end": [
+      "final_third"
+    ],
+    "pressure": "any",
+    "progression": true,
+    "box_entry": true,
+    "switch_play": false,
+    "carry": false,
+    "pass": false,
+    "danger": false,
+    "turnover": false,
+    "rudy_analogy_mode": false,
+    "unsupported": [],
+    "confidence": "high"
+  },
+  "2": {
+    "raw_query": "right flank progression into the box",
+    "primary_mechanism": "flank_progression",
+    "lane": [
+      "right",
+      "right_half_space"
+    ],
+    "zone_start": [],
+    "zone_end": [
+      "final_third"
+    ],
+    "pressure": "any",
+    "progression": true,
+    "box_entry": true,
+    "switch_play": false,
+    "carry": false,
+    "pass": false,
+    "danger": false,
+    "turnover": false,
+    "rudy_analogy_mode": false,
+    "unsupported": [],
+    "confidence": "high"
+  },
+  "3": {
+    "raw_query": "central carry that moves the defensive line",
+    "primary_mechanism": "build_up",
+    "lane": [
+      "central"
+    ],
+    "zone_start": [],
+    "zone_end": [],
+    "pressure": "any",
+    "progression": false,
+    "box_entry": false,
+    "switch_play": false,
+    "carry": true,
+    "pass": false,
+    "danger": false,
+    "turnover": false,
+    "rudy_analogy_mode": false,
+    "unsupported": [],
+    "confidence": "high"
+  },
+  "4": {
+    "raw_query": "build-up under pressure progressing into midfield",
+    "primary_mechanism": "build_up",
+    "lane": [
+      "central"
+    ],
+    "zone_start": [],
+    "zone_end": [
+      "middle_third"
+    ],
+    "pressure": "structured",
+    "progression": true,
+    "box_entry": false,
+    "switch_play": false,
+    "carry": false,
+    "pass": false,
+    "danger": false,
+    "turnover": false,
+    "rudy_analogy_mode": false,
+    "unsupported": [],
+    "confidence": "high"
+  },
+  "5": {
+    "raw_query": "press break through the centre",
+    "primary_mechanism": "press_break",
+    "lane": [
+      "central"
+    ],
+    "zone_start": [],
+    "zone_end": [],
+    "pressure": "high",
+    "progression": true,
+    "box_entry": false,
+    "switch_play": false,
+    "carry": false,
+    "pass": false,
+    "danger": false,
+    "turnover": false,
+    "rudy_analogy_mode": false,
+    "unsupported": [],
+    "confidence": "high"
+  },
+  "6": {
+    "raw_query": "switch of play to the weak side",
+    "primary_mechanism": "switch_of_play",
+    "lane": [],
+    "zone_start": [],
+    "zone_end": [],
+    "pressure": "any",
+    "progression": false,
+    "box_entry": false,
+    "switch_play": true,
+    "carry": false,
+    "pass": false,
+    "danger": false,
+    "turnover": false,
+    "rudy_analogy_mode": false,
+    "unsupported": [],
+    "confidence": "high"
+  },
+  "7": {
+    "raw_query": "dangerous right-sided attack",
+    "primary_mechanism": "dangerous_attack",
+    "lane": [
+      "right",
+      "right_half_space"
+    ],
+    "zone_start": [],
+    "zone_end": [
+      "final_third"
+    ],
+    "pressure": "any",
+    "progression": false,
+    "box_entry": false,
+    "switch_play": false,
+    "carry": false,
+    "pass": false,
+    "danger": true,
+    "turnover": false,
+    "rudy_analogy_mode": false,
+    "unsupported": [],
+    "confidence": "high"
+  },
+  "8": {
+    "raw_query": "progressive pass into the final third",
+    "primary_mechanism": "build_up",
+    "lane": [],
+    "zone_start": [],
+    "zone_end": [
+      "final_third"
+    ],
+    "pressure": "any",
+    "progression": true,
+    "box_entry": false,
+    "switch_play": false,
+    "carry": false,
+    "pass": true,
+    "danger": false,
+    "turnover": false,
+    "rudy_analogy_mode": false,
+    "unsupported": [],
+    "confidence": "high"
+  },
+  "9": {
+    "raw_query": "carry from defensive third into middle third",
+    "primary_mechanism": "build_up",
+    "lane": [],
+    "zone_start": [
+      "defensive_third"
+    ],
+    "zone_end": [
+      "middle_third"
+    ],
+    "pressure": "any",
+    "progression": true,
+    "box_entry": false,
+    "switch_play": false,
+    "carry": true,
+    "pass": false,
+    "danger": false,
+    "turnover": false,
+    "rudy_analogy_mode": false,
+    "unsupported": [],
+    "confidence": "high"
+  },
+  "10": {
+    "raw_query": "high-pressure sequence that ends in a turnover",
+    "primary_mechanism": "turnover",
+    "lane": [],
+    "zone_start": [],
+    "zone_end": [],
+    "pressure": "high",
+    "progression": false,
+    "box_entry": false,
+    "switch_play": false,
+    "carry": false,
+    "pass": false,
+    "danger": false,
+    "turnover": true,
+    "rudy_analogy_mode": false,
+    "unsupported": [],
+    "confidence": "high"
+  },
+  "11": {
+    "raw_query": "Liverpool's high press",
+    "primary_mechanism": null,
+    "lane": [],
+    "zone_start": [],
+    "zone_end": [],
+    "pressure": "high",
+    "progression": false,
+    "box_entry": false,
+    "switch_play": false,
+    "carry": false,
+    "pass": false,
+    "danger": false,
+    "turnover": false,
+    "rudy_analogy_mode": false,
+    "unsupported": [
+      "team_filter:liverpool"
+    ],
+    "rejection_reason": "team_filter_unsupported",
+    "confidence": "low"
+  },
+  "12": {
+    "raw_query": "show me everything tactically interesting",
+    "primary_mechanism": null,
+    "lane": [],
+    "zone_start": [],
+    "zone_end": [],
+    "pressure": "any",
+    "progression": false,
+    "box_entry": false,
+    "switch_play": false,
+    "carry": false,
+    "pass": false,
+    "danger": false,
+    "turnover": false,
+    "rudy_analogy_mode": false,
+    "unsupported": [],
+    "rejection_reason": "vague",
+    "confidence": "low"
+  },
+  "13": {
+    "raw_query": "clips tactically similar to a press break even if the path is different",
+    "primary_mechanism": "press_break",
+    "lane": [],
+    "zone_start": [],
+    "zone_end": [],
+    "pressure": "any",
+    "progression": true,
+    "box_entry": false,
+    "switch_play": false,
+    "carry": false,
+    "pass": false,
+    "danger": false,
+    "turnover": false,
+    "rudy_analogy_mode": true,
+    "unsupported": [],
+    "confidence": "high"
+  },
+  "14": {
+    "raw_query": "deep build-up patterns against a mid-block",
+    "primary_mechanism": "build_up",
+    "lane": [],
+    "zone_start": [
+      "defensive_third"
+    ],
+    "zone_end": [],
+    "pressure": "structured",
+    "progression": false,
+    "box_entry": false,
+    "switch_play": false,
+    "carry": false,
+    "pass": false,
+    "danger": false,
+    "turnover": false,
+    "rudy_analogy_mode": false,
+    "unsupported": [],
+    "confidence": "high"
+  },
+  "15": {
+    "raw_query": "build-up patterns that look similar but use a different mechanism",
+    "primary_mechanism": "build_up",
+    "lane": [],
+    "zone_start": [],
+    "zone_end": [],
+    "pressure": "any",
+    "progression": false,
+    "box_entry": false,
+    "switch_play": false,
+    "carry": false,
+    "pass": false,
+    "danger": false,
+    "turnover": false,
+    "rudy_analogy_mode": true,
+    "unsupported": [],
+    "confidence": "medium"
+  },
+  "16": {
+    "raw_query": "switch-of-play patterns that Rudy would group together",
+    "primary_mechanism": "switch_of_play",
+    "lane": [],
+    "zone_start": [],
+    "zone_end": [],
+    "pressure": "any",
+    "progression": false,
+    "box_entry": false,
+    "switch_play": true,
+    "carry": false,
+    "pass": false,
+    "danger": false,
+    "turnover": false,
+    "rudy_analogy_mode": true,
+    "unsupported": [],
+    "confidence": "high"
+  }
+}

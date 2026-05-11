@@ -1,0 +1,258 @@
+<!doctype html>
+<html><head><meta charset='utf-8'>
+<title>Q02 — right flank progression into the box</title>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<link rel='stylesheet' href='styles.css'>
+</head><body>
+
+        <header class='page-head'>
+          <div class='breadcrumb'>
+            <a href='index.html'>/audit/investor-rudy-demo/</a> · Q02
+          </div>
+          <h1><span class='qid-large'>Q02.</span> right flank progression into the box</h1>
+          <div class='chips chip-row-large'><span class='chip chip-explain'>lane: right flank</span> <span class='chip chip-explain'>box: enters box</span> <span class='chip chip-explain'>progressive (≥10m)</span> <span class='chip chip-rudy-explain'>mech: flank_progression</span></div>
+          <div class='banner'>
+  <div class='banner-line'><b>Internal investor demo.</b> Trained on Rudy's <b>175 hand-labelled clips</b> + <b>46 analyst pair judgments</b>.</div>
+  <div class='banner-line'><b>Demo-tuned.</b> Awaiting fresh query-window labels (queue ready at <a href='label-queue/'>/audit/investor-rudy-demo/label-queue/</a>).</div>
+  <div class='banner-line'><b>Not exhaustive production search.</b> Right-hand panel is candidate ranking, not ground truth.</div>
+  <div class='banner-sub'><b>Model rankings fallback:</b> using the prior <code>ensemble + reranker_v0</code> baseline. Trained-model rankings will replace this once <code>artifacts/model_rankings.jsonl</code> ships from the TRAIN workstream.</div>
+</div>
+        </header>
+
+
+            <section class='expected-block'>
+              <h3>EXPECTED (written before generating results)</h3>
+              <pre>- **Expected predicate**: strong, symmetrical mirror of Q01.
+- **Expected Rudy**: strong; right-flank `final_third_progression` and
+  `crossing_attack` anchors exist.
+- **Expected winner**: **both** — high overlap.
+- **Why**: same shape as Q01.
+- **Known risk**: corpus may be left-flank heavy (one team&#x27;s training data
+  bias); Rudy could surface fewer right-flank labelled clips.</pre>
+            </section>
+
+
+        <div class='two-col'>
+
+            <section class='block col-pred'>
+              <div class='col-head col-head-pred'>
+                <span class='col-title'>🔍 SkillCorner Predicate Search</span>
+                <span class='col-sub'>143 candidates · top 5</span>
+              </div>
+              <div class='card-grid'><div class='card card-pred'>
+  <div class='card-head'>
+    <span class='rank'>#1</span>
+    <span class='conf-tag conf-tag-pred'>🟦 PREDICATE-MATCH</span>
+    <span class='wid' title='2015213:2015213:87:17372'>2015213:2015213:87:17372</span>
+  </div>
+  <video src="animations/2015213/2015213_2015213_87_17372.mp4" controls preload="none" muted class="vid vid-anim"></video><div class="media-tag tag-anim">🟣 PITCH ANIMATION</div>
+  <div class='chips'><span class='chip'>lane: right-hs</span> <span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip chip-pos'>box ✓</span> <span class='chip chip-press'>pressure</span> <span class='chip chip-pos'>switch ✓</span> <span class='chip'>+74m</span></div>
+  <div class='score'>predicate 0.0074</div>
+</div><div class='card card-pred'>
+  <div class='card-head'>
+    <span class='rank'>#2</span>
+    <span class='conf-tag conf-tag-pred'>🟦 PREDICATE-MATCH</span>
+    <span class='wid' title='1996435:1996435:205:45606'>1996435:1996435:205:45606</span>
+  </div>
+  <video src="animations/1996435/1996435_1996435_205_45606.mp4" controls preload="none" muted class="vid vid-anim"></video><div class="media-tag tag-anim">🟣 PITCH ANIMATION</div>
+  <div class='chips'><span class='chip'>lane: right</span> <span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip chip-pos'>box ✓</span> <span class='chip chip-press'>pressure</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>+70m</span></div>
+  <div class='score'>predicate 0.0072</div>
+</div><div class='card card-pred'>
+  <div class='card-head'>
+    <span class='rank'>#3</span>
+    <span class='conf-tag conf-tag-pred'>🟦 PREDICATE-MATCH</span>
+    <span class='wid' title='1996435:1996435:118:23637'>1996435:1996435:118:23637</span>
+  </div>
+  <video src="animations/1996435/1996435_1996435_118_23637.mp4" controls preload="none" muted class="vid vid-anim"></video><div class="media-tag tag-anim">🟣 PITCH ANIMATION</div>
+  <div class='chips'><span class='chip'>lane: right</span> <span class='chip'>start: middle</span> <span class='chip'>end: final</span> <span class='chip chip-pos'>box ✓</span> <span class='chip chip-danger'>dangerous</span> <span class='chip chip-loss'>turnover</span> <span class='chip'>+70m</span></div>
+  <div class='score'>predicate 0.0070</div>
+</div><div class='card card-pred'>
+  <div class='card-head'>
+    <span class='rank'>#4</span>
+    <span class='conf-tag conf-tag-pred'>🟦 PREDICATE-MATCH</span>
+    <span class='wid' title='1996435:1996435:139:30244'>1996435:1996435:139:30244</span>
+  </div>
+  <video src="animations/1996435/1996435_1996435_139_30244.mp4" controls preload="none" muted class="vid vid-anim"></video><div class="media-tag tag-anim">🟣 PITCH ANIMATION</div>
+  <div class='chips'><span class='chip'>lane: right</span> <span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip chip-pos'>box ✓</span> <span class='chip chip-press'>pressure</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>+69m</span></div>
+  <div class='score'>predicate 0.0070</div>
+</div><div class='card card-pred'>
+  <div class='card-head'>
+    <span class='rank'>#5</span>
+    <span class='conf-tag conf-tag-pred'>🟦 PREDICATE-MATCH</span>
+    <span class='wid' title='1953632:1953632:14:2866'>1953632:1953632:14:2866</span>
+  </div>
+  <video src="animations/1953632/1953632_1953632_14_2866.mp4" controls preload="none" muted class="vid vid-anim"></video><div class="media-tag tag-anim">🟣 PITCH ANIMATION</div>
+  <div class='chips'><span class='chip'>lane: right-hs</span> <span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip chip-pos'>box ✓</span> <span class='chip chip-press'>pressure</span> <span class='chip'>+70m</span></div>
+  <div class='score'>predicate 0.0070</div>
+</div></div>
+            </section>
+
+
+            <section class='block col-rudy'>
+              <div class='col-head col-head-rudy'>
+                <span class='col-title'>🧠 Rudy-Trained Tactical Search</span>
+                <span class='col-sub'>10 candidates · top 5 · ensemble + reranker baseline (trained-model fallback)</span>
+              </div>
+              <div class='chips chip-row-anchors'><span class='chip chip-rudy-overlap'>anchor: crossing_attack</span> <span class='chip chip-rudy-overlap'>anchor: crossing_attack</span> <span class='chip chip-rudy-overlap'>anchor: crossing_attack</span></div>
+              <div class='card-grid'><div class='card card-rudy'>
+  <div class='card-head'>
+    <span class='rank rank-rudy'>#1</span>
+    <span class='conf-tag conf-tag-labelled'>🟢 LABELLED</span>
+    <span class='wid' title='1925299:1925299:119:27135'>1925299:1925299:119:27135</span>
+  </div>
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c08_create_finish_attack_1925299_1925299_119_27135.mp4" controls preload="none" muted class="vid"></video><div class="media-tag tag-broadcast">🟢 BROADCAST</div>
+  <div class='chips'><span class='chip chip-rudy-overlap'>anchor 46567</span> <span class='chip chip-rudy-mech'>mech: crossing_attack</span> <span class='chip chip-rudy-score'>score 1.183</span> <span class='chip chip-rudy-overlap'>phase=SETTLED</span> <span class='chip chip-rudy-overlap'>zone~attacking_third</span> <span class='chip chip-rudy-overlap'>lane~central</span></div>
+  <div class='score'>cos=0.72 mech_match=0.20 zone_match=0.10 lane_match=0.00 pressure_match=0.10</div>
+</div><div class='card card-rudy'>
+  <div class='card-head'>
+    <span class='rank rank-rudy'>#2</span>
+    <span class='conf-tag conf-tag-labelled'>🟢 LABELLED</span>
+    <span class='wid' title='1925299:1925299:253:57518'>1925299:1925299:253:57518</span>
+  </div>
+  <video src="animations/1925299/1925299_1925299_253_57518.mp4" controls preload="none" muted class="vid vid-anim"></video><div class="media-tag tag-anim">🟣 PITCH ANIMATION</div>
+  <div class='chips'><span class='chip chip-rudy-overlap'>anchor 55836</span> <span class='chip chip-rudy-mech'>mech: final_third_progression</span> <span class='chip chip-rudy-score'>score 1.177</span> <span class='chip chip-rudy-overlap'>phase=SETTLED</span> <span class='chip chip-rudy-overlap'>zone~attacking_third</span> <span class='chip chip-rudy-overlap'>lane~left</span></div>
+  <div class='score'>cos=0.93 mech_match=0.00 zone_match=0.10 lane_match=0.05 pressure_match=0.10</div>
+</div><div class='card card-rudy'>
+  <div class='card-head'>
+    <span class='rank rank-rudy'>#3</span>
+    <span class='conf-tag conf-tag-labelled'>🟢 LABELLED</span>
+    <span class='wid' title='1925299:1925299:48:8786'>1925299:1925299:48:8786</span>
+  </div>
+  <video src="animations/1925299/1925299_1925299_48_8786.mp4" controls preload="none" muted class="vid vid-anim"></video><div class="media-tag tag-anim">🟣 PITCH ANIMATION</div>
+  <div class='chips'><span class='chip chip-rudy-overlap'>anchor 28903</span> <span class='chip chip-rudy-mech'>mech: final_third_progression</span> <span class='chip chip-rudy-score'>score 1.088</span> <span class='chip chip-rudy-overlap'>phase=TRANSITION_ATK</span> <span class='chip chip-rudy-overlap'>zone~attacking_third</span> <span class='chip chip-rudy-overlap'>lane~right</span></div>
+  <div class='score'>cos=0.85 mech_match=0.00 zone_match=0.10 lane_match=0.00 pressure_match=0.10</div>
+</div><div class='card card-rudy'>
+  <div class='card-head'>
+    <span class='rank rank-rudy'>#4</span>
+    <span class='conf-tag conf-tag-labelled'>🟢 LABELLED</span>
+    <span class='wid' title='1925299:1925299:204:47018'>1925299:1925299:204:47018</span>
+  </div>
+  <video src="animations/1925299/1925299_1925299_204_47018.mp4" controls preload="none" muted class="vid vid-anim"></video><div class="media-tag tag-anim">🟣 PITCH ANIMATION</div>
+  <div class='chips'><span class='chip chip-rudy-overlap'>anchor 55836</span> <span class='chip chip-rudy-mech'>mech: final_third_attack</span> <span class='chip chip-rudy-score'>score 1.077</span> <span class='chip chip-rudy-overlap'>phase=SETTLED</span> <span class='chip chip-rudy-overlap'>zone~attacking_third</span> <span class='chip chip-rudy-overlap'>lane~right</span></div>
+  <div class='score'>cos=0.84 mech_match=0.00 zone_match=0.10 lane_match=0.00 pressure_match=0.10</div>
+</div><div class='card card-rudy'>
+  <div class='card-head'>
+    <span class='rank rank-rudy'>#5</span>
+    <span class='conf-tag conf-tag-labelled'>🟢 LABELLED</span>
+    <span class='wid' title='1886347:1886347:9:1391'>1886347:1886347:9:1391</span>
+  </div>
+  <video src="animations/1886347/1886347_1886347_9_1391.mp4" controls preload="none" muted class="vid vid-anim"></video><div class="media-tag tag-anim">🟣 PITCH ANIMATION</div>
+  <div class='chips'><span class='chip chip-rudy-overlap'>anchor 28903</span> <span class='chip chip-rudy-mech'>mech: final_third_progression</span> <span class='chip chip-rudy-score'>score 1.076</span> <span class='chip chip-rudy-overlap'>phase=SETTLED</span> <span class='chip chip-rudy-overlap'>zone~attacking_third</span> <span class='chip chip-rudy-overlap'>lane~right</span></div>
+  <div class='score'>cos=0.83 mech_match=0.00 zone_match=0.10 lane_match=0.05 pressure_match=0.10</div>
+</div></div>
+            </section>
+
+        </div>
+
+
+            <section class='diff-row'>
+              <section class='block diff-panel diff-pred'>
+                  <h3 class='diff-title'>Predicate-only</h3>
+                  <p class='diff-sub'>5 window(s) only in predicate top-5.</p>
+                  <div class='card-grid'><div class='card card-small card-pred'>
+  <div class='card-head'>
+    <span class='rank'>#0</span>
+    <span class='conf-tag conf-tag-pred'>🟦 PREDICATE-MATCH</span>
+    <span class='wid' title='2015213:2015213:87:17372'>2015213:2015213:87:17372</span>
+  </div>
+  <video src="animations/2015213/2015213_2015213_87_17372.mp4" controls preload="none" muted class="vid vid-small vid-anim"></video><div class="media-tag tag-anim">🟣 PITCH ANIMATION</div>
+  <div class='chips'><span class='chip'>lane: right-hs</span> <span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip chip-pos'>box ✓</span> <span class='chip chip-press'>pressure</span> <span class='chip chip-pos'>switch ✓</span> <span class='chip'>+74m</span></div>
+  <div class='score'>predicate 0.0074</div>
+</div><div class='card card-small card-pred'>
+  <div class='card-head'>
+    <span class='rank'>#0</span>
+    <span class='conf-tag conf-tag-pred'>🟦 PREDICATE-MATCH</span>
+    <span class='wid' title='1996435:1996435:205:45606'>1996435:1996435:205:45606</span>
+  </div>
+  <video src="animations/1996435/1996435_1996435_205_45606.mp4" controls preload="none" muted class="vid vid-small vid-anim"></video><div class="media-tag tag-anim">🟣 PITCH ANIMATION</div>
+  <div class='chips'><span class='chip'>lane: right</span> <span class='chip'>start: defensive</span> <span class='chip'>end: final</span> <span class='chip chip-pos'>box ✓</span> <span class='chip chip-press'>pressure</span> <span class='chip chip-danger'>dangerous</span> <span class='chip'>+70m</span></div>
+  <div class='score'>predicate 0.0072</div>
+</div><div class='card card-small card-pred'>
+  <div class='card-head'>
+    <span class='rank'>#0</span>
+    <span class='conf-tag conf-tag-pred'>🟦 PREDICATE-MATCH</span>
+    <span class='wid' title='1996435:1996435:118:23637'>1996435:1996435:118:23637</span>
+  </div>
+  <video src="animations/1996435/1996435_1996435_118_23637.mp4" controls preload="none" muted class="vid vid-small vid-anim"></video><div class="media-tag tag-anim">🟣 PITCH ANIMATION</div>
+  <div class='chips'><span class='chip'>lane: right</span> <span class='chip'>start: middle</span> <span class='chip'>end: final</span> <span class='chip chip-pos'>box ✓</span> <span class='chip chip-danger'>dangerous</span> <span class='chip chip-loss'>turnover</span> <span class='chip'>+70m</span></div>
+  <div class='score'>predicate 0.0070</div>
+</div></div>
+                </section>
+              <section class='block diff-panel diff-overlap'>
+  <h3 class='diff-title'>Overlap</h3>
+  <p class='diff-sub'>0 window(s) in both — agreement.</p>
+  <p class='muted'>(none)</p>
+</section>
+              <section class='block diff-panel diff-rudy'>
+                  <h3 class='diff-title'>Rudy-only</h3>
+                  <p class='diff-sub'>5 window(s) Rudy ranks that predicate misses.</p>
+                  <div class='card-grid'><div class='card card-small card-rudy'>
+  <div class='card-head'>
+    <span class='rank rank-rudy'>#0</span>
+    <span class='conf-tag conf-tag-labelled'>🟢 LABELLED</span>
+    <span class='wid' title='1925299:1925299:119:27135'>1925299:1925299:119:27135</span>
+  </div>
+  <video src="https://a7jbajmziyo9yaqk.public.blob.vercel-storage.com/analyst_pack_session_1/clips_taxonomy/c08_create_finish_attack_1925299_1925299_119_27135.mp4" controls preload="none" muted class="vid vid-small"></video><div class="media-tag tag-broadcast">🟢 BROADCAST</div>
+  <div class='chips'><span class='chip chip-rudy-overlap'>anchor 46567</span> <span class='chip chip-rudy-mech'>mech: crossing_attack</span> <span class='chip chip-rudy-score'>score 1.183</span> <span class='chip chip-rudy-overlap'>phase=SETTLED</span> <span class='chip chip-rudy-overlap'>zone~attacking_third</span> <span class='chip chip-rudy-overlap'>lane~central</span></div>
+  <div class='score'>cos=0.72 mech_match=0.20 zone_match=0.10 lane_match=0.00 pressure_match=0.10</div>
+</div><div class='card card-small card-rudy'>
+  <div class='card-head'>
+    <span class='rank rank-rudy'>#0</span>
+    <span class='conf-tag conf-tag-labelled'>🟢 LABELLED</span>
+    <span class='wid' title='1925299:1925299:253:57518'>1925299:1925299:253:57518</span>
+  </div>
+  <video src="animations/1925299/1925299_1925299_253_57518.mp4" controls preload="none" muted class="vid vid-small vid-anim"></video><div class="media-tag tag-anim">🟣 PITCH ANIMATION</div>
+  <div class='chips'><span class='chip chip-rudy-overlap'>anchor 55836</span> <span class='chip chip-rudy-mech'>mech: final_third_progression</span> <span class='chip chip-rudy-score'>score 1.177</span> <span class='chip chip-rudy-overlap'>phase=SETTLED</span> <span class='chip chip-rudy-overlap'>zone~attacking_third</span> <span class='chip chip-rudy-overlap'>lane~left</span></div>
+  <div class='score'>cos=0.93 mech_match=0.00 zone_match=0.10 lane_match=0.05 pressure_match=0.10</div>
+</div><div class='card card-small card-rudy'>
+  <div class='card-head'>
+    <span class='rank rank-rudy'>#0</span>
+    <span class='conf-tag conf-tag-labelled'>🟢 LABELLED</span>
+    <span class='wid' title='1925299:1925299:48:8786'>1925299:1925299:48:8786</span>
+  </div>
+  <video src="animations/1925299/1925299_1925299_48_8786.mp4" controls preload="none" muted class="vid vid-small vid-anim"></video><div class="media-tag tag-anim">🟣 PITCH ANIMATION</div>
+  <div class='chips'><span class='chip chip-rudy-overlap'>anchor 28903</span> <span class='chip chip-rudy-mech'>mech: final_third_progression</span> <span class='chip chip-rudy-score'>score 1.088</span> <span class='chip chip-rudy-overlap'>phase=TRANSITION_ATK</span> <span class='chip chip-rudy-overlap'>zone~attacking_third</span> <span class='chip chip-rudy-overlap'>lane~right</span></div>
+  <div class='score'>cos=0.85 mech_match=0.00 zone_match=0.10 lane_match=0.00 pressure_match=0.10</div>
+</div></div>
+                </section>
+            </section>
+
+
+
+<section class='block prose-block'>
+  <h3>What Rudy labels added</h3>
+  <p>Rudy adds <b>5</b> window(s) absent from predicate top-5, of which <b>5</b> are human-labelled clips. Surfaced mechanisms: <code>crossing_attack, final_third_progression, final_third_attack</code> — Rudy's expert labels group these by tactical mechanism (target intent: <code>flank_progression</code>) rather than by literal predicate match. Predicate keeps <b>5</b> window(s) that Rudy demotes — typically windows that match the spatial filter but don't share the labelled tactical mechanism. <em>Note: rankings shown here come from the prior ensemble + rules reranker baseline; fresh trained-model rankings were unavailable at generation time.</em></p>
+</section>
+
+
+        <section class='legend block'>
+  <h3>Confidence tags — the trust boundary</h3>
+  <div class='legend-row'>
+    <span class='conf-tag conf-tag-labelled'>🟢 LABELLED</span>
+    <span class='legend-sub'>window is one of Rudy's 175 hand-labelled clip cards.</span>
+  </div>
+  <div class='legend-row'>
+    <span class='conf-tag conf-tag-suggested'>🟣 SUGGESTED</span>
+    <span class='legend-sub'>high-similarity to a labelled anchor (<code>confidence_tier=propagated_high</code>) — model-inferred, not a human label.</span>
+  </div>
+  <div class='legend-row'>
+    <span class='conf-tag conf-tag-model'>⚪ MODEL-RANKED</span>
+    <span class='legend-sub'>trained ranker placed it in top-5 with no labelled / propagated-high anchor.</span>
+  </div>
+  <div class='legend-row'>
+    <span class='conf-tag conf-tag-pred'>🟦 PREDICATE-MATCH</span>
+    <span class='legend-sub'>matched the deterministic predicate filter (left panel only).</span>
+  </div>
+</section>
+
+        <nav class='nav-row'>
+          <a class='nav-link' href='q01.html'>← q01</a>
+          <a class='nav-link nav-home' href='index.html'>all queries</a>
+          <a class='nav-link' href='q03.html'>q03 →</a>
+        </nav>
+
+        <footer class='page-foot'>
+          <p>Generator: <code>_generate.py</code> · sources: <code>_old_predicate_results.json</code>,
+             <code>_old_rudy_results.json</code>, <code>rudy_semantic_index.jsonl</code></p>
+        </footer>
+</body></html>

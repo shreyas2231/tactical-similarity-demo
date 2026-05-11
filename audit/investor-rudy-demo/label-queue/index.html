@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Rudy labelling queue — investor-rudy-demo</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  * { box-sizing: border-box; }
+  body { font: 14px/1.5 -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    margin: 0; padding: 0; background: #f5f6f8; color: #222; }
+  header { background: #6a3eaa; color: #fff; padding: 12px 20px; display: flex;
+    justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+  header h1 { margin: 0; font-size: 16px; font-weight: 700; }
+  header .breadcrumb { font: 11px ui-monospace, Menlo, monospace; opacity: 0.8; }
+  header .progress { font: 12px ui-monospace, Menlo, monospace; background: #4a2880;
+    padding: 4px 10px; border-radius: 4px; }
+  header button { background: #fff; color: #4a2880; border: none; padding: 6px 14px;
+    border-radius: 4px; font-weight: 700; cursor: pointer; font-size: 13px; }
+  header button:hover { background: #ece0fc; }
+  header .danger { background: #ffe0e0; color: #8a1a1a; }
+  .banner { background: #fffceb; border-bottom: 2px solid #d4b400; padding: 8px 20px;
+    font-size: 12px; color: #5a4108; }
+  main { max-width: 1100px; margin: 0 auto; padding: 18px 20px; }
+  .container { display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; align-items: start; }
+  @media (max-width: 900px) { .container { grid-template-columns: 1fr; } }
+  .video-pane video { width: 100%; max-height: 360px; background: #000; border-radius: 6px; }
+  .video-pane .nomedia { width: 100%; height: 280px; background: #2a2a3a; color: #aaa;
+    display: flex; align-items: center; justify-content: center; border-radius: 6px; }
+  .video-pane .meta { font: 11px ui-monospace, Menlo, monospace; color: #666; margin-top: 6px;
+    word-break: break-all; }
+  .qsection h2 { margin: 0 0 6px 0; font-size: 18px; }
+  .qid-tag { background: #6a3eaa; color: #fff; padding: 2px 8px; border-radius: 3px;
+    font: 11px ui-monospace, Menlo, monospace; margin-right: 8px; }
+  .source-tag { background: #4a4a4a; color: #fff; padding: 2px 8px; border-radius: 3px;
+    font: 10px ui-monospace, Menlo, monospace; text-transform: uppercase; }
+  .source-tag.predicate_top10 { background: #1a4d8a; }
+  .source-tag.rudy_ensemble   { background: #6a3eaa; }
+  .source-tag.anchor          { background: #1a7c1a; }
+  .source-tag.random_diverse  { background: #d4a017; color: #5a4108; }
+  .source-tag.hard_negative   { background: #b03030; }
+  .chips { display: flex; flex-wrap: wrap; gap: 4px; margin: 6px 0; }
+  .chip { background: #eef2fa; color: #1a4d8a; padding: 2px 8px; border-radius: 3px;
+    font-size: 12px; }
+  .chip.predicate { background: #cfe2ff; color: #1a4d8a; }
+  .chip.anchor    { background: #ece0fc; color: #4a2a8a; }
+  .label-pane { background: #fff; border: 1px solid #ddd; border-radius: 6px; padding: 14px; }
+  .label-pane h3 { margin: 0 0 6px 0; font-size: 13px; color: #555; }
+  .label-row { margin-bottom: 12px; }
+  .grade-btns, .show-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+  .grade-btns button, .show-btns button {
+    padding: 10px 14px; border: 2px solid #ddd; background: #fafbfd; cursor: pointer;
+    border-radius: 4px; font-weight: 700; font-size: 14px;
+  }
+  .grade-btns button:hover, .show-btns button:hover { border-color: #1a4d8a; }
+  .grade-btns button[data-active=true] { border-color: #6a3eaa; background: #ece0fc; color: #2a155a; }
+  .show-btns button[data-active=true]  { border-color: #1a7c1a; background: #d6f0d6; color: #1a5f1a; }
+  .grade-strong [data-active=true]  { border-color: #1a7c1a; background: #d6f0d6; }
+  .grade-partial [data-active=true] { border-color: #d4a017; background: #fff3cd; }
+  .grade-miss    [data-active=true] { border-color: #b03030; background: #fde0e0; }
+  kbd { background: #eee; border: 1px solid #bbb; border-radius: 3px; padding: 0 5px;
+    font: 11px ui-monospace, Menlo, monospace; margin-left: 4px; }
+  textarea, input[type=text] { width: 100%; padding: 6px 8px; border: 1px solid #ccc;
+    border-radius: 4px; font: 13px -apple-system, BlinkMacSystemFont, sans-serif; }
+  textarea { min-height: 50px; resize: vertical; }
+  .nav-row { display: flex; justify-content: space-between; align-items: center;
+    margin-top: 14px; padding-top: 10px; border-top: 1px solid #eee; }
+  .nav-row button { padding: 8px 14px; background: #fff; border: 1px solid #ccc;
+    border-radius: 4px; cursor: pointer; font: 12px ui-monospace, Menlo, monospace; }
+  .nav-row button.primary { background: #6a3eaa; color: #fff; border-color: #6a3eaa; }
+  .nav-row button.primary:hover { background: #4a2880; }
+  .filter-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 10px;
+    padding: 8px; background: #fff; border: 1px solid #ddd; border-radius: 4px; font-size: 12px; }
+  .filter-row label { display: flex; align-items: center; gap: 4px; }
+  .saved-flag { font-size: 11px; padding: 2px 6px; border-radius: 3px; background: #d6f0d6;
+    color: #1a5f1a; margin-left: 8px; display: none; }
+  .saved-flag.show { display: inline-block; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="breadcrumb">/audit/investor-rudy-demo/label-queue/</div>
+    <h1>Rudy labelling queue</h1>
+  </div>
+  <div>
+    <span id="progress" class="progress">0 of 0</span>
+    <span id="saved-flag" class="saved-flag">saved</span>
+    <button id="export-btn">Export JSONL ↓</button>
+    <button id="clear-btn" class="danger">Clear local labels</button>
+  </div>
+</header>
+
+<div class="banner">
+  <b>Internal investor demo.</b> Trained on Rudy's 175 hand-labelled clips + 46 analyst pair judgments.
+  <b>Demo-tuned.</b> Awaiting fresh query-window labels (this queue is them). <b>Not exhaustive production search.</b>
+  Labels save to <code>localStorage</code> (key <code>rudy_demo_labels_v1</code>); export the JSONL when done.
+</div>
+
+<main>
+  <div class="filter-row">
+    <label><input type="checkbox" id="filter-unlabelled" /> Show only unlabelled</label>
+    <label>Query: <select id="filter-qid"><option value="">all</option></select></label>
+    <label>Source: <select id="filter-source"><option value="">all</option></select></label>
+    <span id="filter-count" style="color:#666"></span>
+  </div>
+
+  <div class="container">
+    <section class="qsection">
+      <div>
+        <span id="qid-tag" class="qid-tag">Q??</span>
+        <span id="source-tag" class="source-tag">…</span>
+      </div>
+      <h2 id="query-text">Loading…</h2>
+      <div class="video-pane">
+        <video id="video" controls preload="metadata" muted></video>
+        <div id="nomedia" class="nomedia" style="display:none">no media available</div>
+        <div class="meta">
+          <div id="window-id"></div>
+          <div id="match-poss"></div>
+        </div>
+      </div>
+      <h3 style="margin-top:14px">Intent / query chips</h3>
+      <div id="intent-chips" class="chips"></div>
+      <h3>Predicate chips (what predicate search saw)</h3>
+      <div id="predicate-chips" class="chips"></div>
+      <h3>Nearest Rudy anchor</h3>
+      <div id="anchor-chips" class="chips"></div>
+    </section>
+
+    <section class="label-pane">
+      <div class="label-row grade-strong grade-partial grade-miss">
+        <h3>Grade <kbd>1</kbd>/<kbd>2</kbd>/<kbd>3</kbd></h3>
+        <div class="grade-btns">
+          <button data-grade="strong"  class="grade-strong">Strong (2)</button>
+          <button data-grade="partial" class="grade-partial">Partial (1)</button>
+          <button data-grade="miss"    class="grade-miss">Miss (0)</button>
+        </div>
+      </div>
+      <div class="label-row">
+        <h3>Showable for demo <kbd>y</kbd>/<kbd>n</kbd></h3>
+        <div class="show-btns">
+          <button data-showable="yes">Yes — show</button>
+          <button data-showable="no">No — hide</button>
+        </div>
+      </div>
+      <div class="label-row">
+        <h3>Why match (free text)</h3>
+        <textarea id="why-match" placeholder="Why does this window match the query?"></textarea>
+      </div>
+      <div class="label-row">
+        <h3>Why not (if partial / miss)</h3>
+        <textarea id="why-not" placeholder="What's missing or off?"></textarea>
+      </div>
+      <div class="label-row">
+        <h3>Primary tactical concept</h3>
+        <input id="concept" type="text" placeholder="e.g. half-space press break, switch-of-play to weak side"/>
+      </div>
+      <div class="nav-row">
+        <button id="prev-btn">← prev <kbd>⌫</kbd></button>
+        <span id="counter" style="font: 12px ui-monospace, Menlo, monospace; color:#666">– / –</span>
+        <button id="next-btn" class="primary">next → <kbd>⏎</kbd></button>
+      </div>
+    </section>
+  </div>
+
+  <p style="font-size:12px; color:#666; margin-top:24px">
+    Keyboard: <kbd>1</kbd>=Strong, <kbd>2</kbd>=Partial, <kbd>3</kbd>=Miss,
+    <kbd>y</kbd>=showable, <kbd>n</kbd>=not, <kbd>⏎</kbd> next, <kbd>⌫</kbd> prev.
+    Free-text fields don't trigger shortcuts while focused.
+    Labels persist in this browser only; <b>export to JSONL</b> to ship them.
+  </p>
+</main>
+
+<script>
+const LS_KEY = "rudy_demo_labels_v1";
+let queue = [];
+let idx = 0;
+let labels = JSON.parse(localStorage.getItem(LS_KEY) || "{}");
+let filter = { unlabelled: false, qid: "", source: "" };
+
+function saveLabels() {
+  localStorage.setItem(LS_KEY, JSON.stringify(labels));
+  const f = document.getElementById("saved-flag");
+  f.classList.add("show");
+  clearTimeout(saveLabels._t);
+  saveLabels._t = setTimeout(() => f.classList.remove("show"), 600);
+}
+
+function filteredIndices() {
+  const out = [];
+  queue.forEach((it, i) => {
+    if (filter.qid && it.qid !== filter.qid) return;
+    if (filter.source && it.candidate_source !== filter.source) return;
+    if (filter.unlabelled && labels[it.window_id + "::" + it.qid]) return;
+    out.push(i);
+  });
+  return out;
+}
+
+function chip(text, cls="") {
+  return `<span class="chip ${cls}">${escapeHtml(text)}</span>`;
+}
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"})[c]);
+}
+
+function render() {
+  const filt = filteredIndices();
+  document.getElementById("filter-count").textContent = `(${filt.length} of ${queue.length} match filter)`;
+  if (filt.length === 0) {
+    document.getElementById("query-text").textContent = "No items match the filter.";
+    document.getElementById("video").style.display = "none";
+    return;
+  }
+  if (idx >= filt.length) idx = filt.length - 1;
+  if (idx < 0) idx = 0;
+  const realIdx = filt[idx];
+  const it = queue[realIdx];
+
+  document.getElementById("qid-tag").textContent = it.qid;
+  const src = it.candidate_source || "unknown";
+  const stag = document.getElementById("source-tag");
+  stag.className = "source-tag " + src;
+  stag.textContent = src.replace(/_/g, " ");
+  document.getElementById("query-text").textContent = it.query_text;
+  document.getElementById("window-id").textContent = "window: " + it.window_id;
+  document.getElementById("match-poss").textContent =
+    `match ${it.match_id} · possession ${it.possession_id}` +
+    (it.is_labelled_clip ? "  ·  🟢 this is a labelled clip" : "");
+
+  // Media
+  const vid = document.getElementById("video");
+  const nomedia = document.getElementById("nomedia");
+  if (it.media_url) {
+    vid.src = it.media_url;
+    vid.style.display = "";
+    nomedia.style.display = "none";
+  } else {
+    vid.removeAttribute("src");
+    vid.style.display = "none";
+    nomedia.style.display = "";
+  }
+
+  document.getElementById("intent-chips").innerHTML =
+    (it.intent_chips || []).map(c => chip(c, "")).join(" ");
+  document.getElementById("predicate-chips").innerHTML =
+    (it.predicate_chips || []).map(c => chip(`${c.label}: ${c.value}`, "predicate")).join(" ") || "<span style='color:#888'>(no predicate facts)</span>";
+  document.getElementById("anchor-chips").innerHTML =
+    (it.anchor_chips || []).map(c => chip(`${c.label}: ${c.value}`, "anchor")).join(" ") || "<span style='color:#888'>(no anchor)</span>";
+
+  const key = it.window_id + "::" + it.qid;
+  const cur = labels[key] || {};
+  // Grade
+  document.querySelectorAll("[data-grade]").forEach(b => {
+    b.dataset.active = (b.dataset.grade === cur.grade) ? "true" : "false";
+  });
+  document.querySelectorAll("[data-showable]").forEach(b => {
+    b.dataset.active = (b.dataset.showable === cur.showable) ? "true" : "false";
+  });
+  document.getElementById("why-match").value = cur.why_match || "";
+  document.getElementById("why-not").value   = cur.why_not   || "";
+  document.getElementById("concept").value   = cur.concept   || "";
+
+  const nLabelled = Object.keys(labels).length;
+  document.getElementById("progress").textContent = `${nLabelled} of ${queue.length} labelled`;
+  document.getElementById("counter").textContent = `${idx + 1} / ${filt.length}`;
+}
+
+function setField(field, value) {
+  const filt = filteredIndices();
+  if (filt.length === 0) return;
+  const it = queue[filt[idx]];
+  const key = it.window_id + "::" + it.qid;
+  labels[key] = labels[key] || { qid: it.qid, window_id: it.window_id, query_text: it.query_text };
+  labels[key][field] = value;
+  labels[key].labelled_at = new Date().toISOString();
+  saveLabels();
+  render();
+}
+
+function nav(delta) {
+  const filt = filteredIndices();
+  if (!filt.length) return;
+  idx = Math.max(0, Math.min(filt.length - 1, idx + delta));
+  render();
+}
+
+function exportJsonl() {
+  const ts = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
+  const rows = Object.values(labels);
+  const blob = new Blob([rows.map(r => JSON.stringify(r)).join("\n") + "\n"], {type: "application/jsonl"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `rudy_demo_labels_${ts}.jsonl`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+document.querySelectorAll("[data-grade]").forEach(b => {
+  b.addEventListener("click", () => setField("grade", b.dataset.grade));
+});
+document.querySelectorAll("[data-showable]").forEach(b => {
+  b.addEventListener("click", () => setField("showable", b.dataset.showable));
+});
+document.getElementById("why-match").addEventListener("input", e => setField("why_match", e.target.value));
+document.getElementById("why-not").addEventListener("input",   e => setField("why_not",   e.target.value));
+document.getElementById("concept").addEventListener("input",   e => setField("concept",   e.target.value));
+document.getElementById("next-btn").addEventListener("click", () => nav(1));
+document.getElementById("prev-btn").addEventListener("click", () => nav(-1));
+document.getElementById("export-btn").addEventListener("click", exportJsonl);
+document.getElementById("clear-btn").addEventListener("click", () => {
+  if (confirm("Clear all locally saved labels? This cannot be undone.")) {
+    labels = {};
+    saveLabels();
+    render();
+  }
+});
+
+document.getElementById("filter-unlabelled").addEventListener("change", e => {
+  filter.unlabelled = e.target.checked; idx = 0; render();
+});
+document.getElementById("filter-qid").addEventListener("change", e => {
+  filter.qid = e.target.value; idx = 0; render();
+});
+document.getElementById("filter-source").addEventListener("change", e => {
+  filter.source = e.target.value; idx = 0; render();
+});
+
+document.addEventListener("keydown", e => {
+  const tag = (e.target.tagName || "").toUpperCase();
+  if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+  if (e.key === "1") setField("grade", "strong");
+  else if (e.key === "2") setField("grade", "partial");
+  else if (e.key === "3") setField("grade", "miss");
+  else if (e.key.toLowerCase() === "y") setField("showable", "yes");
+  else if (e.key.toLowerCase() === "n") setField("showable", "no");
+  else if (e.key === "Enter") nav(1);
+  else if (e.key === "Backspace") { e.preventDefault(); nav(-1); }
+  else if (e.key === "ArrowRight") nav(1);
+  else if (e.key === "ArrowLeft") nav(-1);
+});
+
+fetch("label_queue.json")
+  .then(r => r.json())
+  .then(d => {
+    queue = d.items || [];
+    // Populate filter dropdowns
+    const qids = [...new Set(queue.map(i => i.qid))].sort();
+    const srcs = [...new Set(queue.map(i => i.candidate_source))].sort();
+    const qidSel = document.getElementById("filter-qid");
+    qids.forEach(q => qidSel.insertAdjacentHTML("beforeend", `<option value="${q}">${q}</option>`));
+    const srcSel = document.getElementById("filter-source");
+    srcs.forEach(s => srcSel.insertAdjacentHTML("beforeend", `<option value="${s}">${s}</option>`));
+    render();
+  })
+  .catch(err => {
+    document.getElementById("query-text").textContent = "Failed to load label_queue.json: " + err;
+  });
+</script>
+</body>
+</html>
