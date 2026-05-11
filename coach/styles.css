@@ -376,3 +376,44 @@ main { max-width: 980px; margin: 0 auto; padding: 32px 28px 80px; }
 }
 .footer small { font-size: 12px; }
 .footer a { color: var(--text-muted); }
+
+/* Coach-brief v2 (post football-expert review 2026-05-11) */
+.sample-badge {
+  display: inline-block; margin-top: 8px;
+  font-size: 11px; font-weight: 600;
+  background: var(--warn-soft); color: var(--warn-text);
+  padding: 4px 10px; border-radius: 6px;
+  border: 1px solid color-mix(in oklab, var(--warn) 30%, transparent);
+}
+
+.section {
+  border-top: 1px solid var(--border);
+  padding: 14px 0 4px 0;
+  margin-top: 4px;
+}
+.section:first-child { border-top: 0; padding-top: 0; margin-top: 0; }
+.section-label {
+  text-transform: uppercase; letter-spacing: 0.08em;
+  font-size: 11px; font-weight: 700; color: var(--text-muted);
+  margin-bottom: 8px;
+}
+.section-found .section-label  { color: var(--accent-text); }
+.section-why .section-label    { color: var(--good-text); }
+.section-proof .section-label  { color: var(--warn-text); }
+.section-body { margin: 0 0 12px 0; line-height: 1.65; color: var(--text); font-size: 14px; }
+
+.evidence-block {
+  background: var(--surface-2);
+  border-radius: var(--r);
+  padding: 12px 14px;
+  margin-top: 8px;
+}
+.evidence-n {
+  font-size: 11px; color: var(--text-soft); margin-top: 6px;
+}
+.proof-explainer {
+  font-size: 13.5px; color: var(--text-muted); margin: 0 0 12px 0;
+}
+.proof-count { color: var(--text-soft); margin-left: 4px; }
+.tag-tl { top: 6px; left: 6px; right: auto; }
+.tag-tr { top: 6px; right: 6px; left: auto; }

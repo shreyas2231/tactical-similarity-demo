@@ -29,26 +29,28 @@ function esc(s) {
     ({"<":"&lt;",">":"&gt;","&":"&amp;",'"':"&quot;","'":"&#39;"}[c]));
 }
 
-function deltaChip(teamPct, leaguePct) {
-  if (leaguePct == null || leaguePct <= 0 || teamPct == null) return "";
-  const ratio = teamPct / leaguePct;
+function deltaChip(teamPct, baselinePct, baselineKind) {
+  if (baselinePct == null || baselinePct <= 0 || teamPct == null) return "";
+  const ratio = teamPct / baselinePct;
   const sign = ratio >= 1 ? "+" : "";
   const pct = Math.round((ratio - 1) * 100);
   const cls = ratio >= 1.15 ? "delta-up" : (ratio <= 0.85 ? "delta-down" : "delta-flat");
-  return `<span class="delta ${cls}">${sign}${pct}% vs league</span>`;
+  const suffix = baselineKind === "corpus" ? "vs sample" : "vs avg";
+  return `<span class="delta ${cls}">${sign}${pct}% ${suffix}</span>`;
 }
 
-function statBar(label, teamPct, leaguePct) {
+function statBar(label, teamPct, baselinePct, baselineKind) {
   const w = Math.max(2, Math.round((teamPct || 0) * 100));
-  const baseline = (leaguePct != null && leaguePct > 0)
-    ? `<span class="stat-baseline" style="left:${Math.round(leaguePct*100)}%" title="league avg ${(leaguePct*100).toFixed(0)}%"></span>` : "";
+  const baselineTitle = baselineKind === "corpus" ? "sample baseline" : "baseline";
+  const baseline = (baselinePct != null && baselinePct > 0)
+    ? `<span class="stat-baseline" style="left:${Math.round(baselinePct*100)}%" title="${baselineTitle} ${(baselinePct*100).toFixed(0)}%"></span>` : "";
   return `<div class="stat-row">
     <div class="stat-track">
       <span class="stat-fill" style="width:${w}%"></span>${baseline}
     </div>
     <div class="stat-numbers">
       <span>${(teamPct*100).toFixed(0)}%</span>
-      ${deltaChip(teamPct, leaguePct)}
+      ${deltaChip(teamPct, baselinePct, baselineKind)}
     </div>
   </div>
   <div class="stat-name">${esc(label)}</div>`;
@@ -60,14 +62,17 @@ function mediaUrl(clip) {
 }
 
 function clipTagHtml(clip) {
-  if (clip.media_kind === "broadcast") {
-    return `<span class="proof-clip-tag is-broadcast">broadcast</span>`;
-  }
+  // Top-left: source (broadcast film vs anonymised animation)
+  const sourceTag = clip.media_kind === "broadcast"
+    ? `<span class="proof-clip-tag tag-tl is-broadcast">broadcast</span>`
+    : `<span class="proof-clip-tag tag-tl">animation</span>`;
+  // Top-right: recurring-FAMILY badge (4-tuple is a family of patterns, not exact)
+  let recurTag = "";
   const rec = clip.pattern_recurrence;
   if (rec && rec.is_recurring) {
-    return `<span class="proof-clip-tag is-recurring">repeats ×${rec.occurrences}</span>`;
+    recurTag = `<span class="proof-clip-tag tag-tr is-recurring" title="this team has ${rec.occurrences} clips in the same pattern family (lane/zone/method)">recurring family ×${rec.occurrences}</span>`;
   }
-  return `<span class="proof-clip-tag">animation</span>`;
+  return sourceTag + recurTag;
 }
 
 function proofClipCard(clip, index) {
@@ -134,7 +139,12 @@ async function loadBrief(teamId) {
 function renderBrief(brief) {
   briefTitle.textContent = brief.hero.title;
   briefSub.textContent = brief.hero.subtitle;
-  briefMeta.textContent = `${brief.recommendations.length} key decisions`;
+  briefMeta.innerHTML = `${brief.recommendations.length} key finding${brief.recommendations.length === 1 ? "" : "s"}`;
+
+  // Sample-size badge (single-match read / thin sample)
+  if (brief.hero.sample_note) {
+    briefMeta.innerHTML += `<div class="sample-badge" title="${esc(brief.hero.sample_note)}">⚠ ${esc(brief.hero.sample_note)}</div>`;
+  }
 
   recList.innerHTML = brief.recommendations.map((rec, i) => `
     <article class="rec tone-${esc(rec.tone)}" data-rec-id="${esc(rec.id)}" data-idx="${i}">
@@ -142,13 +152,14 @@ function renderBrief(brief) {
         <div class="rec-icon">${rec.icon || "•"}</div>
         <div class="rec-title-block">
           <div class="rec-title">${esc(rec.title)}</div>
-          <div class="rec-sub">${esc(rec.subtitle)}</div>
+          <div class="rec-sub">${esc(rec.headline || rec.subtitle || "")}</div>
         </div>
         <span class="rec-chev">▾</span>
       </button>
       <div class="rec-body">
         <div class="rec-body-inner">
-          ${renderEvidence(rec)}
+          ${renderWhatWeFound(rec)}
+          ${renderWhyItMatters(rec)}
           ${renderProof(rec, i)}
         </div>
       </div>
@@ -177,32 +188,45 @@ function renderBrief(brief) {
   });
 }
 
-function renderEvidence(rec) {
-  if (!rec.evidence || !rec.evidence.length) return "";
-  return rec.evidence.map(e => `
-    <div class="evidence">
-      <div class="evidence-label">The evidence</div>
-      <div class="evidence-headline-row">
-        <div class="interpretation">${esc(e.interpretation || "")}</div>
-        <div>
-          ${statBar(e.label, e.team_pct, e.league_pct)}
-        </div>
-      </div>
-    </div>
-  `).join("");
+function renderWhatWeFound(rec) {
+  if (!rec.what_we_found && (!rec.evidence || !rec.evidence.length)) return "";
+  const ev = (rec.evidence || []).map(e => {
+    const baseline = e.baseline_pct;
+    const kind = e.baseline_kind || null;
+    const nNote = e.n_windows ? `<div class="evidence-n">based on ${e.n_windows.toLocaleString()} sequences</div>` : "";
+    return `
+      <div class="evidence-block">
+        ${statBar(e.label, e.team_pct, baseline, kind)}
+        ${nNote}
+      </div>`;
+  }).join("");
+  return `
+    <section class="section section-found">
+      <div class="section-label">What we found</div>
+      <p class="section-body">${esc(rec.what_we_found || "")}</p>
+      ${ev}
+    </section>`;
+}
+
+function renderWhyItMatters(rec) {
+  if (!rec.why_it_matters) return "";
+  return `
+    <section class="section section-why">
+      <div class="section-label">Why it matters</div>
+      <p class="section-body">${esc(rec.why_it_matters)}</p>
+    </section>`;
 }
 
 function renderProof(rec, recIdx) {
   const clips = rec.proof_clips || [];
-  const head = `<div class="proof-header">
-    <span class="proof-title">${esc(rec.proof_explainer || "Proof clips")}</span>
-    <span class="proof-count">${clips.length} clip${clips.length === 1 ? "" : "s"} — click to play</span>
-  </div>`;
+  const head = `<section class="section section-proof">
+    <div class="section-label">Proof — analyst's job: accept / reject / export</div>
+    <p class="proof-explainer">${esc(rec.proof_explainer || "Example clips supporting the finding.")} ${clips.length ? `<span class="proof-count">${clips.length} clip${clips.length === 1 ? "" : "s"} — click to play.</span>` : ""}</p>`;
   if (!clips.length) {
-    return head + `<div class="proof-empty">No direct proof clips for this recommendation in the current corpus.</div>`;
+    return head + `<div class="proof-empty">No direct proof clips for this finding in the current corpus.</div></section>`;
   }
   const grid = clips.map((c, i) => proofClipCard(c, i)).join("");
-  return head + `<div class="proof-grid">${grid}</div>`;
+  return head + `<div class="proof-grid">${grid}</div></section>`;
 }
 
 // ---------- modal ----------
