@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Match Prep — Coach Brief</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="AI-powered match preparation. Coach-style recommendations from tracking + event data.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<script defer src="app.js"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark">●</span>
+    <span class="brand-name">Match Prep</span>
+  </div>
+  <nav class="topnav">
+    <a href="../">Demo home</a>
+  </nav>
+</header>
+
+<main>
+  <section class="hero">
+    <h1 class="hero-title">Prepare for your next opponent.</h1>
+    <p class="hero-sub">Pick a team. We'll tell you how to play them — and show you the clips that prove it.</p>
+
+    <div class="team-grid" id="teamGrid">
+      <!-- populated by app.js -->
+      <div class="team-loading">Loading teams…</div>
+    </div>
+  </section>
+
+  <section class="brief" id="brief" hidden>
+    <div class="brief-hero">
+      <div>
+        <div class="kicker">Match preparation</div>
+        <h2 class="brief-title" id="briefTitle">—</h2>
+        <p class="brief-sub" id="briefSub">—</p>
+      </div>
+      <div class="brief-meta" id="briefMeta"></div>
+    </div>
+
+    <div class="rec-list" id="recList">
+      <!-- recommendations rendered here -->
+    </div>
+
+    <p class="footnote">
+      Recommendations are auto-generated from tracking + event data. They are decision-support, not gospel. Every claim drills down to the clips that justify it.
+    </p>
+  </section>
+
+  <section class="empty-state" id="emptyState">
+    <div class="empty-glyph">⚽</div>
+    <p>Pick a team above to generate a match-prep brief.</p>
+  </section>
+</main>
+
+<!-- Clip modal -->
+<div class="modal" id="clipModal" hidden role="dialog" aria-modal="true">
+  <div class="modal-backdrop" data-close="1"></div>
+  <div class="modal-card">
+    <button class="modal-close" aria-label="Close" data-close="1">✕</button>
+    <div class="modal-caption" id="modalCaption">—</div>
+    <div class="modal-video-wrap">
+      <video id="modalVideo" controls playsinline preload="metadata"></video>
+    </div>
+    <div class="modal-chips" id="modalChips"></div>
+    <div class="modal-nav">
+      <button class="btn-ghost" id="prevClip">← Prev</button>
+      <span class="modal-pos" id="modalPos">—</span>
+      <button class="btn-ghost" id="nextClip">Next →</button>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  <small>Internal investor demo — candidate moments, not exhaustive search. Data: 7,306 tracking windows across 10 matches.
+  Engineering view: <a href="../audit/investor-query-comparison/">/audit/investor-query-comparison/</a></small>
+</footer>
+
+</body>
+</html>
