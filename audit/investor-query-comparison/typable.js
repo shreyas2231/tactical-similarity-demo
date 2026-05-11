@@ -94,6 +94,114 @@ function renderPanel(title, panel, renderCard, kind) {
   </div>`;
 }
 
+// ---- Team-focus rendering (Fire 2: answers "how does team X press / build / progress / leave space") ----
+// Q labels (CTO list ↔ proof_clips routes)
+const TEAM_Q_LABELS = {
+  lateral_preference:    "Which side do they attack more often?",
+  press_style:           "How do they press?",
+  build_up_fragility:    "Where is their build-up fragile?",
+  midfield_progression:  "How do they progress through midfield?",
+  box_entry_method:      "How do they enter the box?",
+  space_between_lines:   "Where do they leave space between lines?",
+  press_break_received:  "When does their press get broken?",
+};
+
+function pctBar(pct, label) {
+  const w = Math.max(2, Math.round(pct * 100));
+  return `<div class="bar-row"><span class="bar-lbl">${label}</span>
+    <span class="bar-track"><span class="bar-fill" style="width:${w}%"></span></span>
+    <span class="bar-pct">${(pct*100).toFixed(0)}%</span></div>`;
+}
+
+function distBlock(title, distObj) {
+  if (!distObj || !distObj.pct) return "";
+  const entries = Object.entries(distObj.pct).sort((a,b) => b[1]-a[1]).filter(([k,v]) => v > 0);
+  if (!entries.length) return "";
+  const bars = entries.map(([k,v]) => pctBar(v, String(k))).join("");
+  return `<div class="dist-block"><h4>${title} <span class="muted">(n=${distObj.n})</span></h4>${bars}</div>`;
+}
+
+function teamProofRow(qid, clips) {
+  if (!clips || !clips.length) {
+    return `<div class="team-q-row team-q-empty">
+      <h4>${TEAM_Q_LABELS[qid] || qid} <span class="qid-tag">${qid}</span></h4>
+      <p class="muted">no clips matched — pattern not present in this corpus</p></div>`;
+  }
+  const cards = clips.slice(0,5).map((r, i) => {
+    const chipsHtml = (r.predicate_chips || []).slice(0,5).map(c => chip(c)).join(" ");
+    const media = mediaTile(r);
+    return `<div class="card">
+      <div class="card-head"><span class="rank">#${i+1}</span>
+        <span class="wid" title="${r.window_id}">${r.window_id}</span></div>
+      ${media}
+      <div class="chips">${chipsHtml}</div>
+    </div>`;
+  }).join("");
+  return `<div class="team-q-row">
+    <h4>${TEAM_Q_LABELS[qid] || qid} <span class="qid-tag">${qid}</span>
+      <span class="muted small">— ${clips.length} matched, top-5 shown</span></h4>
+    <div class="card-grid">${cards}</div>
+  </div>`;
+}
+
+function renderTeamPanel(data) {
+  const a = data.attacking || {};
+  const d = data.defending || {};
+  const dists = `<div class="team-dists">
+    ${distBlock("Attacking — modal lane",       a.modal_lane_distribution)}
+    ${distBlock("Attacking — midfield progression type", a.progression_type_in_middle_third)}
+    ${distBlock("Attacking — box entry method",  a.box_entry_method_distribution)}
+    ${distBlock("Defending — block type",        d.block_type_distribution)}
+    ${distBlock("Defending — counter-press outcomes", d.counter_press_distribution)}
+  </div>`;
+  const proofRows = Object.keys(TEAM_Q_LABELS)
+    .map(qid => teamProofRow(qid, (data.proof_clips || {})[qid]))
+    .join("");
+  return `<div class="team-panel">
+    <div class="team-header">
+      <h2>Team focus: <code>${data.team_id}</code></h2>
+      <div class="muted">attacking windows: <b>${data.n_attacking_windows}</b> &middot;
+        defending windows: <b>${data.n_defending_windows}</b> &middot;
+        matches attacking: ${data.matches_attacking.length} &middot; matches defending: ${data.matches_defending.length}</div>
+    </div>
+    ${dists}
+    <div class="team-proofs"><h3>Proof clips per analyst question</h3>${proofRows}</div>
+  </div>`;
+}
+
+// Extract a team_id from a free-form query — match either bare 4-digit numbers
+// or "team <id>" patterns. Returns first match or null.
+function extractTeamId(q) {
+  const m = q.match(/\bteam[\s_-]+(\d{3,4})\b/i) || q.match(/\b(\d{4})\b/);
+  return m ? m[1] : null;
+}
+
+async function runTeamQuery(teamId, status, out) {
+  status.textContent = `Loading team focus for ${teamId} ...`;
+  try {
+    const t0 = performance.now();
+    const resp = await fetch(BACKEND_URL + "/api/team/" + encodeURIComponent(teamId));
+    if (!resp.ok) {
+      if (resp.status === 404) {
+        // Fetch the list of valid teams so we can show them
+        const listResp = await fetch(BACKEND_URL + "/api/teams");
+        const list = listResp.ok ? await listResp.json() : null;
+        const validIds = list ? list.teams.map(t => t.team_id).join(", ") : "(unavailable)";
+        status.innerHTML = `<span class="rej">team_id ${teamId} not found.</span> Valid team_ids: <code>${validIds}</code>`;
+        return;
+      }
+      throw new Error(`HTTP ${resp.status}`);
+    }
+    const data = await resp.json();
+    const dt = Math.round(performance.now() - t0);
+    status.innerHTML = `<b>Team focus: ${teamId}</b> &mdash; ${dt} ms &middot;
+      <span class="muted">7 analyst questions answered + 5 proof clips each</span>`;
+    out.innerHTML = renderTeamPanel(data);
+  } catch (err) {
+    status.innerHTML = `<span class="rej">error: ${String(err).replace(/</g,"&lt;")}</span>`;
+  }
+}
+
 async function runQuery(e) {
   e.preventDefault();
   const q = document.getElementById("qinput").value.trim();
@@ -102,8 +210,17 @@ async function runQuery(e) {
   const out = document.getElementById("qresult");
   const btn = document.getElementById("qbtn");
   btn.disabled = true;
-  status.textContent = `Searching for: ${q} ...`;
   out.innerHTML = "";
+
+  // Detect team-focus queries: if the query contains a team_id, switch modes.
+  const teamId = extractTeamId(q);
+  if (teamId) {
+    await runTeamQuery(teamId, status, out);
+    btn.disabled = false;
+    return false;
+  }
+
+  status.textContent = `Searching for: ${q} ...`;
   try {
     const t0 = performance.now();
     const resp = await fetch(BACKEND_URL + "/api/query", {
@@ -126,5 +243,12 @@ async function runQuery(e) {
   } finally {
     btn.disabled = false;
   }
+  return false;
+}
+
+// Surface team-focus example links so investors discover the feature.
+function setTeam(id) {
+  document.getElementById("qinput").value = "team " + id;
+  runQuery(new Event("submit"));
   return false;
 }

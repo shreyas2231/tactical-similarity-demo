@@ -397,6 +397,14 @@ def render_landing(pred_results: list[dict], rudy_results: dict, intents: dict, 
             <a href='#' onclick='setQ("clips tactically similar to a press break")'>tactically similar to a press break</a> &middot;
             <a href='#' onclick='setQ("Liverpool high press")'>Liverpool high press</a> <span class='muted'>(honest fail)</span>
           </div>
+          <div id='qteamexamples' class='typable-examples' style='margin-top:6px'>
+            <b>team focus</b> (analyst-style questions per team, 7 questions answered):
+            <a href='#' onclick='setTeam("4177")'>team 4177</a> &middot;
+            <a href='#' onclick='setTeam("1804")'>team 1804</a> &middot;
+            <a href='#' onclick='setTeam("2380")'>team 2380</a> &middot;
+            <a href='#' onclick='setTeam("1802")'>team 1802</a>
+            <span class='muted'>&mdash; or type "team &lt;id&gt;" / "how does 4177 build up"</span>
+          </div>
           <div id='qstatus' class='qstatus'></div>
           <div id='qresult'></div>
         </section>
