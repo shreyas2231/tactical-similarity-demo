@@ -307,6 +307,9 @@ main { max-width: 980px; margin: 0 auto; padding: 32px 28px 80px; }
 }
 
 /* ----- Modal ----- */
+/* `hidden` attribute must win over `.modal` display rule.
+   Use :not([hidden]) so the modal stays invisible on initial page load. */
+.modal[hidden] { display: none !important; }
 .modal {
   position: fixed; inset: 0; z-index: 100;
   display: grid; place-items: center;

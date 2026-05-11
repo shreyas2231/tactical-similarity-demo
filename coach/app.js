@@ -242,8 +242,10 @@ function closeModal() {
   document.body.style.overflow = "";
 }
 
+// Robust delegation: close if user clicks the X, the backdrop, or any child of an element marked data-close
 modal.addEventListener("click", (e) => {
-  if (e.target && e.target.dataset && e.target.dataset.close === "1") closeModal();
+  const closer = e.target && e.target.closest && e.target.closest("[data-close]");
+  if (closer) closeModal();
 });
 document.addEventListener("keydown", (e) => {
   if (modal.hidden) return;
